@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  {% block head %}
+    <title> {{ SITENAME }} </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="{{SITEURL}}/theme/images/favicon.ico">
+
+    <link href="{{SITEURL}}/theme/css/tango_code.css" rel="stylesheet">
+    <link href="{{SITEURL}}/theme/css/webfonts.css" rel="stylesheet">
+    <link href="{{SITEURL}}/theme/css/layout.css" rel="stylesheet">
+    <link href="{{SITEURL}}/theme/css/type.css" rel="stylesheet">
+    <link href="{{SITEURL}}/theme/css/color-decor.css" rel="stylesheet">
+    <link href="{{SITEURL}}/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+    <style> .mf, .mi { font-weight: normal; } </style>
+  {% endblock head %}
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="{{SITEURL}}/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+      {% if DISPLAY_PAGES_ON_MENU %}
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="{{ SITEURL }}/index.html">Home</a></li>
+          <li><a href="{{ SITEURL }}/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+          {% for p in PAGES %}
+            {% if p.title != "Colophon" %}
+              <li {% if p == page %} class="active" {% endif %}> <a href="{{ SITEURL }}/{{ p.url }}"> {{ p.title }} </a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      {% endif %}
+    </nav>
+  </header>
+    {% block content_title %}
+      <!-- For pages that have a title describing their content -->
+    {% endblock %}
+
+    {% block content %}
+      <!-- Page content is defined in the individual page templates. -->
+    {% endblock %}
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="{{SITEURL}}/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="{{SITEURL}}/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  {% include 'analytics.html' %}
+  {% include 'disqus_script.html' %}
+</body>
+
+</html>

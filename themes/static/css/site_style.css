@@ -1,0 +1,292 @@
+Sbody {
+    margin-left: 50px;
+    background-color: #E9E9E3;
+    /*font-family: 'IowanOldStyleBTPro-Roman', sans-serif*/
+}
+
+p, li {
+    width: 40em;
+    font-family: 'IowanOldStyleBTPro-Roman', 'Bitstream Charter', 'URW Palladio L', serif;
+    font-size: 20px;
+    line-height: 150%;
+}
+
+a:link, a:visited {
+    color: black;
+    text-decoration: underline;
+}
+
+code {
+    font-family: SourceCodePro-Regular, monospace;
+    font-size: 16px;
+}
+
+#topmatter {
+    width:900px;
+    margin-left: 0px;
+    overflow: hidden;
+ }
+
+#image_banner {
+    height: 350px;
+    float: left;
+}
+
+h1 {
+    font-family: VerbExCondSemibold;
+    font-weight: normal;
+    font-size: 22px;
+}
+
+h2 {
+    font-family: VerbExCondSemibold;
+    font-weight: normal;
+    font-size: 18px;
+}
+
+h3 {
+    font-family: VerbExCondLight-Italic;
+    font-weight: normal;
+    font-size: 18px;
+}
+
+.highlight {
+    margin: 2em;
+}
+
+.category {
+    list-style-type: none;
+    font-family: VerbExCondLight;
+    font-size: 26px;
+}
+
+.category a {
+    text-decoration: none;
+}
+
+.category a:hover {
+    color: rgba(125, 125, 125, 1);
+}
+.highlight pre {
+    font-family: SourceCodePro-Regular, monospace;
+    font-size: 14px;
+}
+
+.entry-title {
+    font-family: VerbExCondSemiBold;
+    font-weight: 300;
+    font-size: 24px;
+    font-weight: normal;
+}
+
+.entry-title a:link, a:visited {
+    text-decoration: none;
+    color: rgba(45, 45, 45, 1);
+}
+
+.entry-title i, em {
+    font-family: VerbExCondMedium-Italic;
+    font-style: normal;
+}
+
+.entry-title a:hover {
+  /*   color: rgba(200, 200, 200, 1); */
+}
+
+dl {
+    overflow: hidden;
+}
+
+.archive-date {
+    margin-top: 25px;
+    font-family: VerbExCondMedium;
+}
+
+.archive-title a:link {
+    text-decoration: none;
+}
+
+.page-title {
+    font-family: VerbExCondLight;
+    font-size: 25px;
+    letter-spacing: 2px;
+    color: rgba(50, 50, 50, 1);
+    text-transform: uppercase;
+ }
+
+.author {
+    font-style: normal;
+    float: left;
+}
+
+.post-info a:link {
+    text-decoration: none;
+}
+
+.post-info a:hover {
+    text-decoration: underline;
+}
+
+.published {
+    float: left;
+}
+.published:after {
+    margin-left: 10px;
+    margin-right: 10px;
+    content: '|';
+}
+
+.author:after {
+    margin-left: 10px;
+    margin-right: 10px;
+    content: '|';
+}
+
+
+.paginator {
+    font-family: VerbExCondLight;
+    font-size: 15px;
+    margin-top: 50px;
+}
+
+#post-list {
+    list-style-type: none;
+    -webkit-padding-start: 0px;
+}
+
+#navbar {
+   /* background: rgba(200, 200, 200, 1);*/
+    height: 250px;
+    width: 50%;
+    float: left;
+    margin-left: 50px;
+    margin-top: 50px;
+    border-left: solid 2px rgba(150, 150, 150, 1);
+}
+
+#content {
+    margin-top: 50px;
+}
+
+#contentinfo {
+    position: relative;
+    bottom: 0;
+    left:0;
+    width: 100%;
+    margin-top: 200px;
+    margin-left: -40px;
+    padding-left: 10px;
+   /* background: rgba(100, 100, 100, 1);*/
+    border-top: solid 1px;
+    overflow: hidden;
+}
+
+#coloph-link {
+    font-family: SourceSansPro-Regular;
+    font-size: 14px;
+    float:right;
+}
+
+#coloph-link :hover {
+    color: #E9E9E3;
+    background: rgba(50, 50, 50, 1);
+}
+
+#coloph-link a:link {
+    color: rgba(50, 50, 50, 1);
+    text-decoration: none;
+    padding: 0px 10px 0px 10px;
+}
+
+#credits {
+   font-family: VerbExCondLight;
+   font-size: 14px;
+   float: left;
+   margin-top: 5px;
+}
+
+.article-sep {
+    font-size: 20px;
+    width: 40em;
+}
+
+.post-info {
+    font-family: VerbExCondLight;
+    font-size: 14px;
+    overflow: hidden;
+    line-height: 100%
+}
+
+.summary-more {
+    visibility: hidden;
+    position: relative;
+    margin-left: 20px;
+    font-family: VerbExCondMedium-Italic;
+    font-size: 16px;
+}
+
+.summary-more a:link { text-decoration: none; }
+.summary-more a:hover { text-decoration: underline; }
+
+#menu {
+    position: relative;
+    bottom: 0;
+}
+
+nav li {
+    list-style-type: none;
+    margin-bottom: 10px;
+}
+
+nav li a:link {
+    text-decoration: none;
+    font-size: 26px;
+    font-family: 'SourceSansPro-Light';
+    font-weight: 300;
+    color: rgba(0, 0, 0, 1);
+}
+
+nav li a:visited {
+    color: rgba(0, 0, 0, 1);
+}
+
+nav li a:hover {
+
+   color:  rgba(125, 125, 125, 1);
+}
+
+.pagelink {
+    width: 200px;
+    }
+
+/*.pagelink:hover {
+    background: red;*/
+
+#post-list {
+        margin-top: 50px;
+    }
+
+p b, strong {
+    font-family: IowanOldStyleBTPro-Bold;
+    font-weight: normal;
+}
+
+p i, em {
+    font-family: IowanOldStyleBTPro-Italic;
+    font-style: normal;
+}
+
+#category-title-name {
+    font-family: VerbExCondMedium;
+}
+
+#social-icons {
+    font-family: VerbExCondLight;
+    font-size: 18px;
+
+}
+
+#social-icons a { text-decoration: none;}
+#social-icons a:hover { text-decoration: underline; }
+
+#willitpython-logo {float: left; margin-right: 15px; margin-bottom: 10px;}

@@ -1,0 +1,107 @@
+/* @license
+ * MyFonts Webfont Build ID 2611396, 2013-07-29T00:25:41-0400
+ *
+ * The fonts listed in this notice are subject to the End User License
+ * Agreement(s) entered into by the website owner. All other parties are
+ * explicitly restricted from using the Licensed Webfonts(s).
+ *
+ * You may obtain a valid license at the URLs below.
+ *
+ * Webfont: Iowan Old Style Pro Italic by Bitstream
+ * URL: http://www.myfonts.com/fonts/bitstream/iowan-old-style/pro-italic/
+ *
+ * Webfont: Iowan Old Style Pro Roman by Bitstream
+ * URL: http://www.myfonts.com/fonts/bitstream/iowan-old-style/pro-roman/
+ *
+ * Webfont: Iowan Old Style Pro Bold by Bitstream
+ * URL: http://www.myfonts.com/fonts/bitstream/iowan-old-style/pro-bold/
+ *
+ *
+ * License: http://www.myfonts.com/viewlicense?type=web&buildid=2611396
+ * Licensed pageviews: 10,000
+ * Webfonts copyright: Copyright 1990-2005 Bitstream Inc.  All rights reserved.
+ *
+ * © 2013 MyFonts Inc
+*/
+
+
+/* Source Sans Pro */
+@font-face {font-family: 'SourceSansPro-Light';
+            src: url('webfonts/SourceSansPro-Light.ttf');}
+
+@font-face {font-family: 'SourceSansPro-ExtraLight';
+            src: url('webfonts/SourceSansPro-ExtraLight.ttf');}
+
+
+@font-face {font-family: 'SourceSansPro-ExtraLightItalic';
+            src: url('webfonts/SourceSansPro-ExtraLightItalic.ttf');}
+
+@font-face {font-family: 'SourceSansPro-Regular';
+            src: url('webfonts/SourceSansPro-Regular.ttf');}
+
+/* Source Code Pro */
+@font-face {font-family: 'SourceCodePro-Regular';
+            src: url('webfonts/SourceCodePro-Regular.ttf');}
+
+/* Iowan Old Style */
+/* @import must be at top of file, otherwise CSS will not work */
+@import url("//hello.myfonts.net/count/27d8c4");
+
+@font-face {font-family: 'IowanOldStyleBTPro-Italic';
+            src: url('webfonts/27D8C4_0_0.eot');
+            src: url('webfonts/27D8C4_0_0.eot?#iefix') format('embedded-opentype'),
+                 url('webfonts/27D8C4_0_0.woff')       format('woff'),
+                 url('webfonts/27D8C4_0_0.ttf')        format('truetype');}
+
+@font-face {font-family: 'IowanOldStyleBTPro-Roman';
+            src: url('webfonts/27D8C4_1_0.eot');
+            src: url('webfonts/27D8C4_1_0.eot?#iefix') format('embedded-opentype'),
+                 url('webfonts/27D8C4_1_0.woff')       format('woff'),
+                 url('webfonts/27D8C4_1_0.ttf')        format('truetype');}
+
+@font-face {font-family: 'IowanOldStyleBTPro-Bold';
+            src: url('webfonts/27D8C4_2_0.eot');
+            src: url('webfonts/27D8C4_2_0.eot?#iefix') format('embedded-opentype'),
+                 url('webfonts/27D8C4_2_0.woff')       format('woff'),
+                 url('webfonts/27D8C4_2_0.ttf')        format('truetype');}
+
+
+/* Verb */
+@import url("//hello.myfonts.net/count/27e1d6");
+
+@font-face {font-family: 'VerbExCondLight-Italic';
+            src: url('webfonts/27E1D6_0_0.eot');
+            src: url('webfonts/27E1D6_0_0.eot?#iefix') format('embedded-opentype'),
+                 url('webfonts/27E1D6_0_0.woff')       format('woff'),
+                 url('webfonts/27E1D6_0_0.ttf')        format('truetype');}
+
+@font-face {font-family: 'VerbExCondMedium-Italic';
+            src: url('webfonts/27E1D6_1_0.eot');
+            src: url('webfonts/27E1D6_1_0.eot?#iefix') format('embedded-opentype'),
+                 url('webfonts/27E1D6_1_0.woff')       format('woff'),
+                 url('webfonts/27E1D6_1_0.ttf')        format('truetype');}
+
+@font-face {font-family: 'VerbExCondRegular-Italic';
+            src: url('webfonts/27E1D6_2_0.eot');
+            src: url('webfonts/27E1D6_2_0.eot?#iefix') format('embedded-opentype'),
+                 url('webfonts/27E1D6_2_0.woff')       format('woff'),
+                 url('webfonts/27E1D6_2_0.ttf')        format('truetype');}
+
+@font-face {font-family: 'VerbExCondSemibold';
+            src: url('webfonts/27E1D6_3_0.eot');
+            src: url('webfonts/27E1D6_3_0.eot?#iefix') format('embedded-opentype'),
+                 url('webfonts/27E1D6_3_0.woff')       format('woff'),
+                 url('webfonts/27E1D6_3_0.ttf')        format('truetype');}
+
+@font-face {font-family: 'VerbExCondMedium';
+            src: url('webfonts/27E1D6_4_0.eot');
+            src: url('webfonts/27E1D6_4_0.eot?#iefix') format('embedded-opentype'),
+                 url('webfonts/27E1D6_4_0.woff')       format('woff'),
+                 url('webfonts/27E1D6_4_0.ttf')        format('truetype');}
+
+@font-face {font-family: 'VerbExCondLight';
+            src: url('webfonts/27E1D6_5_0.eot');
+            src: url('webfonts/27E1D6_5_0.eot?#iefix') format('embedded-opentype'),
+                 url('webfonts/27E1D6_5_0.woff')       format('woff'),
+                 url('webfonts/27E1D6_5_0.ttf')        format('truetype');}
+

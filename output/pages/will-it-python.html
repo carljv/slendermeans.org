@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li  class="active" > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="page-content">
+      <h1 class="page-title">Will it  Python?</h1>
+
+      
+
+      <h2>What is it?</h2>
+<p><img id="willitpython-logo" src="../images/will-it-python.png" width=300px style="float:left; margin:0 .5em 0 0;"/></p>
+<p><em>Will it Python?</em> posts are my attempts to port data analyses
+originally done in R into Python.</p>
+<p>The objective isn&#8217;t to just make a key that translates functions and
+methods in R into Python equivalents. Instead, the goal is to reproduce
+the results and insights of the analysis in idiomatic Python (to the
+extent I&#8217;m qualified to judge such a thing). Sometimes there will be a
+direct translation from a line of R to a line of Python; other times
+Python will suggest an altogether different approach to the problem.</p>
+<h2>What&#8217;s the point?</h2>
+<p>The first goal of <em>Will it Python?</em> is entirely selfish&#8212;I just want to
+learn how to better use the Python data analysis stack (NumPy, SciPy,
+Matplotlib, Pandas, etc.).</p>
+<p>Second, though, I hope these posts can also be a useful resource  for
+others who are interested the Python data analysis toolkit and its
+viability as an alternative to R. That includes analysts who have been
+working in R and are &#8220;py-curious,&#8221; but aren&#8217;t 100% sure they can get
+their work done in Python. It also includes developers in the Python
+data analysis stack, who are still evolving their tools. By taking cases
+studies that are known-solvable in R and translating them to Python, we
+get a better of idea where the Python toolkit shines, and where it still
+falls short in features or usability.</p>
+<h2>What are the projects?</h2>
+<p>My first <em>Will it Python?</em> project is translating <em><a href="http://shop.oreilly.com/product/0636920018483.do">Machine Learning for
+Hackers</a> </em>by <a href="http://www.drewconway.com">Drew Conway</a> and <a href="http://www.johnmyleswhite.com/">John Myles White</a>. The book has a
+great collection of case studies that showcase R doing what it does very
+well: getting users close to their data quickly, and running cutting
+edge statistical techniques via high-level libraries. The authors also
+strike a good balance in datasets they work with: they recognize that
+real world data are messy, but they don&#8217;t use datasets so complex that
+the tedium of cleaning and munging overwhelms the fun stuff.</p>
+<p>I&#8217;ll also pull examples from textbooks and other sources with R analyses
+as they strike my interest. For example, Gelman and Hill&#8217;s <a href="http://www.stat.columbia.edu/~gelman/arm/"><em>Data
+Analysis Using Regression and Multilevel/Hierarchical Models</em></a>has a
+lot of great examples of running statistical models in R.</p>
+<h2>What else?</h2>
+<p>You can see all the <em>Will it Python?</em> posts <a href="http://www.slendermeans.org/category/will-it-python.html">here</a>, or by clicking in the category label of any <em>Will it Python?</em> post.</p>
+<p>All the code written for <em>Will it Python?</em> posts lives at the Github
+repo <a href="https://github.com/carljv/Will_it_Python">here</a>.</p>
+<p>The dumb name and logo were shamelessly appropriated from
+Blendtec&#8217;s <em><a href="http://www.willitblend.com" title="Will it Blend?">Will it Blend?</a></em> ad campaign.</p>
+<p>This is a learning experience for me, and my Python is amateurish at
+best. I appreciate any and all comments letting me know when I&#8217;m doing
+something dumb.</p>
+<p>I&#8217;m also up for taking requests if folks have R projects in mind that
+they&#8217;d like to see attempted in Python.</p>
+<h2>Viewing IPython notebooks online</h2>
+<p>Most of the projects are coded in IPython notebooks. As I finish them,
+I&#8217;ll post links to them via <a href="http://http://nbviewer.ipython.org">nbviewer</a>, so they can be read online.
+Note that a couple of the earlier entries were coded more with .py
+scripts in mind, so don&#8217;t take good advantage of the notebook features
+(like markdown, Latex, etc.)</p>
+<h3>Machine Learning for Hackers</h3>
+<ul>
+<li><a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/CH2/ch2.ipynb">Chapter 2</a></li>
+<li><a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/CH2/ch2_with_formulas.ipynb">Chapter 2 </a>(updated with formulas)</li>
+<li><a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/CH3/ch3.ipynb">Chapter 3</a></li>
+<li><a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/CH3/ch3_nltk.ipynb">Chapter 3</a>(using <span class="caps">NLTK</span>)</li>
+<li><a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/ch4/ch4.ipynb">Chapter 4</a></li>
+<li><a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/ch5/ch5.ipynb">Chapter 5</a></li>
+<li><a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/ch6/ch6.ipynb">Chapter 6</a></li>
+<li><a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/ch7/ch7.ipynb">Chapter 7</a></li>
+<li><a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/ch8/ch8.ipynb">Chapter 8</a></li>
+<li><a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/ch9/ch9.ipynb">Chapter 9</a></li>
+</ul>
+<h3>Data Analysis Using Regression and Multilevel/Hierarchical Models (<span class="caps">ARM</span>)</h3>
+<ul>
+<li><a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/ARM/ch5/arsenic_wells_switching.ipynb">Chapter 5</a></li>
+</ul>
+
+      <section id="comments">
+      <h2>Comments</h2>
+      <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "pages/will-it-python.html";
+          var disqus_url = "http://slendermeans.org/pages/will-it-python.html";
+          (function() {
+              var dsq = document.createElement('script');
+              dsq.type = 'text/javascript'; dsq.async = true;
+              dsq.src = 'http://slendermeans.disqus.com/embed.js';
+              (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0])  .appendChild(dsq);
+            })();
+          </script>
+      </section>
+    </article>
+  <div>
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

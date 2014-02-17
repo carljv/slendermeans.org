@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/better-typography-for-ipython-notebooks.html" rel = "bookmark"> Better typography for IPython notebooks </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2012-12-05T05:34:00" pubdate> December 05, 2012 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/typography.html"> Typography </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <p><em>(Warning: ignorant rant coming up)</em></p>
+<p>Like everyone else who&#8217;s ever used it, I love the <a href="http://ipython.org/ipython-doc/rel-0.13.1/interactive/htmlnotebook.html">IPython
+notebook.</a> It&#8217;s not only an awesomely productive environment to work
+in, it&#8217;s also the most powerful weapon in the Python evangelist&#8217;s
+arsenal (suck it, Matlab).</p>
+<p>I also think it&#8217;s not hard to imagine a world where scientific papers
+are all just literate programs. And the notebook is probably one of the
+best tools for literate programming around in any language. The
+intregration of markdown and LaTeX/MathJax into the notebook is just
+fantastic.</p>
+<p>But it does have one weakness as a literate programming tool. The
+default typography is ugly as sin.</p>
+<p>There are several issues, but two major ones are easily fixable.</p>
+<h2>Long lines</h2>
+<p>By far the biggest issue is that the text and input cells extend to 100%
+of the window width. Most people keep their browser windows open wider
+than is comfortable reading width, so you end up with long hard-to-read
+lines of text in the markdown cells.</p>
+<p>And for the code, it would be nice to have the code cell discourage you
+from long lines. The variable width cells don&#8217;t. I&#8217;m an 80-character
+anal retentive, and even I have trouble in the notebook getting a sense
+of when a line is too long.</p>
+<p>When you write a script in a text editor, there&#8217;s lots of previous code
+in the viewable window, so your eye gets a sense of the &#8216;right-margin&#8217;
+of the code. (Not to mention many editors will indicate the 80- or
+whatever-character column, so you know exactly when to break). But in
+the notebook, your code is typically broken up into smaller blocks, and
+those blocks are interspersed with output and other cells. It&#8217;s hard to
+get a visual sense of the right margin.</p>
+<h2>Ugly fonts</h2>
+<p>Text and markdown cells are typically rendered in Helvetica or Arial.
+Helvetica is a fine font, obviously, but it&#8217;s not really suitable for
+paragraphs of text (how many books, magazines, newspapers, or academic
+papers do you see with body text typeset in Helvetica?). And combined
+with the small size and long lines makes it hard to read and just plain
+ugly. I don&#8217;t think I have to say anything about Arial.</p>
+<p>The way I use the notebook&#8212;with markdown cells used for long stretches
+of explanatory text and result interpretation&#8212;it&#8217;s better to have the
+text cells render in a serif font. This way it stands out from the code
+and output cells more. Serif fonts also have more distinctive italics,
+and integrate better with LaTeX/MathJax math.</p>
+<p>Code cells and interpreter output cells render in whatever your default
+monospace font is. That&#8217;s typically Courier or Courier New. This is
+fine, but really, this is the 21st century&#8212;we can do <a href="http://blogs.adobe.com/typblography/2012/09/source-code-pro.html">a lot better</a>.</p>
+<h2>Update: one more thing</h2>
+<p>I realize I&#8217;ve made one other change that I think is important. The
+default ordered list in the notebook uses roman numerals (I, <span class="caps">II</span>, <span class="caps">III</span>,
+&#8230;). I almost always want arabic numerals (1, 2, 3, &#8230;) instead. We
+can change this in the file <code>renderedhtml.css</code> with</p>
+<div class="highlight"><pre><span class="nc">.rendered_html</span> <span class="nt">ol</span> <span class="p">{</span><span class="k">list-style</span><span class="o">:</span><span class="k">decimal</span><span class="p">;</span> <span class="k">margin</span><span class="o">:</span> <span class="m">1em</span> <span class="m">2em</span><span class="p">;}</span>
+</pre></div>
+
+
+<p>(Also check the comments for other, and typically better ways to make
+changes.) You can also modify sub-levels <code>ol ol</code>, <code>ol ol ol</code>, etc.
+Ideally I&#8217;d like to have nested numbers 1.1, 1.1.1, but this isn&#8217;t
+straightforward so I haven&#8217;t implemented it. If anyone has tips, I&#8217;d be
+thrilled to hear them.</p>
+<h2>Fixing it (locally, at least)</h2>
+<p><em>(Warning: I don&#8217;t know what I&#8217;m doing. Don&#8217;t make any of these changes,
+or any others, without backing up the files first.)</em></p>
+<blockquote>
+<p>(<strong>Update</strong>: Matthias Bussonnier has an <a href="http://http://nbviewer.ipython.org/urls/raw.github.com/Carreau/posts/master/Blog1.ipynb">informative post</a>
+showing the right way to make these changes. If you make the <span class="caps">CSS</span> changes
+I describe below, do it the way he advises, not through the files I
+describe here.)</p>
+</blockquote>
+<p>The notebook is served through the browser, so its frontend is basically
+just <span class="caps">HTML</span>, Javascript, and <span class="caps">CSS</span>. The typography and appearance of the
+notebook is nearly all driven by <span class="caps">CSS</span> files located where IPython is
+stored on your system. This will differ based on your <span class="caps">OS</span> and your Python
+distribution. On my mac, with the AnacondaCE distribution, the
+stylesheets are located
+in <code>/Users/cvogel/anaconda/lib/python2.7/site-packages/IPython/frontend/html/notebook/static</code>.
+There are several subfolders there, including one called <code>/css</code> and
+<code>/codemirror</code>. You can also take a look at the stylesheet files by
+firing up a notebook, and using your browser&#8217;s inspector. If your
+browser (e.g. Chrome) lets you edit stylesheets on the fly in the
+inspector, you can try out changes relatively safely.</p>
+<p>Here are the edits I&#8217;ve made on my system to address the issues above.
+First, in the /css folder, in the file called notebook.css</p>
+<p>1. Set code input cells to be narrower (code that runs past the width
+will be invisible). I try to set this for about 80 characters plus some
+buffer. There&#8217;s not way to set width as number of characters in <span class="caps">CSS</span>, so
+you may have to experiment to see what ex-widths works with your font.</p>
+<div class="highlight"><pre><span class="nt">div</span><span class="nc">.input</span> <span class="p">{</span>
+<span class="k">width</span><span class="o">:</span> <span class="m">105ex</span><span class="p">;</span> <span class="c">/* about 80 chars + buffer */</span>
+<span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>​2. Fixing markdown/text cells. I make changes to the font, width, and
+linespacing. I&#8217;m using Charis <span class="caps">SIL</span>, a font based on the classic Bitstream
+Charter, and freely available <a href="http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&amp;id=CharisSILfont">here</a>. Shortening the lines and adding
+some line space (120% to 150% of point size is usually a good range) for
+legibility.</p>
+<div class="highlight"><pre><span class="nt">div</span><span class="nc">.text_cell</span> <span class="p">{</span>
+<span class="k">width</span><span class="o">:</span> <span class="m">105ex</span> <span class="c">/* instead of 100%, */</span>
+<span class="o">...</span>
+<span class="p">}</span>
+
+<span class="nt">div</span><span class="nc">.text_cell_render</span> <span class="p">{</span>
+<span class="c">/*font-family: &quot;Helvetica Neue&quot;, Arial, Helvetica, Geneva, sans-serif;*/</span>
+<span class="k">font-family</span><span class="o">:</span> <span class="s2">&quot;Charis <span class="caps">SIL</span>&quot;</span><span class="o">,</span> <span class="k">serif</span><span class="p">;</span> <span class="c">/* Make non-code text serif. */</span>
+<span class="k">line-height</span><span class="o">:</span> <span class="m">145</span><span class="o">%</span><span class="p">;</span> <span class="c">/* added for some line spacing of text. */</span>
+<span class="k">width</span><span class="o">:</span> <span class="m">105ex</span><span class="p">;</span> <span class="c">/* instead of &#39;inherit&#39; for shorter lines */</span>
+<span class="o">...</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>​3. Add styles to specify sizes for headers.</p>
+<div class="highlight"><pre><span class="c">/* Set the size of the headers */</span>
+<span class="nt">div</span><span class="nc">.text_cell_render</span> <span class="nt">h1</span> <span class="p">{</span>
+<span class="k">font-size</span><span class="o">:</span> <span class="m">18pt</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nt">div</span><span class="nc">.text_cell_render</span> <span class="nt">h2</span> <span class="p">{</span>
+<span class="k">font-size</span><span class="o">:</span> <span class="m">14pt</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Then, in the `/codemirror/lib subfolder, there&#8217;s a file called
+codemirror.css. In here we can change the font used for code, both input
+and interpreter output. I&#8217;m using Consolas.</p>
+<div class="highlight"><pre><span class="nc">.CodeMirror</span> <span class="p">{</span>
+<span class="k">font-family</span><span class="o">:</span> <span class="n">Consolas</span><span class="o">,</span> <span class="k">monospace</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Obviously these changes only affect notebooks you view on your local
+machine, and whoever views your notebooks on their own machine, or on
+<a href="http://nbviewer.ipython.org">nbviewer</a> will see the default style.</p>
+<p>Here are before and after shots of these changes:</p>
+<p><a href="../images/ipynb_unstyled.png">
+  <img src="../images/ipynb_unstyled.png" width = 500px />
+</a>
+<a href="../images/ipynb_styled.png">
+  <img src="../images/ipynb_styled.png" width = 500px /></a>
+</a></p>
+<h2>Fixing it (globally?)</h2>
+<p>So this is all cute right? And it&#8217;s nice that we can do some
+customizations to the notebook, but, you know, big deal.</p>
+<p>I&#8217;d argue this is actually more important than just aesthetic tinkering.
+The IPython notebook is becoming a one-stop-shop for exploration,
+collaboration, publication, distribution, and replication in data
+analysis. Like I said above, I think it&#8217;s not unreasonable that
+notebooks could replace a large class of scientific papers. But to do
+that, it has to perform as well as all the fragmented tools that
+researchers are currently using. Otherwise, people are going to keep
+pasting their code and results into Word and Latex documents. In other
+words, the notebook has to work not just as an interactive environment,
+but also as a static document. The IPython team realizes this, which is
+why tools like <a href="https://github.com/ipython/nbconvert">nbconvert</a> exist.</p>
+<p>People are doing amazing things in the notebook. The typography should
+encourage people to read them, and not just serve as suped-up comments.</p>
+<p>Tools are often strongly associated with aesthetic characteristics that
+are only peripheral to the tool itself. ggplot can make charts that look
+however you want, but when people think of ggplot, they think of the
+gray background and the Color Brewer palette. And while main selling
+point of ggplot is its abstraction of the graph-making process, I think
+it was the distinctive and attractive style of its graphs that made it
+catch on so successfully. On the opposite end of the spectrum, when
+people think of Stata graphics, they think of <a href="http://www.survey-design.com.au/distrib2.png">this</a>, and wince. And
+Latex will typeset documents with whatever crazy font you want, but in
+everyone&#8217;s mind, Latex &#8660; Computer Modern (for better or worse).
+Design defaults are important: they&#8217;re marketing and they encourage good
+habits by your users. It&#8217;d be a shame to have it be that people think of
+the IPython notebook and picture long lines of small, single-spaced
+Helvetica Neue.</p>
+<p>It&#8217;s an insanely powerful tool. It&#8217;d be awesome if it were beautiful
+too, and that goal seems eminently do-able.</p>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/better-typography-for-ipython-notebooks.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/better-typography-for-ipython-notebooks.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/better-typography-for-ipython-notebooks.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "better-typography-for-ipython-notebooks.html";
+          var disqus_url = "http://slendermeans.org/better-typography-for-ipython-notebooks.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

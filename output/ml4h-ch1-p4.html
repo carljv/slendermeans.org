@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch1-p4.html" rel = "bookmark"> <i>Machine Learning for Hackers</i>, Chapter 1, Part 4: Data aggregation and reshaping. </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2012-04-26T04:00:00" pubdate> April 26, 2012 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <h2>Introduction</h2>
+<p>In the <a href="../ml4h-ch1-p3.html">last part</a> I made some simple summaries of the cleaned <span class="caps">UFO</span>
+data: basic descriptive statistics and historgrams. At the very end, I
+did some simple data aggregation by summing up the sightings by date,
+and plotted the resulting time series. In this part, I&#8217;ll go further
+with the aggregation, totalling sightings by state and month.</p>
+<p>This takeaway from this part is that Pandas dataframes have some
+powerful methods for aggregating and manipulating data. I&#8217;ll show
+<code>groupby</code>, <code>reindex</code>, hierarchical indices, and <code>stack</code> and <code>unstack</code> in
+action.</p>
+<h2>The shape of data: the long and the wide of it</h2>
+<p>The first step in aggregating and reshaping data is to figure out the
+final form you want the data to be in. This form is basically defined by
+<em>content</em> and <em>shape</em>.</p>
+<p>We know what we want the content to be: an entry in the data should give
+the number of sightings in a state/month combination.</p>
+<p>We have two choices for the shape: wide or long. The wide version of
+this data would have months as the rows and states as the columns; it
+would be a 248 by 51 table with the number of sigthings as entries. This
+is a really natural way to shape the data if we were presenting a table
+for example.</p>
+<p>One of things I&#8217;ve picked up from my years of using R, though, is a
+preference for long data. This is because R&#8217;s <code>factors</code> and <code>formulas</code>
+with easy conditioning make it easier to work with long data. The most
+common example is using <code>lattice</code> plots. To generate a lattice plot of
+<code>y</code> over <code>x</code> with panels defined by a level of the variable <code>f</code>, you
+just call <code>xyplot(y ~ x | f)</code>. For this to work though, the data must be
+long, with <code>f</code> a column of factors, and the <code>x</code> column will likely be
+some values repeated for each level of <code>f</code>. This seems kind of redundant
+and unwieldy when you&#8217;re used to tables and spreadsheets, but it becomes
+more natural when you starting working with tools like <code>lattice</code> or
+<code>ggplot</code>, using more panel data, or doing more <a href="http://vita.had.co.nz/papers/plyr.html"><em>split-apply-combine</em></a>
+or <em>map-reduce</em> types of procedures.</p>
+<p>Because Pandas dataframes are so organized around indices, and because
+Pandas allows for hierarchical indexing, we&#8217;ll find that it will be a
+good strategy to shape data in a way that provides for informative
+indices. This will give us access to a host of powerful methods to
+manipulate the dataframe. In this case, as we&#8217;ll see, by making the data
+long, we&#8217;ll be able to push most of the information into the dataframe&#8217;s
+index.</p>
+<p>The long version of our <span class="caps">UFO</span> data would have rows defined by a
+state/month pair, and a column recording the number of sightings for
+that pair. In R–as the authors do in the book–you&#8217;ll have a dataframe
+with three columns. The first two are the <em>factor</em> variables <code>USState</code>
+and <code>YearMonth</code>. (I&#8217;m not actually sure these are technically factor
+variables in the authors&#8217; implementation, but they are conceptually).
+The third is the sightings count.</p>
+<p>In Pandas, since the state and month pairs identify unique observations,
+it&#8217;s natural to make these indices of the dataframe. Pandas supports
+hierarchical indexing by using unique tuples–here a tuple would be
+<em>(state, month)</em>.</p>
+<h2>Aggregating the data</h2>
+<p>Now that we&#8217;ve decided the form of the data, let&#8217;s implement all this.</p>
+<p>The first step is to create a year-month variable. I do this just by
+taking the date of each sighting, and calculating a new date with the
+same year and month, but set to the first of the month. This is just
+another <code>map</code> operation.</p>
+<div class="highlight"><pre><span class="n">ufo_us</span><span class="p">[</span><span class="err">&#39;</span><span class="n">year_month</span><span class="err">&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ufo_us</span><span class="p">[</span><span class="err">&#39;</span><span class="n">date_occurred</span><span class="err">&#39;</span><span class="p">].</span><span class="n">map</span><span class="p">(</span><span class="n">lambda</span> <span class="n">x</span><span class="o">:</span>
+<span class="n">dt</span><span class="p">.</span><span class="n">date</span><span class="p">(</span><span class="n">x</span><span class="p">.</span><span class="n">year</span><span class="p">,</span> <span class="n">x</span><span class="p">.</span><span class="n">month</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
+
+
+<blockquote>
+<p><strong>Note</strong>: The authors approach this problem a little differently,
+using R&#8217;s <code>strftime</code> function to turn the dates into a string of the form
+<code>YYYY-MM</code>. I prefer to keep them numeric (it makes time series
+ plots more sensible), but either way works. My choice of the first
+day of the month is arbitrary, and just serves to collect the dates into
+groups.</p>
+</blockquote>
+<p>Then we want to sum up the sightings by state and month. To do this,
+I&#8217;ll use Pandas <code>groupby</code> method. <code>groupby</code>, as you&#8217;d expect, works like
+<span class="caps">SQL</span>&#8217;s <code>GROUP BY</code> statement.</p>
+<div class="highlight"><pre><span class="n">sightings_counts</span> <span class="o">=</span> <span class="n">ufo_us</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s">&#39;us_state&#39;</span><span class="p">,</span>
+<span class="s">&#39;year_month&#39;</span><span class="p">])[</span><span class="s">&#39;year_month&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</pre></div>
+
+
+<p>You can almost read this statement as an <code>SQL</code> query:
+<code>SELECT COUNT(year_month) GROUP BY us_state, year_month</code>.</p>
+<p>The <code>groupby</code> method applied to the data frame results in a
+<code>DataFrameGroupBy</code> object, which isn&#8217;t much to look at but contains all
+the information we need to perform calculations by groups of the
+variables we passed to the method. Calling the <code>year_month</code> column
+results in a similar <code>SeriesGroupBy</code> object. Finally, calling the
+<code>count</code> method counts how many non-null observations of <code>year_month</code>
+there are in each level. The final output is a Series of the counts with
+a hierarchal index of the groupby variables.</p>
+<p>To aggregate their data in R, the authors use the <code>ddply</code> function,
+which provides similar groupby-type functionality. I find the <code>plyr</code>
+functions less intuitive and expressive than Pandas&#8217; syntax. But, the
+<code>plyr</code> functions are a big improvement over R&#8217;s <code>apply</code> functions for
+complicated calculations.</p>
+<p>As the authors do on p. 22, let&#8217;s check out the first few Alaska
+sightings.</p>
+<div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;First few <span class="caps">AK</span> sightings in data:&#39;</span>
+<span class="k">print</span> <span class="n">sightings_counts</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="s">&#39;ak&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span>
+</pre></div>
+
+
+<p>This spits out:</p>
+<div class="highlight"><pre><span class="n">First</span> <span class="n">few</span> <span class="n"><span class="caps">AK</span></span> <span class="n">sightings</span> <span class="n">in</span> <span class="n">data</span><span class="o">:</span>
+<span class="n">year_month</span>
+<span class="mi">1990</span><span class="o">-</span><span class="mo">01</span><span class="o">-</span><span class="mo">01</span> <span class="mi">1</span>
+<span class="mi">1990</span><span class="o">-</span><span class="mo">03</span><span class="o">-</span><span class="mo">01</span> <span class="mi">1</span>
+<span class="mi">1990</span><span class="o">-</span><span class="mo">05</span><span class="o">-</span><span class="mo">01</span> <span class="mi">1</span>
+<span class="mi">1993</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mo">01</span> <span class="mi">1</span>
+<span class="mi">1994</span><span class="o">-</span><span class="mo">02</span><span class="o">-</span><span class="mo">01</span> <span class="mi">1</span>
+<span class="mi">1994</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mo">01</span> <span class="mi">1</span>
+</pre></div>
+
+
+<p>Note that I have one more observation than the authors do–February 1994.
+As discussed in <a href="../ml4h-ch1-p2.html">Part 2</a>, the authors&#8217; cleaning methodology is going
+to cut any observations where the <span class="caps">U.S.</span> city part of the location data
+has commas in it. My methodology won&#8217;t lose those observations. That
+seems to be what&#8217;s happened here. Looking at that record with:</p>
+<div class="highlight"><pre><span class="n">print</span> <span class="err">&#39;</span><span class="n">Extra</span> <span class="n"><span class="caps">AK</span></span> <span class="n">sighting</span><span class="p">,</span> <span class="n">no</span> <span class="n">on</span> <span class="n">p</span><span class="p">.</span> <span class="mi">22</span><span class="o">:</span><span class="err">&#39;</span>
+<span class="n">print</span> <span class="n">ufo_us</span><span class="p">[(</span><span class="n">ufo_us</span><span class="p">[</span><span class="err">&#39;</span><span class="n">us_state</span><span class="err">&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="err">&#39;</span><span class="n">ak</span><span class="err">&#39;</span><span class="p">)</span> <span class="o">&amp;</span>
+<span class="p">(</span><span class="n">ufo_us</span><span class="p">[</span><span class="err">&#39;</span><span class="n">year_month</span><span class="err">&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">dt</span><span class="p">.</span><span class="n">date</span><span class="p">(</span><span class="mi">1994</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))]</span> <span class="err">\</span>\
+<span class="p">[[</span><span class="err">&#39;</span><span class="n">year_month</span><span class="sc">&#39;,&#39;</span><span class="n">location</span><span class="err">&#39;</span><span class="p">]]</span>
+</pre></div>
+
+
+<p>shows that indeed, my extra observation has a comma in the city record:</p>
+<div class="highlight"><pre><span class="n">Extra</span> <span class="n"><span class="caps">AK</span></span> <span class="n">sighting</span><span class="p">,</span> <span class="n">no</span> <span class="n">on</span> <span class="n">p</span><span class="p">.</span> <span class="mi">22</span><span class="o">:</span>
+<span class="n">year_month</span> <span class="n">location</span>
+<span class="mi">5508</span> <span class="mi">1994</span><span class="o">-</span><span class="mo">02</span><span class="o">-</span><span class="mo">01</span> <span class="n">Savoonga</span><span class="p">,</span><span class="n">St</span><span class="p">.</span> <span class="n">Lawrence</span> <span class="n">Island</span><span class="p">,</span> <span class="n"><span class="caps">AK</span></span><span class="p">[</span><span class="o">/</span><span class="n">sourcecode</span><span class="p">]</span>
+</pre></div>
+
+
+<h2>Indexing tricks</h2>
+<p>When we perform the <code>groupby</code> calculations, the resulting series is
+missing rows where there were no <span class="caps">UFO</span> sightings in a state/month. This
+makes sense of course – <code>groupby</code> goes through the data, finds all the
+state/month combinations, and turns them into discrete levels within
+which to perform calculations. If there are no sightings in a state in a
+month, <code>groupby</code> won&#8217;t know to turn that combination into a level.</p>
+<p>So, basically, we want to add those levels back into the data and set
+the associated sightings count to zero. There are two ways to do this in
+Pandas. The first uses Pandas&#8217; <code>reindex</code> methods. I&#8217;ll create a &#8220;full&#8221;
+index with every combination of states and months:</p>
+<div class="highlight"><pre><span class="n">ym_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1990</span><span class="p">,</span> <span class="mi">2011</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">m</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> \<span class="o">&lt;=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2010</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+
+<span class="n">full_index</span> <span class="o">=</span> <span class="nb">zip</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">us_states</span> \<span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">ym_list</span><span class="p">)),</span> <span class="n">ym_list</span> \<span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">us_states</span><span class="p">))</span>
+<span class="n">full_index</span> <span class="o">=</span> <span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_tuples</span><span class="p">(</span><span class="n">full_index</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span>
+<span class="p">[</span><span class="s">&#39;states&#39;</span><span class="p">,</span> <span class="s">&#39;year_month&#39;</span><span class="p">])[</span><span class="o">/</span><span class="n">sourcecode</span><span class="p">]</span>
+</pre></div>
+
+
+<p>The first line is just a list comprehension that creates a list of all
+the months in the data, from January 1990 to August 2010. The second
+line creates 51&times;248 tuples of (state, month) pairs. (I created the list
+of states, <code>us_states</code>, in <a href="../ml4h-ch1-p2.html">Part 2</a>.) The third line creates a Pandas
+hierarchical index out of these tuples. Hierarchical indices in Pandas
+can take names that label the levels of the index.</p>
+<p>Next, I&#8217;ll reindex the <code>sightings_counts</code> series with this full index.
+Pandas will conform the dataset to the new index we give it, dropping
+elements whose index level is not in the new index, and making elements
+for new index levels not in the original. By default Pandas fills in
+these new elements with <code>NA</code>, but we can tell it to fill these values
+with zero, and end up with the series we&#8217;re looking for.</p>
+<div class="highlight"><pre><span class="n">sightings_counts</span> <span class="o">=</span> <span class="n">sightings_counts</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">full_index</span><span class="p">,</span> <span class="n">fill_value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>Stacking and unstacking data</h2>
+<p>There&#8217;s another way to get the full time series out of the groupby
+calculations. Instead of creating the full index of state/month
+combinations, I can use a trick using Pandas <code>stack</code> and <code>unstack</code>
+methods. <code>stack</code> and <code>unstack</code> turn data from wide to long and vice
+versa, similar to the <code>melt</code> and <code>cast</code> methods in R&#8217;s <code>reshape2</code>
+package.</p>
+<p>The idea is to first widen (<code>unstack</code>) the data, so that we have states
+as columns and months as rows. This will force the data to have the
+248&times;51 entries we&#8217;re looking for (assuming that there&#8217;s a sighting in
+at least one state every month between January 1990 and August 2010).
+For the entries in this data frame where there are no
+sightings–state/months not present in the long data–Pandas will fill in
+<code>NA</code>. I&#8217;ll tell Pandas to fill it with zero instead, and then <code>stack</code>
+the data again to put it back in long form. Since there is now a number
+(sometimes zero) for every state/month pair, this new long dataset will
+have all the rows we need. Here&#8217;s the code:</p>
+<div class="highlight"><pre><span class="n">sightings_counts1</span> <span class="o">=</span> <span class="n">ufo_us</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s">&#39;us_state&#39;</span><span class="p">,</span> <span class="s">&#39;year_month&#39;</span><span class="p">])[</span><span class="s">&#39;year_month&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+
+<span class="n">sightings_counts1</span> <span class="o">=</span> <span class="n">sightings_counts1</span><span class="o">.</span><span class="n">unstack</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">stack</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Let&#8217;s check that we get the same dataset from both methods:</p>
+<div class="highlight"><pre><span class="c"># Check they&#39;re the same shape and values.</span>
+<span class="k">print</span> <span class="s">&#39;Shape using handmade MultiIndex:&#39;</span><span class="p">,</span> <span class="n">sightings_counts</span><span class="o">.</span><span class="n">shape</span>
+<span class="k">print</span> <span class="s">&#39;Shape using unstack/stack method:&#39;</span><span class="p">,</span> <span class="n">sightings_counts1</span><span class="o">.</span><span class="n">shape</span>
+<span class="k">print</span> <span class="s">&#39;Sum absolute difference:&#39;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">sightings_counts1</span> <span class="o">-</span>
+<span class="n">sightings_counts</span><span class="p">))</span>
+</pre></div>
+
+
+<p>I check the sum-of-absolute-differences between the series, instead of
+ checking for strict equality, to give some leeway for floating point
+error (even though these should be integers, there might be some type
+conversion that happens through these methods). Either way, looks like
+we have the same result from both methods:</p>
+<div class="highlight"><pre><span class="n">Shape</span> <span class="n">using</span> <span class="n">handmade</span> <span class="n">MultiIndex</span><span class="o">:</span> <span class="p">(</span><span class="mi">12648</span><span class="p">,)</span>
+<span class="n">Shape</span> <span class="n">using</span> <span class="n">unstack</span><span class="o">/</span><span class="n">stack</span> <span class="n">method</span><span class="o">:</span> <span class="p">(</span><span class="mi">12648</span><span class="p">,)</span>
+<span class="n">Sum</span> <span class="n">absolute</span> <span class="n">difference</span><span class="o">:</span> <span class="mf">0.0</span>
+</pre></div>
+
+
+<h2>Conclusion</h2>
+<p>I&#8217;ve got the data just how I want it to plot time series of <span class="caps">UFO</span>
+sightings by state. There were actually very few lines of code in this
+part. But those few lines of code were doing a lot of work, and
+represented one of the toughest parts of working with data: getting it
+in the right shape. It wasn&#8217;t long ago that reshaping data was always
+and everywhere a huge hassle. It still is in some languages (<em>*cough*
+<span class="caps">SAS</span> *cough* Stata *cough*</em>). The combination of hierarchical
+indexing and <code>stack</code> and <code>unstack</code> methods in Pandas make doing this in
+Python actually pleasant.</p>
+<p>I&#8217;m finally going to wrap up Chapter 1 in the next part, in which I
+create a plot to match the authors&#8217; trellis plot of sightings time
+series by state. It&#8217;s going to be a real Matplotlib adventure.</p>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/ml4h-ch1-p4.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/ml4h-ch1-p4.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/ml4h-ch1-p4.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "ml4h-ch1-p4.html";
+          var disqus_url = "http://slendermeans.org/ml4h-ch1-p4.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

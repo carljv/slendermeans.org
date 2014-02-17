@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch1-p3.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 1, Part 3: Simple summaries and plots. </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2012-04-19T04:00:00" pubdate> April 19, 2012 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <h2>Introduction</h2>
+<p>See <a href="../ml4h-ch1-p1.html">Part 1</a> and <a href="../ml4h-ch1-p2.html">Part 2</a> for previous work.</p>
+<p>In this part, I&#8217;ll replicate the authors&#8217; exploration of the <span class="caps">UFO</span>
+sighting dates via histograms. The key takeaways:</p>
+<ol>
+<li>The plotting methods in Pandas are easy and useful.</li>
+<li>Unlike R <code>Dates</code>, Python <code>datetimes</code> aren&#8217;t compatible with a lot of
+    mathematical operations. We&#8217;ll see that you can&#8217;t apply quantile or
+    histogram methods to them directly.</li>
+</ol>
+<h2>Quick data summary methods and datetime complications.</h2>
+<p>For those playing along at home, I&#8217;m at p. 19 of the book. The first
+thing the authors do here is get a statistical summary of the sighting
+dates in the data, which are recorded in the <code>DateOccurred</code> variable
+(which I&#8217;ve named <code>date_occurred</code> in my code). This is easy in R using
+the <code>summary</code> function, which provides the minimum, maximum, and
+quartiles of the data by default.</p>
+<p>Pandas has similar functionality, in a method called <code>describe</code>, which
+gives the same for numeric variables, plus the count of non-null values
+and the mean and standard deviation. For example:</p>
+<div class="highlight"><pre><span class="n">s1</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+<span class="k">print</span> <span class="n">s1</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+
+
+<p>outputs what we&#8217;d expect from a series of randomly-generated standard
+normals:</p>
+<div class="highlight"><pre><span class="n">count</span> <span class="mf">100.000000</span>
+<span class="n">mean</span> <span class="o">-</span><span class="mf">0.149274</span>
+<span class="n">std</span> <span class="mf">1.011230</span>
+<span class="n">min</span> <span class="o">-</span><span class="mf">2.521374</span>
+<span class="mi">25</span><span class="o">%</span> <span class="o">-</span><span class="mf">0.790867</span>
+<span class="mi">50</span><span class="o">%</span> <span class="o">-</span><span class="mf">0.167813</span>
+<span class="mi">75</span><span class="o">%</span> <span class="mf">0.596617</span>
+<span class="n">max</span> <span class="mf">2.231157</span>
+</pre></div>
+
+
+<p>If we apply this to the <code>date_occurred</code> series, though, we get something
+different.</p>
+<div class="highlight"><pre><span class="n">ufo_us</span><span class="p">[</span><span class="s">&#39;date_occurred&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">describe</span><span class="p">()[</span><span class="o">/</span><span class="n">sourcecode</span><span class="p">]</span>
+</pre></div>
+
+
+<p>results in:</p>
+<div class="highlight"><pre><span class="n">count</span> <span class="mi">52134</span>
+<span class="n">unique</span> <span class="mi">8786</span>
+<span class="n">top</span> <span class="mi">1999</span><span class="o">-</span><span class="mi">11</span><span class="o">-</span><span class="mi">16</span> <span class="mo">00</span><span class="o">:</span><span class="mo">00</span><span class="o">:</span><span class="mo">00</span>
+<span class="n">freq</span> <span class="mi">185</span>
+</pre></div>
+
+
+<p>because Pandas treats <code>datetime</code> series as non-numeric variables (which
+they technically are).</p>
+<blockquote>
+<p><strong>Note</strong>: To compute quantiles for numeric series, Pandas uses SciPy&#8217;s
+<code>scoreatpercentile</code> function, which in turn relies on a simple linear
+interpolation function (<code>_interpolate</code> in <code>scipy.stats</code>). <code>datetime</code>
+objects don&#8217;t play well with this function, since when you take the
+difference between two <code>datetimes</code> you don&#8217;t get a number, but instead
+a <code>timedelta</code> tuple, that you can&#8217;t perform mathematical operations on
+until you unpack it. The <code>min</code> and <code>max</code> methods will work on
+<code>datetimes</code>, though.</p>
+</blockquote>
+<p>We can get around this by extracting the years from the variable, which
+will be integers.</p>
+<div class="highlight"><pre><span class="n">years</span> <span class="o">=</span> <span class="n">ufo_us</span><span class="p">[</span><span class="err">&#39;</span><span class="n">date_occurred</span><span class="err">&#39;</span><span class="p">].</span><span class="n">map</span><span class="p">(</span><span class="n">lambda</span> <span class="n">x</span><span class="o">:</span> <span class="n">x</span><span class="p">.</span><span class="n">year</span><span class="p">)</span>
+<span class="n">print</span> <span class="n">years</span><span class="p">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+
+
+<p>results in:</p>
+<div class="highlight"><pre><span class="n">count</span> <span class="mf">52134.000000</span>
+<span class="n">mean</span> <span class="mf">2000.572237</span>
+<span class="n">std</span> <span class="mf">10.889045</span>
+<span class="n">min</span> <span class="mf">1400.000000</span>
+<span class="mi">25</span><span class="o">%</span> <span class="mf">1999.000000</span>
+<span class="mi">50</span><span class="o">%</span> <span class="mf">2003.000000</span>
+<span class="mi">75</span><span class="o">%</span> <span class="mf">2007.000000</span>
+<span class="n">max</span> <span class="mf">2010.000000</span>
+</pre></div>
+
+
+<p>which is a little precise for year data, but how is Pandas to know? At
+any rate, we come to the same conclusion as the authors: that three
+quarters of the sightings occurred in 1999 or later, and the earliest
+date in the data is in 1400. (If we check, we&#8217;ll see this sighting
+occurred in Texas, so it&#8217;s certainly an error).</p>
+<p>Plotting histograms</p>
+<p>The authors then plot a histogram of the dates in the data. Like with
+<code>quantile</code>, the <code>hist</code> plot method (which just calls a Matplotlib
+histogram) doesn&#8217;t work with <code>datetime</code> data. If we try</p>
+<div class="highlight"><pre><span class="n">ufo_us</span><span class="p">[</span><span class="s">&#39;date_occurred&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">()</span>
+</pre></div>
+
+
+<p>we&#8217;ll get an error complaining that <code>datetime</code> can&#8217;t be compared with
+<code>float</code>. So, I&#8217;ll just work with the years instead of the full
+<code>datetime</code>. I can generate the plot with a call to the series&#8217; <code>hist</code>
+method, one of several plotting methods for Pandas objects that makes it
+extremely easy to get quick plots of them.</p>
+<div class="highlight"><pre><span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">years</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span> <span class="o">=</span> <span class="p">(</span><span class="n">years</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">years</span><span class="o">.</span><span class="n">min</span><span class="p">())</span><span class="o">/</span><span class="mf">30.</span><span class="p">,</span> <span class="n">fc</span> <span class="o">=</span> <span class="s">&#39;steelblue&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Histogram of years with <span class="caps">U.S.</span> <span class="caps">UFO</span> sightings</span><span class="se">\n</span><span class="s">All years in data&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;quick_hist_all_years.png&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>I explicitly set the bins to match the ggplot defaults used in the book.
+We get this plot, which basically matches the authors&#8217;:</p>
+<p><a href="../images/quick_hist_all_years2.png">
+  <img src="../images/quick_hist_all_years2.png" width=450px />
+</a></p>
+<p>The authors then focus on only data after 1990, using R&#8217;s <code>subset</code>
+function to remove earlier observations from the data. This is
+straightforward in Pandas. I&#8217;ll also extract another series with the
+years of this subset of dates.</p>
+<div class="highlight"><pre><span class="n">ufo_us</span> <span class="o">=</span> <span class="n">ufo_us</span><span class="p">[</span><span class="n">ufo_us</span><span class="p">[</span><span class="s">&#39;date_occurred&#39;</span><span class="p">]</span> \<span class="o">&gt;=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">1990</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">years_post90</span> <span class="o">=</span> <span class="n">ufo_us</span><span class="p">[</span><span class="s">&#39;date_occurred&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+</pre></div>
+
+
+<p>After subsetting, the authors have 46,347 rows left in the data. Looking
+at the <code>shape</code> attribute of the subsetted data frame, we have 46,780.
+We&#8217;ve picked up some observations from D.C., as well as from our more
+expansive method of finding <span class="caps">U.S.</span> locations.</p>
+<p>Another histogram of the subset data looks similar to the authors&#8217; chart
+on p. 23, but since I&#8217;m only histogramming over years, I lose some
+resolution.</p>
+<p><a href="../images/quick_hist_post90.png">
+  <img src="../images/quick_hist_post90.png" width=450px />
+</a></p>
+<p>While the histogram is fine for a quick look at the distribution of
+dates, it&#8217;s not a very accurate picture of how sightings evolve over
+time: the binning really destroys too much information. It makes more
+sense just to do a time-series plot of total sightings by date. We can
+do that with some data aggregation and an easy call to the <code>plot</code> method
+in Pandas.</p>
+<div class="highlight"><pre><span class="n">post90_count</span> <span class="o">=</span> <span class="n">ufo_us</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">&#39;date_occurred&#39;</span><span class="p">)[</span><span class="s">&#39;date_occurred&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">post90_count</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Number of <span class="caps">U.S.</span> <span class="caps">UFO</span> sightings</span><span class="se">\\</span><span class="s">nJanuary 1990 through August 2010&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s">&#39;post90_count_ts.png&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>This uses Pandas&#8217; awesome <code>groupby</code> method, which I&#8217;ll discuss more in
+the next part. We get the following figure:</p>
+<p><a href="../images/post90_count_ts.png">
+  <img src="../images/post90_count_ts.png" width=450px />
+</a></p>
+<p>Based on this graph, it looks like there&#8217;s a seasonal component to
+sightings, which wasn&#8217;t apparent in the histogram. There are also a few
+large spikes, especially around the end of the millenium.</p>
+<h2>Conclusion</h2>
+<p>This part was a relatively easy one. The next part will focus on data
+aggregation using <code>groupby</code> and <code>reindex</code> methods. Then I&#8217;ll wrap up
+with with replicating the authors&#8217; trellis graph.</p>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/ml4h-ch1-p3.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/ml4h-ch1-p3.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/ml4h-ch1-p3.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "ml4h-ch1-p3.html";
+          var disqus_url = "http://slendermeans.org/ml4h-ch1-p3.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

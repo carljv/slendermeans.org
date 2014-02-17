@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch3.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 3: Naive Bayes Text Classification </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2012-12-20T04:20:00" pubdate> December 20, 2012 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <p>I realize I haven&#8217;t blogged about the rest of chapter 2 yet. I&#8217;ll get
+back to that, but chapter 3 is on my mind today. If you haven&#8217;t seen
+them yet, IPython notebooks up to chapter 9 are all up in the <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH">Github
+repo</a>. To view them online, you can check the links on <a href="../category/will-it-python.html">this page</a>.</p>
+<p>Chapter 3 is about text classification. The authors build a classifier
+that will identify whether an e-mail is spam or not (&#8220;ham&#8221;) based on the
+content of the e-mail&#8217;s message. I won&#8217;t go into much detail on how the
+Naive Bayes classifier they use works (beyond what&#8217;s evident in the
+code). The theory is described well in the book and many other places.
+I&#8217;m just going to discuss implementation, assuming you know how the
+classifier works in theory. The Python code for this project relies
+heavily on the <span class="caps">NLTK</span> (Natural Language Toolkit) package, which is a
+comprehensive library that includes functions for doing <span class="caps">NLP</span> and text
+analysis, as well as an array of benchmark text corpora to use them on.
+If you want to go deep into this stuff, two good resources are:</p>
+<ul>
+<li><a href="http://shop.oreilly.com/product/9780596516499.do"><em>Natural Language Processing with Python</em></a> by S. Bird, E. Klein,
+    and E. Loper; and</li>
+<li><a href="http://www.packtpub.com/python-text-processing-nltk-20-cookbook/book"><em>Python Text Processing with <span class="caps">NLTK</span> 2.0 Cookbook</em></a> by J. Perkins</li>
+</ul>
+<h2>Two versions of the program</h2>
+<p>I&#8217;ve coded up two different versions of this chapter. The first,
+<a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/CH3/ch3.ipynb">here</a>, tries to follow the book relatively closely. The general
+procedure they use is:</p>
+<ol>
+<li>Parse and tokenize the e-mails</li>
+<li>Create a term-document matrix of the e-mails</li>
+<li>Calculate features of the training e-mails using the term-document
+    matrix</li>
+<li>Train the classifier on these features</li>
+<li>Test the classifier on other sets of spam and ham e-mails</li>
+</ol>
+<p>I&#8217;m not going to discuss this version in much detail, but you should
+take a look at the notebook if you&#8217;re interested. Two big takeaways from
+this are:</p>
+<ul>
+<li>
+<p>Python lacks a good term-document matrix tool.** I was surprised to find that <span class="caps">NLTK</span>, which has so much functionality including helper functions like <code>FreqDist</code>, doesn&#8217;t have a function for making term-document matrices similar to the <code>tdm</code> function in R&#8217;s <code>tm</code> package. There is a Python module called <code>textmining</code> (which you can install with pip) that does have a term-document matrix function, but it&#8217;s pretty rudimentary. What you&#8217;ll see in this chapter is that I&#8217;ve coded up a term-document matrix function that uses the one in <code>textmining</code> but adds some bells and whistles, and returns the <span class="caps">TDM</span> as a
+(typically sparse) pandas dataframe.</p>
+</li>
+<li>
+<p>The authors&#8217; classifier suffers from numerical errors.** The Naive
+Bayes classifier calcalates the probability that a message is spam by
+calculating the probability that the message&#8217;s terms occur in a spam
+message. So if the message is just &#8220;buy viagra&#8221;, and &#8220;buy&#8221; occurs in 75%
+of the training spam, and &#8220;viagra&#8221; occurs in 50% of the training spam,
+then the classifier assigns this a &#8216;spam&#8217; probability of .75 * .50 =
+37.5%. The problem with this calculation is that there are typically
+many terms, and the probabilities are often small, so their product can
+end up smaller than machine precision and underflow to zero. The way
+around this is to take the sum of the log probabilities (so log(.75) +
+log(.25)). The authors don&#8217;t do this, though, and it&#8217;s apparent that
+they end up with underflow errors. See, for example, the code output on
+page 89. This is also what leads to them having essentially the same
+error rates for &#8220;hard&#8221; ham as they do for &#8220;easy&#8221; ham in the tables on
+pages 89 and 92. Once you fix this problem, it turns out the classifier
+is actually much better for spam and easy ham than it appears in the
+book, but it&#8217;s way worse for hard ham.</p>
+</li>
+</ul>
+<p>I&#8217;m going to focus on the second version of the program, though, in the
+notebook called <code>ch3_nltk.ipynb</code>. You can view it online <a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/CH3/ch3_nltk.ipynb">here</a>.In
+this version, I use <span class="caps">NLTK</span>&#8217;s built-in <code>NaiveBayesClassifier</code> function, and
+avoid creating the <span class="caps">TDM</span> (which isn&#8217;t really used for much in the original
+code anyway).</p>
+<h2>Building a Naive Bayes spam classifier with <span class="caps">NLTK</span></h2>
+<p>I&#8217;ll follow the same logic as the program from chapter 3, but I&#8217;ll do so
+with a workflow more suited to <span class="caps">NLTK</span>&#8217;s functions. So instead of creating
+a term-document matrix, and building my own Naive Bayes classifier, Ill
+build a <code>features → label</code> association for each training e-mail, and
+feed a list of these to <span class="caps">NLTK</span>&#8217;s <code>NaiveBayesClassifier</code> function.</p>
+<h3>Extracting word features from the e-mail messages</h3>
+<p>The program begins with some simple code that loads the e-mail files
+from the directories, extracts the &#8220;message&#8221; or body of the e-mail, and
+loads all those messages into a list. This follows the book&#8217;s code
+pretty closely, and we end up with training and testing lists of spam,
+easy ham, and hard ham. The training data will be the e-mails in the
+training directories for spam and easy ham. (So, like in the book, we&#8217;re
+not training on any hard ham.)</p>
+<p>Each e-mail in our classifier&#8217;s training data will have a label (&#8220;spam&#8221;
+or &#8220;ham&#8221;) and a feature set. For this application, we&#8217;re just going to
+use a feature set that is just a set of the unique words in the e-mail.
+Below, I&#8217;ll turn this into a dictionary to feed into the
+<code>NaiveBayesClassifier</code>, but first, let&#8217;s get the set.</p>
+<blockquote>
+<p><strong>Note:</strong> This is a similar to a &#8220;bag-of-words&#8221; model, in that it
+doesn&#8217;t care about word order or other semantic information. But a
+&#8220;bag-of-words&#8221; usually considers the frequency of the word within the
+document (like a histogram of the words), whereas we&#8217;re only concerned
+with whether it&#8217;s in an e-mail, not how often it occurs.*</p>
+</blockquote>
+<h3>Parsing and tokenizing the e-mails</h3>
+<p>I&#8217;m going to use <span class="caps">NLTK</span>&#8217;s <code>wordpunct_tokenize</code> function to break the
+message into tokens. This splits tokens at white space and (most)
+punctuation marks, and returns the punctuation along with the tokens on
+each side. So <code>"I don't know. Do you?"</code> becomes
+<code>["I", "don","'", "t", "know", ".", "Do", "you", "?"]</code>.</p>
+<p>If you look through some of the training e-mails in
+<code>train_spam_messages</code> and <code>train_ham_messages</code>, you&#8217;ll notice a few
+features that make extracting words tricky.</p>
+<p>First, there are a couple of odd text artefacts. The string &#8216;3D&#8217; shows
+up in strange places in <span class="caps">HTML</span> attributes and other places, and we&#8217;ll
+remove these. Furthermore there seem to be some mid-word line wraps
+flagged with an &#8216;=&#8217; where the word is broken across lines. For example,
+the word &#8216;apple&#8217; might be split across lines like &#8216;app=\nle&#8217;. We want
+to strip these out so we can recover &#8216;apple&#8217;. We&#8217;ll want to deal with
+all these first, before we apply the tokenizer.</p>
+<p>Second, there&#8217;s a lot of <span class="caps">HTML</span> in the messages. We&#8217;ll have to decide
+first whether we want to keep <span class="caps">HTML</span> info in our set of words. If we do,
+and we apply <code>wordpunct_tokenize</code> to some <span class="caps">HTML</span>, for example:</p>
+<div class="highlight"><pre><span class="s2">&quot;&lt;<span class="caps">HEAD</span>&gt;&lt;/<span class="caps">HEAD</span>&gt;&lt;<span class="caps">BODY</span>&gt;&lt;!-- Comment --&gt;&quot;</span>
+</pre></div>
+
+
+<p>would tokenize to:</p>
+<div class="highlight"><pre><span class="cp">[</span><span class="s2">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;<span class="caps">HEAD</span>&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&lt;/&quot;</span><span class="p">,</span> <span class="s2">&quot;<span class="caps">HEAD</span>&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&lt;&quot;</span><span class="p">,</span> <span class="s2">&quot;<span class="caps">BODY</span>&quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&lt;!--&quot;</span><span class="p">,</span> <span class="s2">&quot;Comment&quot;</span><span class="p">,</span> <span class="s2">&quot;--&gt;&quot;</span><span class="cp">]</span>
+</pre></div>
+
+
+<p>So if we drop the punctuation tokens, and get the unique set of what
+remains, we&#8217;d have <code>{"HEAD", "BODY", "Comment"}</code>, which seems like what
+we&#8217;d want. For example, it&#8217;s nice that this method doesn&#8217;t make,
+<code>&lt;HEAD&gt;</code> and <code>&lt;/HEAD&gt;</code> separate words in our set, but just captures the
+existence of this tag with the term <code>"HEAD"</code>. It might be a problem that
+we won&#8217;t distinguish between the <span class="caps">HTML</span> tag <code>&lt;HEAD&gt;</code> and &#8220;head&#8221; used as an
+English word in the message. But for the moment I&#8217;m willing to bet that
+sort of conflation won&#8217;t have a big effect on the classifier.</p>
+<p>If we don&#8217;t want to count <span class="caps">HTML</span> information in our set of words, we can
+set <code>strip_html</code> to <code>True</code>, and we&#8217;ll take all the <span class="caps">HTML</span> tags out before
+tokenizing.</p>
+<p>Lastly we&#8217;ll strip out any &#8220;stopwords&#8221; from the set. Stopwords are
+highly common, therefore low information words, like &#8220;a&#8221;, &#8220;the&#8221;, &#8220;he&#8221;,
+etc. Below I&#8217;ll use <code>stopwords</code>, downloaded from <span class="caps">NLTK</span>&#8217;s corpus library,
+with a minor modifications to deal with this. (In other programs I&#8217;ve
+used the stopwords exported from R&#8217;s <code>tm</code> package.)</p>
+<p>Note that because our tokenizer splits contractions (&#8220;she&#8217;ll&#8221; → &#8220;she&#8221;,
+&#8220;ll&#8221;), we&#8217;d like to drop the ends (&#8220;ll&#8221;). Some of these may be picked up
+in <span class="caps">NLTK</span>&#8217;s <code>stopwords</code> list, others we&#8217;ll manually add. It&#8217;s an
+imperfect, but easy solution. There are more sophisticated ways of
+dealing with this which are overkill for our purposes.</p>
+<p>Tokenizing, as perhaps you can tell, is a non-trivial operation. <span class="caps">NLTK</span>
+has a host of other tokenizing functions of varying sophistication, and
+even lets you define your own tokenizing rule using regex.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">get_msg_words</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">stopwords</span> <span class="o">=</span> <span class="p">[],</span> <span class="n">strip_html</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Returns the set of unique words contained in an e-mail message.</span>
+<span class="sd">Excludes</span>
+<span class="sd">any that are in an optionally-provided list.</span>
+
+<span class="sd"><span class="caps">NLTK</span>&#39;s &#39;wordpunct&#39; tokenizer is used, and this will break contractions.</span>
+<span class="sd">For example, don&#39;t -&amp;gt; (don, &#39;, t). Therefore, it&#39;s advisable to</span>
+<span class="sd">supply</span>
+<span class="sd">a stopwords list that includes contraction parts, like &#39;don&#39; and &#39;t&#39;.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="c"># Strip out weird &#39;3D&#39; artefacts.</span>
+<span class="n">msg</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;3D&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
+<span class="c"># Strip out html tags and attributes and html character codes,</span>
+<span class="c"># like &#39;&amp;amp;nbsp;&#39;  and &#39;&amp;amp;lt;&#39;.</span>
+<span class="k">if</span> <span class="n">strip_html</span><span class="p">:</span>
+<span class="n">msg</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;&amp;lt;(.|</span><span class="se">\\</span><span class="s">n)\*?&amp;gt;&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+<span class="n">msg</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;&amp;amp;</span><span class="se">\\</span><span class="s">w+;&#39;</span><span class="p">,</span> <span class="s">&#39; &#39;</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
+<span class="c"># wordpunct_tokenize doesn&#39;t split on underscores. We don&#39;t</span>
+<span class="c"># want to strip them, since the token first_name may be informative</span>
+<span class="c"># moreso than &#39;first&#39; and &#39;name&#39; apart. But there are tokens with</span>
+<span class="nb">long</span>
+<span class="c"># underscore strings (e.g. &#39;name_&#39;). We&#39;ll just</span>
+<span class="n">replace</span> <span class="n">the</span>
+<span class="c"># multiple underscores with a single one, since &#39;name_&#39; is</span>
+<span class="n">probably</span>
+<span class="c"># not distinct from &#39;name_&#39; or &#39;name_&#39; in identifying spam.</span>
+<span class="n">msg</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s">&#39;_+&#39;</span><span class="p">,</span> <span class="s">&#39;_&#39;</span><span class="p">,</span> <span class="n">msg</span><span class="p">)</span>
+
+<span class="c"># Note, remove &#39;=&#39; symbols before tokenizing, since these</span>
+<span class="c"># sometimes occur within words to indicate, e.g., line-wrapping.</span>
+<span class="n">msg_words</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">wordpunct_tokenize</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s">&#39;=</span><span class="se">\\</span><span class="s">n&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()))</span>
+
+<span class="c"># Get rid of stopwords</span>
+<span class="n">msg_words</span> <span class="o">=</span> <span class="n">msg_words</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">stopwords</span><span class="p">)</span>
+
+<span class="c"># Get rid of punctuation tokens, numbers, and single letters.</span>
+<span class="n">msg_words</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">msg_words</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="s">&#39;[a-zA-Z]&#39;</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span> <span class="ow">and</span>
+<span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">)</span> <span class="o">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="k">return</span> <span class="n">msg_words</span>
+</pre></div>
+
+
+<h3>Making a <code>(features, label)</code> list</h3>
+<p>The <code>NaiveBayesClassifier</code> function trains on data that&#8217;s of the form
+<code>[(features1, label1), features2, label2), ..., (featuresN, labelN)]</code>
+where <code>featuresi</code> is a dictionary of features for e-mail <code>i</code> and
+<code>labeli</code> is the label for e-mail <code>i</code> (<code>spam</code> or <code>ham</code>).</p>
+<p>The function <code>features_from_messages</code> iterates through the messages
+creating this list, but calls an outside function to create the features
+for each e-mail. This makes the function modular in case we decide to
+try out some other method of extracting features from the e-mails
+besides the set of word. It then combines the features to the e-mail&#8217;s
+label in a tuple and adds the tuple to the list.</p>
+<p>The <code>word_indicator</code> function calls <code>get_msg_words()</code> to get an e-mail&#8217;s
+words as a set, then creates a dictionary with entries <code>{word: True}</code>
+for each word in the set. This is a little counter-intuitive (since we
+don&#8217;t have <code>{word: False}</code> entries for words not in the set) but
+<code>NaiveBayesClassifier</code> knows how to handle it.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">features_from_messages</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">feature_extractor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+     <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Make a (features, label) tuple for each message in a list of a certain,</span>
+<span class="sd">    label of e-mails (&#39;spam&#39;, &#39;ham&#39;) and return a list of these tuples.</span>
+
+<span class="sd">    Note every e-mail in &#39;messages&#39; should have the same label.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">features_labels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">feature_extractor</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">features_labels</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">features</span><span class="p">,</span> <span class="n">label</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">features_labels</span>
+
+    <span class="k">def</span> <span class="nf">word_indicator</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Create a dictionary of entries {word: True} for every unique</span>
+<span class="sd">    word in a message.</span>
+
+<span class="sd">    Note **kwargs are options to the word-set creator,</span>
+<span class="sd">    get_msg_words().</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="n">defaultdict</span><span class="p">(</span><span class="nb">list</span><span class="p">)</span>
+    <span class="n">msg_words</span> <span class="o">=</span> <span class="n">get_msg_words</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">msg_words</span><span class="p">:</span>
+    <span class="n">features</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="k">return</span> <span class="n">features</span>
+</pre></div>
+
+
+<h2>Training and evaluating the classifier</h2>
+<p>With those functions defined, we can apply them to the training and
+testing spam and ham messages.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">make_train_test_sets</span><span class="p">(</span><span class="n">feature_extractor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Make (feature, label) lists for each of the training</span>
+<span class="sd">    and testing lists.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">train_spam</span> <span class="o">=</span> <span class="n">features_from_messages</span><span class="p">(</span><span class="n">train_spam_messages</span><span class="p">,</span> <span class="s">&#39;spam&#39;</span><span class="p">,</span>
+    <span class="n">feature_extractor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">train_ham</span> <span class="o">=</span> <span class="n">features_from_messages</span><span class="p">(</span><span class="n">train_easyham_messages</span><span class="p">,</span> <span class="s">&#39;ham&#39;</span><span class="p">,</span>
+    <span class="n">feature_extractor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">train_set</span> <span class="o">=</span> <span class="n">train_spam</span> <span class="o">+</span> <span class="n">train_ham</span>
+
+    <span class="n">test_spam</span> <span class="o">=</span> <span class="n">features_from_messages</span><span class="p">(</span><span class="n">test_spam_messages</span><span class="p">,</span> <span class="s">&#39;spam&#39;</span><span class="p">,</span>
+    <span class="n">feature_extractor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">test_ham</span> <span class="o">=</span> <span class="n">features_from_messages</span><span class="p">(</span><span class="n">test_easyham_messages</span><span class="p">,</span> <span class="s">&#39;ham&#39;</span><span class="p">,</span>
+    <span class="n">feature_extractor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="n">test_hardham</span> <span class="o">=</span> <span class="n">features_from_messages</span><span class="p">(</span><span class="n">test_hardham_messages</span><span class="p">,</span>
+    <span class="s">&#39;ham&#39;</span><span class="p">,</span>
+    <span class="n">feature_extractor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">train_set</span><span class="p">,</span> <span class="n">test_spam</span><span class="p">,</span> <span class="n">test_ham</span><span class="p">,</span> <span class="n">test_hardham</span>
+</pre></div>
+
+
+<p>Notice that the training set we&#8217;ll use to train the classifier combines
+both the spam and easy ham training sets (since we need both types of
+e-mail to train it).</p>
+<p>Finally, let&#8217;s write a function to train the classifier and check how
+accurate it is on the test data.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">check_classifier</span><span class="p">(</span><span class="n">feature_extractor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Train the classifier on the training spam and ham, then check its</span>
+<span class="sd">    accuracy</span>
+<span class="sd">    on the test data, and show the classifier&#39;s most informative features.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c"># Make training and testing sets of (features, label) data</span>
+    <span class="n">train_set</span><span class="p">,</span> <span class="n">test_spam</span><span class="p">,</span> <span class="n">test_ham</span><span class="p">,</span> <span class="n">test_hardham</span> <span class="o">=</span> \\
+    <span class="n">make_train_test_sets</span><span class="p">(</span><span class="n">feature_extractor</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="c"># Train the classifier on the training set</span>
+    <span class="n">classifier</span> <span class="o">=</span> <span class="n">NaiveBayesClassifier</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">train_set</span><span class="p">)</span>
+
+    <span class="c"># How accurate is the classifier on the test sets?</span>
+    <span class="k">print</span> <span class="p">(</span><span class="s">&#39;Test Spam accuracy: {0:.2f}%&#39;</span>
+    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">100</span> \<span class="o">*</span> <span class="n">nltk</span><span class="o">.</span><span class="n">classify</span><span class="o">.</span><span class="n">accuracy</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">test_spam</span><span class="p">)))</span>
+    <span class="k">print</span> <span class="p">(</span><span class="s">&#39;Test Ham accuracy: {0:.2f}%&#39;</span>
+    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">100</span> \<span class="o">*</span> <span class="n">nltk</span><span class="o">.</span><span class="n">classify</span><span class="o">.</span><span class="n">accuracy</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">test_ham</span><span class="p">)))</span>
+    <span class="k">print</span> <span class="p">(</span><span class="s">&#39;Test Hard Ham accuracy: {0:.2f}%&#39;</span>
+    <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">100</span> \<span class="o">*</span> <span class="n">nltk</span><span class="o">.</span><span class="n">classify</span><span class="o">.</span><span class="n">accuracy</span><span class="p">(</span><span class="n">classifier</span><span class="p">,</span> <span class="n">test_hardham</span><span class="p">)))</span>
+
+    <span class="c"># Show the top 20 informative features</span>
+    <span class="k">print</span> <span class="n">classifier</span><span class="o">.</span><span class="n">show_most_informative_features</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+</pre></div>
+
+
+<p>The function also prints out the results of <code>NaiveBayesClassifiers</code>&#8216;s
+handy <code>show_most_informative_features</code> method. This shows which features
+are most unique to one label or another. For example, if &#8220;viagra&#8221; shows
+up in 500 of the spam e-mails, but only 2 of the &#8220;ham&#8221; e-mails in the
+training set, then the method will show that &#8220;viagra&#8221; is one of the most
+informative features with a <code>spam:ham</code> ratio of 250:1.</p>
+<p>So how do we do? I&#8217;ll check two versions. The first uses the <span class="caps">HTML</span> info
+in the e-mails in the classifier:</p>
+<div class="highlight"><pre><span class="n">check_classifier</span><span class="p">(</span><span class="n">word_indicator</span><span class="p">,</span> <span class="n">stopwords</span> <span class="o">=</span> <span class="n">sw</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Which gives:</p>
+<div class="highlight"><pre><span class="n">Test</span> <span class="n">Spam</span> <span class="n">accuracy</span><span class="o">:</span> <span class="mf">98.71</span><span class="o">%</span>
+<span class="n">Test</span> <span class="n">Ham</span> <span class="n">accuracy</span><span class="o">:</span> <span class="mf">97.07</span><span class="o">%</span>
+<span class="n">Test</span> <span class="n">Hard</span> <span class="n">Ham</span> <span class="n">accuracy</span><span class="o">:</span> <span class="mf">13.71</span><span class="o">%</span>
+<span class="n">Most</span> <span class="n">Informative</span> <span class="n">Features</span>
+    <span class="n">align</span> <span class="o">=</span> <span class="n">True</span>          <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">119.7</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">tr</span> <span class="o">=</span> <span class="n">True</span>             <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">115.7</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">td</span> <span class="o">=</span> <span class="n">True</span>             <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">111.7</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">arial</span> <span class="o">=</span> <span class="n">True</span>          <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">107.7</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">cellpadding</span> <span class="o">=</span> <span class="n">True</span>    <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">97.0</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">cellspacing</span> <span class="o">=</span> <span class="n">True</span>    <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">94.3</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">True</span>            <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">80.3</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">bgcolor</span> <span class="o">=</span> <span class="n">True</span>        <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">67.4</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">href</span> <span class="o">=</span> <span class="n">True</span>           <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">67.0</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">sans</span> <span class="o">=</span> <span class="n">True</span>           <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">62.3</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">colspan</span> <span class="o">=</span> <span class="n">True</span>        <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">61.0</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">font</span> <span class="o">=</span> <span class="n">True</span>           <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">61.0</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">valign</span> <span class="o">=</span> <span class="n">True</span>         <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">60.3</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">br</span> <span class="o">=</span> <span class="n">True</span>             <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">59.6</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">verdana</span> <span class="o">=</span> <span class="n">True</span>        <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">57.7</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">nbsp</span> <span class="o">=</span> <span class="n">True</span>           <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">57.4</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">color</span> <span class="o">=</span> <span class="n">True</span>          <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">54.4</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">ff0000</span> <span class="o">=</span> <span class="n">True</span>         <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">53.0</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">ffffff</span> <span class="o">=</span> <span class="n">True</span>         <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">50.6</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">border</span> <span class="o">=</span> <span class="n">True</span>         <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">49.6</span> <span class="o">:</span> <span class="mf">1.0</span>
+</pre></div>
+
+
+<p>The classifier does a really good job for spam and easy ham, but it&#8217;s
+pretty miserable for hard ham. This may be because hard ham messages
+tend to be <span class="caps">HTML</span>-formatted while easy ham messages aren&#8217;t. Note how much
+the classifier relies on <span class="caps">HTML</span> information&#8212;nearly all the most
+informative features are <span class="caps">HTML</span>-related.</p>
+<p>If we try just using the text of the messages, without the <span class="caps">HTML</span>
+information, we lose a tiny bit of accuracy in identifying spam but do
+much better with the hard ham.</p>
+<div class="highlight"><pre><span class="n">check_classifier</span><span class="p">(</span><span class="n">word_indicator</span><span class="p">,</span> <span class="n">stopwords</span> <span class="o">=</span> <span class="n">sw</span><span class="p">,</span> <span class="n">strip_html</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</pre></div>
+
+
+<p>shows</p>
+<div class="highlight"><pre><span class="n">Test</span> <span class="n">Spam</span> <span class="n">accuracy</span><span class="o">:</span> <span class="mf">96.64</span><span class="o">%</span>
+<span class="n">Test</span> <span class="n">Ham</span> <span class="n">accuracy</span><span class="o">:</span> <span class="mf">98.64</span><span class="o">%</span>
+<span class="n">Test</span> <span class="n">Hard</span> <span class="n">Ham</span> <span class="n">accuracy</span><span class="o">:</span> <span class="mf">56.05</span><span class="o">%</span>
+<span class="n">Most</span> <span class="n">Informative</span> <span class="n">Features</span>
+    <span class="n">dear</span> <span class="o">=</span> <span class="n">True</span>          <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">41.7</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">aug</span> <span class="o">=</span> <span class="n">True</span>           <span class="n">ham</span> <span class="o">:</span> <span class="n">spam</span> <span class="o">=</span> <span class="mf">38.3</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">guaranteed</span> <span class="o">=</span> <span class="n">True</span>    <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">35.0</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">assistance</span> <span class="o">=</span> <span class="n">True</span>    <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">29.7</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="n">True</span>        <span class="n">ham</span> <span class="o">:</span> <span class="n">spam</span> <span class="o">=</span> <span class="mf">27.9</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">mailings</span> <span class="o">=</span> <span class="n">True</span>      <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">25.0</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">sincerely</span> <span class="o">=</span> <span class="n">True</span>     <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">23.0</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">fill</span> <span class="o">=</span> <span class="n">True</span>          <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">23.0</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">mortgage</span> <span class="o">=</span> <span class="n">True</span>      <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">21.7</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">sir</span> <span class="o">=</span> <span class="n">True</span>           <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">21.0</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">sponsor</span> <span class="o">=</span> <span class="n">True</span>       <span class="n">ham</span> <span class="o">:</span> <span class="n">spam</span> <span class="o">=</span> <span class="mf">20.3</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">article</span> <span class="o">=</span> <span class="n">True</span>       <span class="n">ham</span> <span class="o">:</span> <span class="n">spam</span> <span class="o">=</span> <span class="mf">20.3</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">assist</span> <span class="o">=</span> <span class="n">True</span>        <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">19.0</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">income</span> <span class="o">=</span> <span class="n">True</span>        <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">18.6</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">tue</span> <span class="o">=</span> <span class="n">True</span>           <span class="n">ham</span> <span class="o">:</span> <span class="n">spam</span> <span class="o">=</span> <span class="mf">18.3</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">mails</span> <span class="o">=</span> <span class="n">True</span>         <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">18.3</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">iso</span> <span class="o">=</span> <span class="n">True</span>           <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">17.7</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">admin</span> <span class="o">=</span> <span class="n">True</span>         <span class="n">ham</span> <span class="o">:</span> <span class="n">spam</span> <span class="o">=</span> <span class="mf">17.7</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">monday</span> <span class="o">=</span> <span class="n">True</span>        <span class="n">ham</span> <span class="o">:</span> <span class="n">spam</span> <span class="o">=</span> <span class="mf">17.7</span> <span class="o">:</span> <span class="mf">1.0</span>
+    <span class="n">earn</span> <span class="o">=</span> <span class="n">True</span>          <span class="n">spam</span> <span class="o">:</span> <span class="n">ham</span> <span class="o">=</span> <span class="mf">17.0</span> <span class="o">:</span> <span class="mf">1.0</span>
+</pre></div>
+
+
+<p>Check out the most informative features; they make a lot of sense. Note
+mostly spammers address you with &#8220;Dear&#8221; and &#8220;Sir&#8221; and sign off with
+&#8220;Sincerely,&#8221;. (Probably those Nigerian princes; they tend to be polite.)
+Other spam flags that gel with our intuition are &#8220;guaranteed&#8221;,
+&#8220;mortgage&#8221;, &#8220;assist&#8221;, &#8220;assistance&#8221;, and &#8220;income.&#8221;</p>
+<h2>Conclusion</h2>
+<p>So we&#8217;ve built a simple but decent spam classifier with just a tiny
+amount of code. <span class="caps">NLTK</span> provides a wealth of tools for doing this sort of
+thing more seriously including ways to extract more sophisticated
+features and more complex classifiers.</p>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/ml4h-ch3.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/ml4h-ch3.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/ml4h-ch3.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "ml4h-ch3.html";
+          var disqus_url = "http://slendermeans.org/ml4h-ch3.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

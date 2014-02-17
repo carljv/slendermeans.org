@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/julia-loops.html" rel = "bookmark"> I&#8217;ve seen the best minds of my generation destroyed by Matlab &#8230; </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2013-05-11T16:52:00" pubdate> May 11, 2013 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/programming.html"> Programming </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <p>(Note: this is very quick and not well thought out. Mostly a
+conversation starter as opposed to any real thesis on the subject.)</p>
+<p>This post is a continuation of a Twitter conversation <a href="https://twitter.com/johnmyleswhite/status/332920041626554369">here</a>, started
+when John Myles White poked the hornets&#8217; nest. (Python&#8217;s nest? Where do
+Pythons live?)</p>
+<p><img src="../images/jmw_tweet.jpg" width=450px /></p>
+<p>The gist with John&#8217;s code is <a href="https://gist.github.com/johnmyleswhite/5556201">here</a>.</p>
+<p>This isn&#8217;t a very thoughtful post. But the conversation was becoming
+sort of a shootout and my thoughts (half-formed as they are) were a bit
+longer than a tweet. Essentially, I think the Python performance
+shootouts&#8212;PyPy, Numba, Cython&#8212;are missing the point.</p>
+<p>The point is, I think, that loops are a crutch. A 3-nested for loop in
+Julia that increments a counter takes 8 lines of code (1 initialize
+counter, 3 for statements, 1 increment statement, 3 end statements).
+Only one of those lines tells me what the code does.</p>
+<p>But most scientific programmers learned to code in imperative languages
+and that style of thinking and coding has become natural. I&#8217;ve often
+seen comments like this:</p>
+<p><img alt="forloop_tweet" src="../images/forloop_tweet.jpg" /></p>
+<p>Which I think simply equates readability with familiarity. That isn&#8217;t
+wrong, but it isn&#8217;t the whole story.</p>
+<p>Anyway, a lot of the responses to John&#8217;s code were showing that, hey,
+you can get fast loops in Python, with either JITing (PyPy, Numba) or
+Cython. So here are my thoughts:</p>
+<p>​1. Cython is great. I&#8217;ve used it with great success myself. But Julia
+   gives me fast loops while keeping the dynamic typing; i.e., I&#8217;m still
+   writing in Julia. Cython is a manifestation of what the Julia developers
+   call the &#8220;two-language problem.&#8221;  My programmer-productivity happens in
+   the slow, dynamic language, and I swap to a more painful language for
+   critical bottlenecks and glue the two together. Cython is a more
+   pleasant manifestation of the problem, especially since it lets you
+   evolve in an exploratory, piece-meal way from your first language to
+   your second language. But you still end up with code that is nice
+   dynamic-typing and abstractions on the outside; gross static typing and
+   low-level imperative stuff on the inside. (And Cython examples are often
+   clean and simple, but the code can get hairy very quickly.)</p>
+<p>​2. One of the nice things about the slow for loops in Python and R is
+   that they force you to think about other ways to express your problem. R
+   and Python programmers start thinking about how they can exploit arrays
+   and other ADTs, and higher-order functions to express they&#8217;re problem.
+   Avoiding the loop performance hit is the first reason, but then many of
+   them start to realize they like their code better this way. The
+   adjustment is hard at first, but once you get their, it&#8217;s hard to go
+   back.</p>
+<p>Forget about the Numpy, PyPy, Cython solutions to John&#8217;s problem. I
+think it&#8217;s safe to say his original pure Python code would be considered
+pretty un-Pythonic, to the extent that&#8217;s a thing. Python programmers are
+discouraged from that style of writing-C-in-Python, for both performance
+reasons, and conceptual reasons. Python programmers just think the
+alternatives (e.g. list comprehensions) are more expressive and
+maintainable. They&#8217;re not avoiding for loops because they&#8217;re slow: they
+don&#8217;t <strong>want</strong> to write for loops.</p>
+<p>Maybe Julia is the answer to this
+problem. Since list comprehensions, higher-order-functions (applies,
+maps, etc.) wrap imperative loops, and Julia loops are fast, then these
+things can be written in Julia and be fast.</p>
+<p>But that requires some thought about how
+Julia devs want Julia programmers to program. Julia is great and
+really promising, and it&#8217;s got an opportunity to let scientific
+programmers really raise their game. But I&#8217;d hate the big pitch for
+Julia to be: hey, you can write fast loops! And it would basically
+become a refuge for people who never learned to properly code R and are
+are fed up with slow loops, or for Matlab guys who&#8217;s licenses ran out.</p>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/julia-loops.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/julia-loops.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/julia-loops.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "julia-loops.html";
+          var disqus_url = "http://slendermeans.org/julia-loops.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

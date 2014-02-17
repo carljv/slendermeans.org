@@ -1,0 +1,1235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/julia-iterators.html" rel = "bookmark"> Tricked out iterators in Julia </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2014-01-13T15:15:00" pubdate> January 13, 2014 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/julia.html"> Julia </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+<script src="./scripts/gadfly.js"></script>
+
+<h2>Introduction</h2>
+<p>I want to spend some time messing about with iterators in Julia. I think they
+not only provide a familiar and useful entry point into Julia&#8217;s type system and dispatch
+model, they&#8217;re also interesting in their own right.<a name="fnm-multdisp" href="#fn-multdisp" class="footnote-mark">1</a> Clever application of iterators can
+help to simplify complicated loops, better express their intent, and improve
+memory usage.</p>
+<p>A word of warning about the code here. Much of the it isn&#8217;t idiomatic Julia and I wouldn&#8217;t
+necessarily recommend using this style in a serious project. I also can&#8217;t speak
+to its performance vis-a-vis more obvious Julian alternatives. In some cases,
+the style of the code examples below may help reduce memory usage, but
+performance is not my main concern. (This may be the first blogpost about Julia
+unconcerned with speed). Instead, I&#8217;m just interested in different ways of
+expressing iteration problems.</p>
+<p>For anyone who&#8217;d like to play along at home, there&#8217;s an IJulia notebook of
+this material on <a href="https://github.com/carljv/Julia-Iterators/blob/master/iterator_tricks.ipynb">Github</a>, which can be viewed on nbviewer <a href="http://nbviewer.ipython.org/urls/raw2.github.com/carljv/Julia-Iterators/master/iterator_tricks.ipynb?create=1">here</a>.</p>
+<h2>The Iterator Protocol</h2>
+<p>What do I mean by iterators?<a name="fnm-iterable" href="#fn-iterable"
+class="footnote-mark">2</a> I mean any <code>I</code> in Julia that works on
+the right hand side of the statement <code>for i = I ...</code>. That is, anything you can for-loop
+over. This includes not only data collections like Arrays, Dicts, and Sets, but
+also more abstract types like Ranges, as well as what I&#8217;ll call &#8220;higher order&#8221;
+iterators such as those that result from <code>zip</code> or <code>enumerate</code> functions.</p>
+<p>As an equivalent definition, an iterator in Julia is any type that implements
+the <strong>iterator protocol</strong>. The iterator protocol is comprised of three methods:
+<code>start</code>, <code>next</code>, and <code>done</code>. So any type in Julia for which these three methods
+are defined is an iterator. It might be a dumb iterator or a broken iterator,
+but it&#8217;s an iterator. </p>
+<p>Since the <code>for</code> statement works on iterators, and iterators are just a
+collection of methods, we can define any for loop using calls to those methods. </p>
+<p>For example, this simple for loop</p>
+<div class="highlight"><pre><span class="n">arr</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="p">:</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="n">arr</span>
+    <span class="n">println</span><span class="p">(</span><span class="n">i</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<div class="highlight"><pre>100
+ 64
+ 36
+ 16
+  4
+</pre></div>
+
+
+<p>is equivalent to this</p>
+<div class="highlight"><pre><span class="n">state</span> <span class="o">=</span> <span class="n">start</span><span class="p">(</span><span class="n">arr</span><span class="p">);</span>
+<span class="k">while</span> <span class="o">!</span><span class="n">done</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">state</span> <span class="o">=</span> <span class="n">next</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="n">i</span><span class="o">^</span><span class="mi">2</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<div class="highlight"><pre>100
+ 64
+ 36
+ 16
+  4
+</pre></div>
+
+
+<p>In this example, the <code>start</code> method provides the initial state of the iterator;
+the <code>next</code> method returns the value of the array at a given state, as well as what the
+next state is. Finally, the <code>done</code> method returns <code>true</code> when we&#8217;ve gone past
+the end of the iterator, informing the loop that it should stop.</p>
+<p>If you know Python, the idea of the iterator protocol is probably familiar. In
+Python, any object can be an iterator if it has the methods <code>__iter__</code> and
+<code>__next__</code>. But notice the lack of side effects in the Julia implementation
+&#8212;calling <code>start</code> or <code>next</code> on the array has no affect on the array itself. <code>start</code> is
+basically a constant, always returning the value of the initial state whenever
+you pass it the same type of iterator. And <code>next</code> doesn&#8217;t really increment
+anything; it&#8217;s just a mapping from <em>current state &rightarrow; (value, next
+state)</em>. In general, the iterator itself has no internal state being incremented or
+changed as you pass through a loop.</p>
+<h2>An iterator&#8217;s state</h2>
+<p>More concretely, what&#8217;s the <em>state</em> of an iterator? How the state is
+defined, and an iterator&#8217;s sequence of states depends on the type of
+the iterator itself. It&#8217;s best to look at some examples.</p>
+<h3>Arrays.</h3>
+<p>Arrays are very intuitive iterators. They have states that are just integer
+values from 1 to the length of the array. So <code>start</code> returns 1.</p>
+<div class="highlight"><pre><span class="n">arr</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;one&quot;</span><span class="p">,</span> <span class="s">&quot;two&quot;</span><span class="p">,</span> <span class="s">&quot;three&quot;</span><span class="p">,</span> <span class="s">&quot;four&quot;</span><span class="p">,</span> <span class="s">&quot;five&quot;</span><span class="p">,</span> <span class="s">&quot;six&quot;</span><span class="p">]</span>
+<span class="n">start</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre>1
+</pre></div>
+
+
+<p>The <code>next</code> mapping is <em>i</em> &rightarrow; <em>i+1</em>, and the value of the iterator at any state
+<code>i</code> is just <code>a[i]</code>. </p>
+<div class="highlight"><pre><span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">:</span><span class="mi">4</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;next(arr, </span><span class="si">$</span><span class="s">i) = &quot;</span><span class="p">,</span> <span class="n">next</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<div class="highlight"><pre>next(arr, 1) = (&quot;one&quot;,2)
+next(arr, 2) = (&quot;two&quot;,3)
+next(arr, 3) = (&quot;three&quot;,4)
+next(arr, 4) = (&quot;four&quot;,5)
+</pre></div>
+
+
+<p>If this were a multidimensional array, say 3&times;2 instead of 6&times;1, we&#8217;d
+get the same result; iteration would just proceed along the rows of the matrix.</p>
+<p>The <code>done</code> method returns true when the state is <code>i =
+length(a) + 1</code>. You might think it&#8217;d be <code>length(a)</code>, but recall the for-equivalent while loop
+above. Having <code>done</code> return true at the last index of the array would prevent
+the loop from executing on the last element. So in our 6-element array, <code>done</code>
+is true when the state hits 7.</p>
+<div class="highlight"><pre><span class="n">println</span><span class="p">(</span><span class="n">done</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>  <span class="c"># not yet</span>
+<span class="n">println</span><span class="p">(</span><span class="n">next</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre>false
+(&quot;six&quot;,7)
+</pre></div>
+
+
+<div class="highlight"><pre><span class="n">done</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>    
+</pre></div>
+
+
+<div class="highlight"><pre>true
+</pre></div>
+
+
+<h3>Ranges</h3>
+<p>Ranges have states that looks similar to arrays, except they start at zero.</p>
+<div class="highlight"><pre><span class="n">rng</span> <span class="o">=</span> <span class="mi">11</span><span class="p">:</span><span class="mi">20</span>  <span class="c"># length 10 range</span>
+<span class="n">start</span><span class="p">(</span><span class="n">rng</span><span class="p">)</span> <span class="c"># 0</span>
+</pre></div>
+
+
+<div class="highlight"><pre>0
+</pre></div>
+
+
+<p>But the relationship between the current and next state is the same: <em>i</em> &rightarrow; <em>i+1</em>.</p>
+<div class="highlight"><pre><span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">]</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;next(rng, </span><span class="si">$</span><span class="s">i) = &quot;</span><span class="p">,</span> <span class="n">next</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<div class="highlight"><pre>next(rng, 0) = (11,1)
+next(rng, 1) = (12,2)
+next(rng, 9) = (20,10)
+next(rng, 10) = (21,11)
+</pre></div>
+
+
+<p>Since we start at zero, the done state is one less than the equivalent array.</p>
+<div class="highlight"><pre><span class="n">done</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre>true
+</pre></div>
+
+
+<h3>Unordered collections: Dicts, Sets, etc.</h3>
+<p>Arrays and ranges have a natural order, so the evolution of state is
+straightforward. But what about collections such as dictionaries and sets that have no inherent
+order? Like in many languages, such things can be iterated over, but the order
+of iteration is not easily predictable.</p>
+<p>For example, here&#8217;s a dictionary:</p>
+<div class="highlight"><pre><span class="n">dictit</span> <span class="o">=</span> <span class="p">{:</span><span class="n">one</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="n">three</span> <span class="o">=&gt;</span> <span class="mi">3</span><span class="p">,</span> <span class="p">:</span><span class="n">five</span> <span class="o">=&gt;</span> <span class="mi">5</span><span class="p">,</span> <span class="p">:</span><span class="n">five</span> <span class="o">=&gt;</span> <span class="s">&quot;five!&quot;</span><span class="p">}</span>
+</pre></div>
+
+
+<div class="highlight"><pre>{:one=&gt;1,:three=&gt;3,:five=&gt;&quot;five!&quot;}
+</pre></div>
+
+
+<p>The starting state isn&#8217;t 0 or 1, as would be natural for an ordered collection.</p>
+<div class="highlight"><pre><span class="n">s0</span> <span class="o">=</span> <span class="n">start</span><span class="p">(</span><span class="n">dictit</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre>3
+</pre></div>
+
+
+<p>And while <code>next</code> maps state <em>i</em> to state <em>j</em>, the relationship between <em>i</em> and <em>j</em>
+is not obvious. Here, while the first state is 3, the second is 11, and the rest
+are similarly weird.</p>
+<div class="highlight"><pre><span class="n">_</span><span class="p">,</span> <span class="n">s1</span> <span class="o">=</span> <span class="n">next</span><span class="p">(</span><span class="n">dictit</span><span class="p">,</span> <span class="n">s0</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre>((:one,1),11)
+</pre></div>
+
+
+<div class="highlight"><pre><span class="n">_</span><span class="p">,</span> <span class="n">s2</span> <span class="o">=</span> <span class="n">next</span><span class="p">(</span><span class="n">dictit</span><span class="p">,</span> <span class="n">s1</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre>((:three,3),13)
+</pre></div>
+
+
+<div class="highlight"><pre><span class="n">_</span><span class="p">,</span> <span class="n">s3</span> <span class="o">=</span> <span class="n">next</span><span class="p">(</span><span class="n">dictit</span><span class="p">,</span> <span class="n">s2</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre>((:five,&quot;five!&quot;),17)
+</pre></div>
+
+
+<div class="highlight"><pre><span class="n">done</span><span class="p">(</span><span class="n">dictit</span><span class="p">,</span> <span class="n">s3</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre>true
+</pre></div>
+
+
+<p>The states, you probably and correctly suspect, are tied to the internal
+implementation of the dictionary, e.g. how the keys are hashed. So the state
+doesn&#8217;t follow a predictable 1, 2, 3, &#8230; order, and what order of elements we
+get when iterating is essentially unpredictable.</p>
+<p>But because for loops handle the iterator&#8217;s states for us, we rarely if ever have to worry about
+the representation of an iterator&#8217;s state. The for loop implicitly calls the <code>start</code>,
+<code>done</code>, and <code>next</code> methods, which do all this bookkeeping for us.</p>
+<h2>Iterators and Delayed Evaluation</h2>
+<p>While many iterators are collections of data in memory, like Arrays, Dicts, or
+Sets, iterators can also represent abstract collections that aren&#8217;t held in memory.</p>
+<p>Range is a good example. When we iterate over the range <code>1:10</code>, we get the
+sequence 1, 2, 3, &#8230;, 10. But in memory, this range is comprised of only two
+integers, 1 and 10. The values in between are only evaluated when we&#8217;re looping over it.</p>
+<p>From <a href="">https://github.com/JuliaLang/julia/blob/master/base/range.jl</a>, here&#8217;s how a
+Range&#8217;s iterator protocol is defined:</p>
+<div class="highlight"><pre><span class="n">start</span><span class="p">(</span><span class="n">r</span><span class="p">::</span><span class="n">Ranges</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">next</span><span class="p">{</span><span class="n">T</span><span class="p">}(</span><span class="n">r</span><span class="p">::</span><span class="n">Range</span><span class="p">{</span><span class="n">T</span><span class="p">},</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">oftype</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">i</span><span class="o">*</span><span class="n">step</span><span class="p">(</span><span class="n">r</span><span class="p">)),</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">next</span><span class="p">{</span><span class="n">T</span><span class="p">}(</span><span class="n">r</span><span class="p">::</span><span class="n">Range1</span><span class="p">{</span><span class="n">T</span><span class="p">},</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">oftype</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">start</span> <span class="o">+</span> <span class="n">i</span><span class="p">),</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">done</span><span class="p">(</span><span class="n">r</span><span class="p">::</span><span class="n">Ranges</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span><span class="n">length</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">i</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Notice that the <code>next</code> method calculates the value of the iterator in state
+<code>i</code>. This is different from an Array iterator, which just reads the element
+<code>a[i]</code> from memory.</p>
+<p>Iterators that exploit delayed evaluation like this can have important performance
+benefits. If we want to iterate over the integers 1 to 10,000, iterating over an
+Array means we have to allocate about <span class="caps">80MB</span> to hold it. A Range only requires
+16 bytes; the same size as the range 1 to 100,000 or 1 to 100,000,000.</p>
+<h3>Application: Iterating over Fibonacci numbers</h3>
+<p>Here&#8217;s another example of an iterator which computes values on demand, using the
+<code>next</code> method to do the work. <code>fibit(n)</code> is an iterator over the first <code>n</code>
+Fibonacci numbers. When the iterator is constructed, it doesn&#8217;t calculate all of
+these numbers. Instead it waits for its <code>next</code> method to be called, providing
+the next Fibonacci number depending on the current one.</p>
+<div class="highlight"><pre><span class="c"># Iterator produces the first n Fibonacci numbers</span>
+<span class="n">immutable</span> <span class="n">FibIt</span><span class="p">{</span><span class="n">T</span><span class="o">&lt;:</span><span class="n">Integer</span><span class="p">}</span>
+    <span class="n">last2</span><span class="p">::(</span><span class="n">T</span><span class="p">,</span> <span class="n">T</span><span class="p">)</span>
+    <span class="n">n</span><span class="p">::</span><span class="n">Integer</span>
+<span class="k">end</span>
+
+<span class="n">fibit</span><span class="p">(</span><span class="n">n</span><span class="p">::</span><span class="n">Integer</span><span class="p">)</span> <span class="o">=</span> <span class="n">FibIt</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">n</span><span class="p">)</span>
+<span class="c"># Specify types, e.g. BigInt to prevent overflow.</span>
+<span class="n">fibit</span><span class="p">(</span><span class="n">n</span><span class="p">::</span><span class="n">Integer</span><span class="p">,</span> <span class="n">T</span><span class="p">::</span><span class="n">Type</span><span class="p">)</span> <span class="o">=</span> <span class="n">FibIt</span><span class="p">{</span><span class="n">T</span><span class="p">}((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">n</span><span class="p">)</span> 
+
+<span class="n">Base</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">fi</span><span class="p">::</span><span class="n">FibIt</span><span class="p">)</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="k">function</span><span class="nf"> Base</span><span class="o">.</span><span class="n">next</span><span class="p">(</span><span class="n">fi</span><span class="p">::</span><span class="n">FibIt</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">state</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">else</span>
+        <span class="n">fi</span><span class="o">.</span><span class="n">last2</span> <span class="o">=</span> <span class="n">fi</span><span class="o">.</span><span class="n">last2</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">sum</span><span class="p">(</span><span class="n">fi</span><span class="o">.</span><span class="n">last2</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">fi</span><span class="o">.</span><span class="n">last2</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">state</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">Base</span><span class="o">.</span><span class="n">done</span><span class="p">(</span><span class="n">fi</span><span class="p">::</span><span class="n">FibIt</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="o">=</span> <span class="n">state</span> <span class="o">&gt;</span> <span class="n">fi</span><span class="o">.</span><span class="n">n</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="n">fibit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<div class="highlight"><pre>1 1 2 3 5 8 13 21 34 55
+</pre></div>
+
+
+<h3>Tasks/Co-routines</h3>
+<p>This talk of iterators with delayed evaluation may remind Pythonistas of
+generators. And Julia has a type that is basically equivalent to Python&#8217;s
+generators, called Tasks. A Task is constructed by calling the <code>Task()</code> 
+constructor (or
+<code>@task</code> macro) on a function with a <code>produce</code> statement, which issimilar to Python&#8217;s
+<code>yield</code>.</p>
+<p>Instead of using the <code>Fibit</code> type above, we could get an equivalent iterator by
+defining a Task that produces sequential Fibonacci numbers.</p>
+<div class="highlight"><pre><span class="k">function</span><span class="nf"> fibtask</span><span class="p">(</span><span class="n">n</span><span class="p">::</span><span class="n">Integer</span><span class="p">,</span> <span class="n">T</span><span class="p">::</span><span class="n">Type</span><span class="p">)</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">zero</span><span class="p">(</span><span class="n">T</span><span class="p">),</span> <span class="n">one</span><span class="p">(</span><span class="n">T</span><span class="p">))</span>
+    <span class="n">produce</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">function</span><span class="nf"> _it</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">n</span>
+            <span class="n">produce</span><span class="p">(</span><span class="n">b</span><span class="p">)</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">a</span><span class="o">+</span><span class="n">b</span><span class="p">)</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="n">Task</span><span class="p">(</span><span class="n">_it</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">fibtask</span><span class="p">(</span><span class="n">n</span><span class="p">::</span><span class="n">Integer</span><span class="p">)</span> <span class="o">=</span> <span class="n">fibtask</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="kt">Int</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Once we&#8217;ve made the task, we get iteration for free.</p>
+<div class="highlight"><pre><span class="k">for</span> <span class="n">i</span> <span class="k">in</span> <span class="n">fibtask</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">print</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s">&quot; &quot;</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<div class="highlight"><pre>1 1 2 3 5 8 13 21 34 55
+</pre></div>
+
+
+<p>Whether you create an iterator using a type with the iterator protocol, or by
+constructing a Task, is up to you. There are pros and cons to each approach. By
+defining your iterator as a specific type, you can dispatch lots of other
+functions on it. Here, on the other hand, <code>fibtask</code> is just a <code>Task</code> type, so
+defining methods for it means defining methods for all Tasks, which may be
+undesirable or infeasible. On the other hand Tasks give you iterators with less
+code. Below I&#8217;ll show an example of an iterator that&#8217;s hard to define with the
+iterator protocol methods, but easy to define as a Task. And of course, Tasks
+are coroutines, and can be used in those contexts.</p>
+<h2>Realizing Iterators without loops</h2>
+<p>So far, we&#8217;ve talked about iterators in the context of for loops. We saw that
+<code>for i = I</code> was a construct for calling <code>I</code>&#8216;s <code>start</code>, <code>done</code> and <code>next</code>
+methods, letting us realize and operate on the values in the iterator.</p>
+<p>But there are functions which can take iterators as inputs and implicitly iterate over them
+to some desired result. This obviates the need for explicit for loops, and can
+make for cleaner more functional code. Some examples follow.</p>
+<h3><code>collect</code> and <code>reduce</code></h3>
+<p>The <code>collect</code> function takes an iterator input, realizes all its values, and
+<em>collects</em> them into an array.</p>
+<div class="highlight"><pre><span class="n">collect</span><span class="p">(</span><span class="n">fibit</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre>10-element Array{Any,1}:
+  1
+  1
+  2
+  3
+  5
+  8
+ 13
+ 21
+ 34
+ 55
+</pre></div>
+
+
+<p>The <code>reduce</code> function similarly realizes the values of an iterator, but then successively
+applies an operator to them to give a scalar result.</p>
+<div class="highlight"><pre><span class="n">reduce</span><span class="p">(</span><span class="o">+</span><span class="p">,</span> <span class="n">fibit</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre>143
+</pre></div>
+
+
+<p>That reduce operation is equivalent to the <code>sum</code> function called with an
+iterator argument.</p>
+<div class="highlight"><pre><span class="n">sum</span><span class="p">(</span><span class="n">fibit</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre>143
+</pre></div>
+
+
+<p>In this next line of code, I compute the sum of the reciprocals of the first
+10,000 Fibonacci numbers (which should be close to <a href="http://en.wikipedia.org/wiki/Reciprocal_Fibonacci_constant">this</a>), using <code>collect</code> to first put them into an array.</p>
+<div class="highlight"><pre><span class="n">sum</span><span class="p">(</span><span class="mi">1</span> <span class="o">./</span> <span class="n">collect</span><span class="p">(</span><span class="n">BigInt</span><span class="p">,</span> <span class="n">fibit</span><span class="p">(</span><span class="mi">10</span><span class="n">_000</span><span class="p">,</span> <span class="n">BigInt</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre>3.359885666243177553172011302918927179688905133731968486495553815325130318996609
+e+00 with 256 bits of precision
+</pre></div>
+
+
+<h3>Comprehensions</h3>
+<p>The <code>collect</code> function may remind you of an array comprehension, and it is
+similar, but here we see array comprehension don&#8217;t work on our iterator:</p>
+<div class="highlight"><pre><span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="o">=</span> <span class="n">fibit</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+</pre></div>
+
+
+<div class="highlight"><pre>no method length(FibIt{Int64})
+while loading In[26], in expression starting on line 1
+ in anonymous at no file
+</pre></div>
+
+
+<p>What&#8217;s going on is that the array comprehension wants to allocate an array,
+then fill it in with the values of the iterator. Since it doesn&#8217;t know the
+iterator&#8217;s length (how many values it will produce), it doesn&#8217;t know how large
+an array to allocate.<a name="fnm-arrcomp" href="#fn-arrcomp"
+class="footnote-mark">3</a> We can fix this for our Fibonacci iterator by
+giving it a <code>length</code> method.</p>
+<div class="highlight"><pre><span class="n">Base</span><span class="o">.</span><span class="n">length</span><span class="p">(</span><span class="n">it</span><span class="p">::</span><span class="n">FibIt</span><span class="p">)</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="n">n</span>
+<span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="o">=</span> <span class="n">fibit</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+</pre></div>
+
+
+<div class="highlight"><pre>10-element Array{Int64,1}:
+  1
+  1
+  2
+  3
+  5
+  8
+ 13
+ 21
+ 34
+ 55
+</pre></div>
+
+
+<p>Now we can redefine our sum-of-reciprocals using a comprehension instead of <code>collect</code>.</p>
+<div class="highlight"><pre><span class="n">sum</span><span class="p">([</span><span class="mi">1</span><span class="o">/</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="o">=</span> <span class="n">fibit</span><span class="p">(</span><span class="mi">10</span><span class="n">_000</span><span class="p">,</span> <span class="n">BigInt</span><span class="p">)])</span>
+</pre></div>
+
+
+<div class="highlight"><pre>3.359885666243177553172011302918927179688905133731968486495553815325130318996712
+e+00 with 256 bits of precision
+</pre></div>
+
+
+<p>What if we tried this with our Fibonacci task?</p>
+<div class="highlight"><pre><span class="p">[</span><span class="n">f</span> <span class="k">for</span> <span class="n">f</span> <span class="o">=</span> <span class="n">fibtask</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+</pre></div>
+
+
+<div class="highlight"><pre>no method length(Task)
+while loading In[27], in expression starting on line 1
+ in anonymous at no file
+</pre></div>
+
+
+<p>We get the same issue; Tasks don&#8217;t have a length method. The advantage of using
+the <code>FibIt</code> type is that we can easily define a length method for it. We can
+only give our Fibonacci task a method if we give all Tasks a length method,
+which wouldn&#8217;t make sense.</p>
+<h2>The Iterator Package</h2>
+<p>When we calculated the sum of the reciprocals of Fibonacci number above, we had
+to realize the values of the Fibonacci iterator before taking the
+reciprocal, and then sum a collection of all those values. Alternatively, we could have called sum on an
+iterator that produced <em>1/x</em> for each Fibonacci number <em>x</em>.</p>
+<p>One way to do this would be to create a new iterator type, called
+<code>ReciprocalFibIt</code>, and given it its own <code>start</code>, <code>next</code>, and <code>done</code> methods. But that
+feels a little excessive. Wouldn&#8217;t it be nicer to be able to construct that iterator from
+the Fibonacci iterator we already have? Essentially saying, &#8220;hey, I want another
+iterator that gives one over the values of that other iterator.&#8221;</p>
+<p>That would be an example of what I&#8217;ll call a <em>higher-order iterator</em>, which is
+an iterator constructed from one or more other iterators. <code>zip</code> and <code>enumerable</code>
+are common examples.</p>
+<p>It turns out Julia has a neat little package of useful higher-order iterators;
+called, obviously, Iterators. In the rest of (this already very long) post, I&#8217;ll
+explore some of things in the package. Pythonistas will notice similarities with
+the itertools module in the Standard Library.</p>
+<div class="highlight"><pre><span class="k">using</span> <span class="n">Iterators</span>
+</pre></div>
+
+
+<h2>Imap</h2>
+<p>The <code>Imap</code> iterator provides us with our wish above: a new iterator that is the
+result of applying a function to the values of an existing iterator. In the case of our
+reciprocal Fibonacci numbers, that function is <code>x -&gt; 1/x</code>. </p>
+<div class="highlight"><pre><span class="n">recipricalfib</span> <span class="o">=</span> <span class="n">imap</span><span class="p">(</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="mi">1</span><span class="o">/</span><span class="n">x</span><span class="p">,</span> <span class="n">fibit</span><span class="p">(</span><span class="mi">10</span><span class="n">_000</span><span class="p">,</span> <span class="n">BigInt</span><span class="p">))</span> <span class="c"># A new iterator, composed</span>
+                                                      <span class="c"># from a FibIt</span>
+<span class="n">psi</span> <span class="o">=</span> <span class="n">sum</span><span class="p">(</span><span class="n">recipricalfib</span><span class="p">)</span> <span class="c"># No collect needed</span>
+</pre></div>
+
+
+<div class="highlight"><pre>3.359885666243177553172011302918927179688905133731968486495553815325130318996609
+e+00 with 256 bits of precision
+</pre></div>
+
+
+<p>So <code>reciprocalfib</code> is itself an iterator, whose values are only realized when
+it&#8217;s passed to the <code>sum</code> function. We didn&#8217;t have to allocate any arrays before
+calling sum as with the <code>collect</code> and comprehension examples above.</p>
+<h2>An IFilter iterator</h2>
+<p>Since we have a map-like iterator, why not a filter?<a name="fnm-filter" href="#fn-filter" class="footnote-mark">4</a> How would it work? Given an
+iterator that produces values <em>v1</em>, <em>v2</em>, <em>v3</em>, &#8230;, the filter iterator would
+only produce the values that met some predicate, skipping any that didn&#8217;t.</p>
+<p>This isn&#8217;t implemented in the Iterators package (because <code>Base.filter</code> will
+already do this, see <a href="#fn-filter">footnote 4</a>). It&#8217;s a neat idea, but it turns
+out to be tricky to define in terms of the iterator protocol. It&#8217;s easy with a
+Task, though.</p>
+<div class="highlight"><pre><span class="k">function</span><span class="nf"> ifilter</span><span class="p">(</span><span class="n">f</span><span class="p">::</span><span class="n">Function</span><span class="p">,</span> <span class="n">itr</span><span class="p">)</span>
+    <span class="k">function</span><span class="nf"> _it</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="n">itr</span>
+            <span class="k">if</span> <span class="n">f</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="n">produce</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">end</span>
+        <span class="k">end</span>
+    <span class="k">end</span>
+    <span class="n">Task</span><span class="p">(</span><span class="n">_it</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<h3>Application: A list of primes whose digits sum to a prime</h3>
+<p>Here&#8217;s an example of it in action. We&#8217;ll begin with a Range iterator from 1 to
+1,000. I want to list all of numbers in that range that are (1) prime and
+(2) have digits that sum to a prime. </p>
+<p>So <code>ifilter</code> takes the predicate test and the original iterator, then produces only
+those values from the original iterator that pass the test. Turns out there are
+89 such primes between 1 and 1,000.</p>
+<div class="highlight"><pre><span class="k">function</span><span class="nf"> funnyprimetest</span><span class="p">(</span><span class="n">n</span><span class="p">::</span><span class="n">Integer</span><span class="p">)</span>
+    <span class="n">sumdigits</span> <span class="o">=</span> <span class="n">sum</span><span class="p">([</span><span class="n">parseint</span><span class="p">(</span><span class="n">string</span><span class="p">(</span><span class="n">c</span><span class="p">))</span> <span class="k">for</span> <span class="n">c</span> <span class="k">in</span> <span class="n">string</span><span class="p">(</span><span class="n">n</span><span class="p">)])</span>
+    <span class="n">isprime</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">isprime</span><span class="p">(</span><span class="n">sumdigits</span><span class="p">)</span>
+<span class="k">end</span>
+
+<span class="n">collect</span><span class="p">(</span><span class="n">ifilter</span><span class="p">(</span><span class="n">funnyprimetest</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">1000</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre>89-element Array{Any,1}:
+   2
+   3
+   5
+   7
+  11
+  23
+  29
+  41
+  43
+  47
+  61
+  67
+  83
+   ⋮
+ 829
+ 863
+ 881
+ 883
+ 887
+ 911
+ 919
+ 937
+ 953
+ 971
+ 977
+ 991
+</pre></div>
+
+
+<h2>Repeat and RepeatForever</h2>
+<p>Another surprisingly useful iterator is <code>Repeat</code>, which simply produces an object
+some number of times. Here the iterator is just the string &#8220;echo!&#8221; five times.</p>
+<div class="highlight"><pre><span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="n">repeated</span><span class="p">(</span><span class="s">&quot;echo!&quot;</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<div class="highlight"><pre>echo!
+echo!
+echo!
+echo!
+echo!
+</pre></div>
+
+
+<p>If we didn&#8217;t provide the second argument, the result would be an iterator that
+goes on infinitely, so its for loop would never terminate. Why would you want
+that? I&#8217;ll show some examples of its use below.</p>
+<h3>Extension: Repeating impure functions</h3>
+<p>One thing about the <code>Repeat</code> iterator though, is that the object or value it
+repeats is fixed at its construction. If you pass it a called function, it will
+call that function once in the constructor, and then repeatedly return the
+result of that first call. For pure functions, that&#8217;s fine. The first call of
+<code>sqrt(100)</code> is the same as the second, third, or ten-thousandth call of
+<code>sqrt(100)</code>.</p>
+<p>If the function is impure, though, we&#8217;ll get undesired results.</p>
+<div class="highlight"><pre><span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="n">repeated</span><span class="p">(</span><span class="n">rand</span><span class="p">(),</span> <span class="mi">10</span><span class="p">)</span> <span class="n">println</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">end</span>
+</pre></div>
+
+
+<div class="highlight"><pre>0.30142748588653046
+0.30142748588653046
+0.30142748588653046
+0.30142748588653046
+0.30142748588653046
+0.30142748588653046
+0.30142748588653046
+0.30142748588653046
+0.30142748588653046
+0.30142748588653046
+</pre></div>
+
+
+<p>Here, the <code>rand</code> function was called once in the constructor, and that result was repeated again
+and again. I&#8217;d prefer if I could get 10 separate calls to <code>rand</code>. Here&#8217;s one way
+to get this to work.</p>
+<div class="highlight"><pre><span class="n">Base</span><span class="o">.</span><span class="n">next</span><span class="p">(</span><span class="n">it</span><span class="p">::</span><span class="n">Iterators</span><span class="o">.</span><span class="n">Repeat</span><span class="p">{</span><span class="n">Function</span><span class="p">},</span> <span class="n">state</span><span class="p">)</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">state</span> <span class="o">-</span> <span class="mi">1</span>
+<span class="n">Base</span><span class="o">.</span><span class="n">next</span><span class="p">(</span><span class="n">it</span><span class="p">::</span><span class="n">Iterators</span><span class="o">.</span><span class="n">RepeatForever</span><span class="p">{</span><span class="n">Function</span><span class="p">},</span> <span class="n">state</span><span class="p">)</span> <span class="o">=</span> <span class="n">it</span><span class="o">.</span><span class="n">x</span><span class="p">(),</span> <span class="n">nothing</span>
+
+<span class="c"># Note the function isn&#39;t called in the constructor;</span>
+<span class="c"># the `next` function does this.</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="n">repeated</span><span class="p">(</span><span class="n">rand</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span> <span class="n">println</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">end</span> 
+</pre></div>
+
+
+<div class="highlight"><pre>0.6621100826024566
+0.755346320113107
+0.021395943367805037
+0.7304018818932669
+0.22941680891855865
+0.966762896262876
+0.13729437119070198
+0.028788242666101915
+0.5584434146272579
+0.09166900954689794
+</pre></div>
+
+
+<p>What I&#8217;ve done is create new <code>next</code> methods for the <code>Repeat</code> and <code>RepeatForever</code>
+iterators. When the object of the iterators is a function, the <code>next</code> methods
+call the function. By passing the iterator an uncalled function object, I avoid the call
+in the constructor, and defer it to the <code>next</code> method.</p>
+<h2>Take and Drop</h2>
+<p>The <code>Take</code> iterator only iterates over some specified first values of its input
+iterator. It works well in combination with infinite iterators, like <code>RepeatForever</code></p>
+<div class="highlight"><pre><span class="n">randsforever</span> <span class="o">=</span> <span class="n">repeated</span><span class="p">(</span><span class="n">rand</span><span class="p">)</span>
+
+<span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="o">=</span> <span class="n">take</span><span class="p">(</span><span class="n">randsforever</span><span class="p">,</span> <span class="mi">10</span><span class="p">)]</span>
+</pre></div>
+
+
+<div class="highlight"><pre>10-element Array{Any,1}:
+ 0.719153
+ 0.660597
+ 0.280763
+ 0.54125 
+ 0.427029
+ 0.919311
+ 0.165029
+ 0.796911
+ 0.354417
+ 0.678271
+</pre></div>
+
+
+<div class="highlight"><pre><span class="p">[</span><span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="o">=</span> <span class="n">take</span><span class="p">(</span><span class="n">randsforever</span><span class="p">,</span> <span class="mi">20</span><span class="p">)]</span>
+</pre></div>
+
+
+<div class="highlight"><pre>20-element Array{Any,1}:
+ 0.568741 
+ 0.614644 
+ 0.49445  
+ 0.0942616
+ 0.518134 
+ 0.126585 
+ 0.961748 
+ 0.698277 
+ 0.0805089
+ 0.32351
+ 0.797422 
+ 0.513762 
+ 0.601515 
+ 0.616174 
+ 0.460832 
+ 0.813204 
+ 0.172391 
+ 0.444915 
+ 0.732941 
+ 0.0550762
+</pre></div>
+
+
+<p>The <code>Drop</code> iterator, on the other hand, <em>ignores</em> some specified first values of its
+input iterator. So, how many values should be printed in this for loop?</p>
+<div class="highlight"><pre><span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="n">drop</span><span class="p">(</span><span class="n">take</span><span class="p">(</span><span class="n">randsforever</span><span class="p">,</span> <span class="mi">10</span><span class="n">_000</span><span class="p">),</span> <span class="mi">9998</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<p>Answer: just the last two, since we take 10,000 random numbers, but drop the first 9,998.</p>
+<div class="highlight"><pre>0.26830900957427684
+0.5141969888172926
+</pre></div>
+
+
+<h3>Extension: TakeWhile and TakeUntil</h3>
+<p>In some cases you may not want to take a fixed number of values from an
+iterator, but instead you want to take values until some condition is met.</p>
+<p>To accomplish this, I&#8217;ll create a <code>TakeWhile</code> iterator, which takes values from
+its input iterator so long as they pass some test.</p>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">TakeWhile</span><span class="p">{</span><span class="n">I</span><span class="p">}</span>
+    <span class="n">xs</span><span class="p">::</span><span class="n">I</span>
+    <span class="n">cond</span><span class="p">::</span><span class="n">Function</span>
+<span class="k">end</span>
+
+<span class="n">takewhile</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">cond</span><span class="p">)</span> <span class="o">=</span> <span class="n">TakeWhile</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">cond</span><span class="p">)</span>
+<span class="n">Base</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">it</span><span class="p">::</span><span class="n">TakeWhile</span><span class="p">)</span> <span class="o">=</span> <span class="n">start</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">xs</span><span class="p">)</span>
+
+<span class="n">Base</span><span class="o">.</span><span class="n">next</span><span class="p">(</span><span class="n">it</span><span class="p">::</span><span class="n">TakeWhile</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span> <span class="o">=</span> <span class="n">next</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+
+<span class="k">function</span><span class="nf"> Base</span><span class="o">.</span><span class="n">done</span><span class="p">(</span><span class="n">it</span><span class="p">::</span><span class="n">TakeWhile</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">next</span><span class="p">(</span><span class="n">it</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+    <span class="o">!</span><span class="n">it</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">||</span> <span class="n">done</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+<span class="k">end</span>
+
+
+<span class="n">tw</span> <span class="o">=</span> <span class="n">takewhile</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span><span class="o">^</span><span class="mi">2</span> <span class="o">&lt;</span> <span class="mi">25</span><span class="p">)</span>
+<span class="n">collect</span><span class="p">(</span><span class="n">tw</span><span class="p">)</span> 
+</pre></div>
+
+
+<div class="highlight"><pre>4-element Array{Int64,1}:
+ 1
+ 2
+ 3
+ 4
+</pre></div>
+
+
+<p>Let&#8217;s also create a <code>TakeUntil</code> iterator, which takes values until it finds one that
+passes the test. So the last value produced by this iterator will pass the test
+and all values before that will have failed.</p>
+<div class="highlight"><pre><span class="n">immutable</span> <span class="n">TakeUntil</span><span class="p">{</span><span class="n">I</span><span class="p">}</span>
+    <span class="n">xs</span><span class="p">::</span><span class="n">I</span>
+    <span class="n">cond</span><span class="p">::</span><span class="n">Function</span>
+<span class="k">end</span>
+
+<span class="n">takeuntil</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">cond</span><span class="p">)</span> <span class="o">=</span> <span class="n">TakeUntil</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">cond</span><span class="p">)</span>
+<span class="n">Base</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">it</span><span class="p">::</span><span class="n">TakeUntil</span><span class="p">)</span> <span class="o">=</span> <span class="n">start</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">xs</span><span class="p">),</span> <span class="n">false</span>
+
+<span class="k">function</span><span class="nf"> Base</span><span class="o">.</span><span class="n">next</span><span class="p">(</span><span class="n">it</span><span class="p">::</span><span class="n">TakeUntil</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+    <span class="n">i</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">next</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span> <span class="n">state</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">it</span><span class="o">.</span><span class="n">cond</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+<span class="k">end</span>
+
+
+<span class="k">function</span><span class="nf"> Base</span><span class="o">.</span><span class="n">done</span><span class="p">(</span><span class="n">it</span><span class="p">::</span><span class="n">TakeUntil</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+    <span class="n">s</span><span class="p">,</span> <span class="n">iscond</span> <span class="o">=</span> <span class="n">state</span>
+    <span class="n">iscond</span> <span class="o">||</span> <span class="n">done</span><span class="p">(</span><span class="n">it</span><span class="o">.</span><span class="n">xs</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span class="n">collect</span><span class="p">(</span><span class="n">takeuntil</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="mi">10</span><span class="p">,</span> <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span><span class="o">*</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="mi">25</span><span class="p">))</span>  <span class="c"># x &lt;= sqrt(25) -&gt; 1:5</span>
+</pre></div>
+
+
+<div class="highlight"><pre>5-element Array{Any,1}:
+ 1
+ 2
+ 3
+ 4
+ 5
+</pre></div>
+
+
+<h3>Application: How long does it take a Poisson process to produce a prime number?</h3>
+<p>As an application of the <code>TakeUntil</code> iterator, an experiment. How many draws do
+we have to make from a Poisson process until we draw a prime number? For this
+example, I&#8217;ll use a Poisson with mean 5,000.</p>
+<p>In the code, we make a <code>Repeat</code> iterator that repeatedly draws from the
+Poisson. We pass this into <code>takeuntil</code> and this creates an iterator that draws
+from the Poisson until we find a prime number. While this is happening, we keep track of the
+number of steps we took through this iterator.</p>
+<div class="highlight"><pre><span class="c"># Draw random integers from a distibrution d until you get a prime number.</span>
+<span class="c"># Return the number of draws.</span>
+<span class="k">function</span><span class="nf"> primetime</span><span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">dparams</span><span class="p">)</span>
+    <span class="n">randgen</span> <span class="o">=</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="n">rand</span><span class="p">(</span><span class="n">d</span><span class="p">(</span><span class="n">dparams</span><span class="o">...</span><span class="p">))</span>
+    <span class="n">tu</span> <span class="o">=</span> <span class="n">takeuntil</span><span class="p">(</span><span class="n">repeated</span><span class="p">(</span><span class="n">randgen</span><span class="p">),</span> <span class="n">isprime</span><span class="p">)</span>
+    <span class="n">time</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="n">tu</span>
+        <span class="n">time</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">end</span>
+    <span class="n">time</span>
+<span class="k">end</span>
+
+<span class="n">primetime_poiss5k</span> <span class="o">=</span> <span class="p">()</span> <span class="o">-&gt;</span> <span class="n">primetime</span><span class="p">(</span><span class="n">Poisson</span><span class="p">,</span> <span class="mi">5000</span><span class="p">)</span>
+</pre></div>
+
+
+<p>What&#8217;s the average wait for a prime? Repeating the experiment 10,000 times, we
+find the average number of draws is between 7 and 8.</p>
+<div class="highlight"><pre><span class="n">mean</span><span class="p">(</span><span class="n">repeated</span><span class="p">(</span><span class="n">primetime_poiss5k</span><span class="p">,</span> <span class="mi">10</span><span class="n">_000</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre>7.6783
+</pre></div>
+
+
+<p>To see the distribution of waiting times, I&#8217;ll collect each repetition of the
+experiment in an array that we can plot.</p>
+<div class="highlight"><pre><span class="n">times</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="p">::</span><span class="kt">Int</span> <span class="k">for</span> <span class="n">t</span> <span class="o">=</span> <span class="n">repeated</span><span class="p">(</span><span class="n">primetime_poiss5k</span><span class="p">,</span> <span class="mi">10</span><span class="n">_000</span><span class="p">)]</span>
+</pre></div>
+
+
+<div id="primetimechart"></div>
+
+<script src="scripts/primetime.js"></script>
+
+<script>
+draw("#primetimechart");
+</script>
+
+<h2>Partition</h2>
+<p>The <code>Partition</code> iterator split its input iterator into pieces, producing an
+iterator over iterators. For example we could use it to partition the Range
+iterator <code>1:100</code> into two iterators, <code>1:50</code> and <code>51:100</code>. We can also make
+overlapping partitions, for example, <code>1:50</code>, <code>2:51</code>, <code>3:52</code>, etc. </p>
+<h3>Application: Moving average</h3>
+<p>One useful application of overlapping partitions is computing moving
+averages. The following code imports Google&#8217;s historical stock price from Yahoo
+Finance and computes its 60-day moving average. </p>
+<p>First, we download the data, creating a 2-D array containing dates, volumes, and prices.</p>
+<div class="highlight"><pre><span class="kd">const</span> <span class="n">googdata</span> <span class="o">=</span>
+    <span class="s">&quot;http://ichart.finance.yahoo.com/table.csv?s=<span class="caps">GOOG</span>&amp;d=0&amp;e=7&amp;f=2014&amp;g=d&amp;a=0&amp;b=7&amp;c=2013&amp;ignore=.csv&quot;</span> <span class="o">|&gt;</span>
+        <span class="n">download</span> <span class="o">|&gt;</span>
+        <span class="n">open</span> <span class="o">|&gt;</span>
+        <span class="n">readall</span> <span class="o">|&gt;</span>
+        <span class="n">s</span> <span class="o">-&gt;</span> <span class="n">split</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span> <span class="o">|&gt;</span> 
+        <span class="n">a</span> <span class="o">-&gt;</span> <span class="n">map</span><span class="p">(</span><span class="n">l</span> <span class="o">-&gt;</span> <span class="n">split</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="s">&quot;,&quot;</span><span class="p">),</span> <span class="n">a</span><span class="p">)</span> <span class="o">|&gt;</span>
+        <span class="n">a</span> <span class="o">-&gt;</span> <span class="n">filter</span><span class="p">(</span><span class="n">l</span> <span class="o">-&gt;</span> <span class="n">contains</span><span class="p">(</span><span class="n">l</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s">&quot;201&quot;</span><span class="p">),</span> <span class="n">a</span><span class="p">)</span> <span class="o">|&gt;</span>
+        <span class="n">reverse</span>  <span class="c"># Dates start at most recent, so reverse for chron order.</span>
+</pre></div>
+
+
+<p>We then create iterators over the dates and closing prices in the Array. These
+iteratively extract and parse values from the relevant columns.</p>
+<div class="highlight"><pre><span class="n">dates</span> <span class="o">=</span> <span class="n">imap</span><span class="p">(</span><span class="n">r</span> <span class="o">-&gt;</span> <span class="n">date</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">googdata</span><span class="p">)</span>
+<span class="n">close</span> <span class="o">=</span> <span class="n">imap</span><span class="p">(</span><span class="n">r</span> <span class="o">-&gt;</span> <span class="n">parsefloat</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">7</span><span class="p">]),</span> <span class="n">googdata</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Now we can make 60-day sub-period partitions and compute the average of
+each. Since I&#8217;m using <code>imap</code> nothing has been calculated yet. These are all just
+iterators promising to do work when called.</p>
+<div class="highlight"><pre><span class="n">ma60</span> <span class="o">=</span> <span class="n">imap</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">partition</span><span class="p">(</span><span class="n">close</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+
+<span class="c"># <span class="caps">NB</span>: The Julian way to do this would be</span>
+<span class="c">#     [mean(price[i-59:i]) for i = 60:length(price)]</span>
+</pre></div>
+
+
+<p>With all these useful iterators defined, I can just collect them into arrays for
+plotting.</p>
+<div class="highlight"><pre><span class="n">plot</span><span class="p">(</span><span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">collect</span><span class="p">(</span><span class="n">dates</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">collect</span><span class="p">(</span><span class="n">close</span><span class="p">),</span> <span class="n">Geom</span><span class="o">.</span><span class="n">line</span><span class="p">),</span>
+     <span class="n">layer</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">collect</span><span class="p">(</span><span class="n">dates</span><span class="p">)[</span><span class="mi">60</span><span class="p">:</span><span class="k">end</span><span class="p">],</span> <span class="n">y</span> <span class="o">=</span> <span class="n">collect</span><span class="p">(</span><span class="n">ma60</span><span class="p">),</span> <span class="n">Geom</span><span class="o">.</span><span class="n">line</span><span class="p">),</span>
+     <span class="n">Guide</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;Price&quot;</span><span class="p">),</span>
+     <span class="n">Guide</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&quot;<span class="caps">GOOG</span> Daily Stock Price 60-Day Moving Avg.&quot;</span><span class="p">))</span>
+</pre></div>
+
+
+<div id="ma60chart"></div>
+
+<script src="scripts/ma60.js"></script>
+
+<script>
+draw("#ma60chart");
+</script>
+
+<h2>Groupby</h2>
+<p>While the <code>Partition</code> iterator makes partitions of specified lengths, the
+<code>Groupby</code> iterator splits an iterator based on some condition. One caveat is
+that the input iterator has to be sorted in some way on the groupby condition,
+so that values with the same condition are adjacent in the iterator. </p>
+<h3>Application: Do Labor Force figures follow Benford&#8217;s Law?</h3>
+<p>In this example, I&#8217;m going to look at <a href="http://en.wikipedia.org/wiki/Benford%27s_law">Benford&#8217;s Law</a> using the <code>Groupby</code>
+iterator. Benford&#8217;s Law posits that the leading digits of numbers in many
+data sources follows a regular distribution. I&#8217;ll use the <code>Groupby</code> iterator to
+group the data by first digit and check this.</p>
+<p>The data I&#8217;ll examine is the size
+of the labor force population in each <span class="caps">U.S.</span> county in 2012.</p>
+<div class="highlight"><pre><span class="kd">const</span> <span class="n">lfdata</span> <span class="o">=</span> <span class="s">&quot;http://www.bls.gov/lau/laucnty12.txt&quot;</span> <span class="o">|&gt;</span>
+                   <span class="n">download</span> <span class="o">|&gt;</span>
+                   <span class="n">open</span> <span class="o">|&gt;</span>
+                   <span class="n">readall</span> <span class="o">|&gt;</span>
+                   <span class="n">s</span> <span class="o">-&gt;</span> <span class="n">split</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s">&quot;</span><span class="se">\r\n</span><span class="s">&quot;</span><span class="p">)</span> <span class="o">|&gt;</span>
+                   <span class="n">a</span> <span class="o">-&gt;</span> <span class="n">filter</span><span class="p">(</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="n">length</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">==</span> <span class="mi">125</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="o">|&gt;</span>  <span class="c"># Rows with data</span>
+                   <span class="n">a</span> <span class="o">-&gt;</span> <span class="n">map</span><span class="p">(</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="n">strip</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">79</span><span class="p">:</span><span class="mi">92</span><span class="p">]),</span> <span class="n">a</span><span class="p">)</span> <span class="o">|&gt;</span>      <span class="c"># Column w/ <span class="caps">LF</span> data</span>
+                   <span class="n">a</span> <span class="o">-&gt;</span> <span class="n">map</span><span class="p">(</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="n">replace</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s">&quot;,&quot;</span><span class="p">,</span> <span class="s">&quot;&quot;</span><span class="p">),</span> <span class="n">a</span><span class="p">)</span> <span class="o">|&gt;</span>  <span class="c"># 1,000 -&gt; 1000</span>
+                   <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="k">end</span><span class="p">]</span> <span class="o">|&gt;</span>                          <span class="c"># Remove header</span>
+                   <span class="n">sort</span>                                    
+</pre></div>
+
+
+<p>The analysis is simple with a <code>Groupby</code> iterator. It splits up the data by
+leading digit, and then I just calculate the frequency of each leading digit in
+the data by taking the length of each leading-digit group as a share of
+the total length of the data.</p>
+<div class="highlight"><pre><span class="n">dgroups</span> <span class="o">=</span> <span class="n">groupby</span><span class="p">(</span><span class="n">lfdata</span><span class="p">,</span> <span class="n">s</span> <span class="o">-&gt;</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="c"># Groups by first digit</span>
+<span class="c"># Extract the digit from the group members</span>
+<span class="n">digits</span> <span class="o">=</span> <span class="n">imap</span><span class="p">(</span><span class="n">i</span> <span class="o">-&gt;</span> <span class="n">parseint</span><span class="p">(</span><span class="n">string</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">])),</span> <span class="n">dgroups</span><span class="p">)</span>
+<span class="c"># Compute the frequency</span>
+<span class="n">frequency</span> <span class="o">=</span> <span class="n">imap</span><span class="p">(</span><span class="n">x</span> <span class="o">-&gt;</span> <span class="n">length</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">/</span> <span class="n">length</span><span class="p">(</span><span class="n">lfdata</span><span class="p">),</span> <span class="n">dgroups</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Benford&#8217;s Law posits that the frequency of digit <em>d</em> in data should be
+log<sub>10</sub>(<em>d+1</em>) - log<sub>10</sub>(<em>d</em>). This function prints out a
+table of the observed frequencies next to the expected frequencies per Benford&#8217;s Law.</p>
+<div class="highlight"><pre><span class="n">benfordcheck</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">obs_freqs</span><span class="p">,</span> <span class="n">digits</span><span class="p">)</span>
+    <span class="n">pred_freqs</span> <span class="o">=</span> <span class="n">map</span><span class="p">(</span><span class="n">d</span> <span class="o">-&gt;</span> <span class="n">log10</span><span class="p">(</span><span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">log10</span><span class="p">(</span><span class="n">d</span><span class="p">),</span> <span class="n">digits</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Digit Frequency Compared to Benford&#39;s Law&quot;</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;=========================================&quot;</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">println</span><span class="p">(</span><span class="s">&quot;Digit  Observed  Expected  Difference&quot;</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">e</span><span class="p">)</span> <span class="k">in</span> <span class="n">zip</span><span class="p">(</span><span class="n">digits</span><span class="p">,</span> <span class="n">obs_freqs</span><span class="p">,</span> <span class="n">pred_freqs</span><span class="p">)</span>
+        <span class="p">@</span><span class="n">printf</span><span class="p">(</span> <span class="s">&quot;%5d %9.2f %9.2f %11.2f</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="mi">100</span><span class="o">*</span><span class="n">o</span><span class="p">,</span> <span class="mi">100</span><span class="o">*</span><span class="n">e</span><span class="p">,</span> <span class="mi">100</span><span class="o">*</span><span class="p">(</span><span class="n">o</span><span class="o">-</span><span class="n">e</span><span class="p">))</span>
+    <span class="k">end</span>
+
+<span class="k">end</span>
+</pre></div>
+
+
+<p>We can see the labor force data follows Benford&#8217;s Law quite closely.</p>
+<div class="highlight"><pre><span class="n">benfordcheck</span><span class="p">(</span><span class="n">frequency</span><span class="p">,</span> <span class="n">digits</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre>Digit Frequency Compared to Benford&#39;s Law
+=========================================
+
+Digit  Observed  Expected  Difference
+    1     30.09     30.10       -0.01
+    2     16.46     17.61       -1.15
+    3     12.02     12.49       -0.48
+    4      9.72      9.69        0.03
+    5      8.29      7.92        0.37
+    6      6.30      6.69       -0.39
+    7      6.02      5.80        0.23
+    8      5.84      5.12        0.72
+    9      5.25      4.58        0.67
+</pre></div>
+
+
+<p>To plot the comparison, I can collect the values from our iterators into a
+DataFrame.</p>
+<div class="highlight"><pre><span class="n">benford_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="c"># Extract the digit</span>
+                       <span class="n">digits</span> <span class="o">=</span> <span class="n">collect</span><span class="p">(</span><span class="n">digits</span><span class="p">),</span>
+                       <span class="n">observed</span> <span class="o">=</span> <span class="n">collect</span><span class="p">(</span><span class="n">frequency</span><span class="p">),</span>
+                       <span class="n">expected</span> <span class="o">=</span> <span class="n">map</span><span class="p">(</span><span class="n">d</span> <span class="o">-&gt;</span> <span class="n">log10</span><span class="p">(</span><span class="n">d</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">log10</span><span class="p">(</span><span class="n">d</span><span class="p">),</span> <span class="n">digits</span><span class="p">))</span>
+</pre></div>
+
+
+<div id="barchart"></div>
+
+<script src="./scripts/bl.js"></script>
+
+<script>
+draw("#barchart");
+</script>
+
+<h2>Iterate</h2>
+<p>Though its name might be a little confusing, the <code>Iterate</code> iterator is one of my
+favorites. It recursively applies a function to a starting value, that is
+<code>f(...f(f(f(x)))...)</code>. I come across applications for it all over the place.</p>
+<h3>Application: Autoregressive time series processes</h3>
+<p>One application is producing autoregressive time series processes. An <span class="caps">AR</span>(1)
+process has the form <em>x<sub>t+1</sub> = px<sub>t</sub> + e<sub>t+1</sub></em>, where
+<em>e</em> is some random noise. If
+We define the function <em>f(x) = px + e</em>, then <em>x<sub>t+2</sub></em> as a function
+of <em>x<sub>t<sub></em> is <em>f(f(x<sub>t</sub>))</em>. Subsequent values can be similarly
+produced by iteratively applying the function.</p>
+<p>First the code for the <span class="caps">AR</span>(1) function itself, along with a helper function for
+plotting a realization of the process.</p>
+<div class="highlight"><pre><span class="k">function</span><span class="nf"> ar</span><span class="p">(</span><span class="n">phi</span><span class="p">::</span><span class="kt">Float64</span><span class="p">,</span> <span class="n">sigma</span><span class="p">::</span><span class="kt">Float64</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">phi</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">sigma</span> <span class="o">*</span> <span class="n">randn</span><span class="p">()</span>
+<span class="k">end</span>
+
+<span class="n">plotar</span><span class="p">(</span><span class="n">arseq</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span> <span class="o">=</span> <span class="n">plot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="mi">1</span><span class="p">:</span><span class="n">length</span><span class="p">(</span><span class="n">arseq</span><span class="p">),</span> <span class="n">y</span><span class="o">=</span><span class="n">arseq</span><span class="p">,</span> <span class="n">Geom</span><span class="o">.</span><span class="n">line</span><span class="p">,</span>
+                            <span class="n">Guide</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&quot;Time&quot;</span><span class="p">),</span> <span class="n">Guide</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="p">),</span>
+                            <span class="n">Guide</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">))</span>
+</pre></div>
+
+
+<p>Defining a coefficient and a standard deviation for the random variable, I pass
+them through a process that creates an iterator that recursively applies the
+function, starting with a randomly-drawn initial value. Then I collect 250 values of
+that iterator and plot them.</p>
+<div class="highlight"><pre><span class="kd">const</span> <span class="n">ar1coef</span> <span class="o">=</span> <span class="mf">0.9</span>
+<span class="kd">const</span> <span class="n">ar1sigma</span> <span class="o">=</span> <span class="mf">0.15</span>                                           
+
+<span class="p">(</span><span class="n">ar1coef</span><span class="p">,</span> <span class="n">ar1sigma</span><span class="p">)</span> <span class="o">|&gt;</span>
+    <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">apply</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">|&gt;</span>
+    <span class="n">f</span> <span class="o">-&gt;</span> <span class="n">iterate</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ar1sigma</span><span class="o">*</span><span class="n">rand</span><span class="p">())</span> <span class="o">|&gt;</span>
+    <span class="n">i</span> <span class="o">-&gt;</span> <span class="n">collect</span><span class="p">(</span><span class="n">take</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">250</span><span class="p">))</span> <span class="o">|&gt;</span>
+    <span class="n">s</span> <span class="o">-&gt;</span> <span class="n">plotar</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s">&quot;<span class="caps">AR</span>(1) Time Series&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<div id="ar1chart"></div>
+
+<script src="scripts/ar1.js"></script>
+
+<script>
+draw("#ar1chart");
+</script>
+
+<p>This idea can be extended an <span class="caps">AR</span>(p) process, where the current value of <em>x</em>
+depends on several past values. Whereas the coefficient was a scalar in the
+<span class="caps">AR</span>(1) model, it&#8217;s a matrix now, but the formula is otherwise the same.</p>
+<div class="highlight"><pre><span class="k">function</span><span class="nf"> ar</span><span class="p">(</span><span class="n">coeffs</span><span class="p">::</span><span class="n">AbstractVector</span><span class="p">{</span><span class="kt">Float64</span><span class="p">},</span> <span class="n">sigma</span><span class="p">::</span><span class="kt">Float64</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">length</span><span class="p">(</span><span class="n">coeffs</span><span class="p">)</span>
+    <span class="n">Phi</span> <span class="o">=</span> <span class="p">[</span><span class="n">coeffs</span><span class="o">&#39;</span><span class="p">,</span> <span class="n">eye</span><span class="p">(</span><span class="n">p</span><span class="p">)[</span><span class="mi">1</span><span class="p">:(</span><span class="k">end</span><span class="o">-</span><span class="mi">1</span><span class="p">),:]]</span>
+    <span class="n">Sigma</span> <span class="o">=</span> <span class="p">[</span><span class="n">sigma</span><span class="p">,</span> <span class="n">zeros</span><span class="p">(</span><span class="n">p</span><span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">Phi</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">Sigma</span> <span class="o">.*</span> <span class="n">randn</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+<span class="k">end</span>
+</pre></div>
+
+
+<p>For an example, here&#8217;s 250-periods simulated from an <span class="caps">AR</span>(3) model.</p>
+<div class="highlight"><pre><span class="kd">const</span> <span class="n">ar3coeffs</span> <span class="o">=</span> <span class="p">[</span><span class="o">.</span><span class="mi">9</span><span class="p">,</span> <span class="o">-.</span><span class="mi">1</span><span class="p">,</span> <span class="o">-.</span><span class="mi">25</span><span class="p">]</span>
+<span class="kd">const</span> <span class="n">ar3sigma</span> <span class="o">=</span> <span class="mf">0.15</span>
+
+<span class="p">(</span><span class="n">ar3coeffs</span><span class="p">,</span> <span class="n">ar3sigma</span><span class="p">)</span> <span class="o">|&gt;</span>
+    <span class="n">x</span> <span class="o">-&gt;</span> <span class="n">apply</span><span class="p">(</span><span class="n">ar</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span> <span class="o">|&gt;</span>
+    <span class="n">f</span> <span class="o">-&gt;</span> <span class="n">iterate</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">ar3sigma</span><span class="o">*</span><span class="n">rand</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span> <span class="o">|&gt;</span>
+    <span class="n">i</span> <span class="o">-&gt;</span> <span class="n">map</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">take</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">250</span><span class="p">))</span> <span class="o">|&gt;</span>
+    <span class="n">s</span> <span class="o">-&gt;</span> <span class="n">plotar</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="s">&quot;<span class="caps">AR</span>(3) Time Series&quot;</span><span class="p">)</span>
+</pre></div>
+
+
+<div id="ar3chart"></div>
+
+<script src="scripts/ar3.js"></script>
+
+<script>
+draw("#ar3chart");
+</script>
+
+<h2>Conclusion</h2>
+<p>Most iteration you&#8217;ll see in the wild uses simple collections or ranges as the
+iterator, performing extensive work inside the loop. Sometimes our problem can be
+better expressed using more complicated iterators whose structure represents the
+logic of our iteration. One thing to notice in all the examples was that once
+the iterators were defined, there was very little to do after iterating over
+them. Typically I was just collecting the iteration values into an array, or
+reducing them with an operation to a scalar result. We were also able to build
+the problems in such a way that calculation of values in the iterators was
+delayed until absolutely necessary.</p>
+<p>There are tradeoffs to this sort of style, and much of the stuff in this
+post was more cute than practical. But it was a fun exploration of how to create types
+that interact with protocols in Julia. Julia&#8217;s type system and dispatch design
+are very powerful and interesting, and gives programmers a lot of flexibility in
+expressing their problems.</p>
+<hr />
+<ol class="footnotes">
+
+<li><a name="fn-multdisp"></a>
+While
+we&#8217;ll see lots of examples of extending Julia&#8217;s base functions dispatched on
+newly-defined types, we won&#8217;t see much <i>multiple dispatch</i>, which is an
+important design feature of Julia. In fact, pretty much everything here could be
+implemented in a single-dispatch <span class="caps">OO</span> language.
+<a href="#fnm-multdisp"><i class="fa fa-level-up"></i></a></li>
+
+<li><a name="fn-iterable"></a>
+Pythonistas
+may be thinking about the distinction between <i>iterators</i> and <i>iterables</i>. (See,
+e.g. <a href=" http://stackoverflow.com/questions/9884132/understanding-pythons-iterator-iterable-and-iteration-protocols-what-exact">this Stack Overflow thread</a>.) That distinction doesn&#8217;t really apply to
+Julia. So I won&#8217;t use the term iterable here, and I&#8217;ll define an iterator in the two
+ways discussed above: (1) it is valid in a <code>for i = I</code> statement, and (2) it
+implements the iterator protocol.
+<a href="#fnm-iterable"><i class="fa fa-level-up"></i></a></li>
+
+<li><a name="fn-arrcomp"></a>
+This limitation seems
+to come from the idea that only iterators with known lengths can be counted on
+to produce multidimensional arrays. This may be changed in future versions of
+Julia. See, e.g. <a href="https://github.com/JuliaLang/julia/issues/550">Issue #550</a>.  The <code>collect</code> function uses the
+<code>push!</code> function to dynamically allocate the array, but <code>collect</code> can only give
+a 1-D Array output, whereas comprehensions can be multidimensional.
+<a href="#fnm-arrcomp"><i class="fa fa-level-up">
+</i></a></li>
+
+<li><a name="fn-filter"></a>
+Actually, Julia&#8217;s <code>filter</code> function already does this. If you pass
+that function a predicate or condition function and an iterator, it produce a
+<code>Filter</code> object that you can then iterate over. This is different from
+<code>map</code> which can take an input iterator, but returns the result of
+mapping the function immediately.
+<a href="#fnm-filter"><i class="fa fa-level-up">
+</i></a></li>
+
+</ol>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/julia-iterators.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/julia-iterators.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/julia-iterators.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "julia-iterators.html";
+          var disqus_url = "http://slendermeans.org/julia-iterators.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/language-wars.html" rel = "bookmark"> A Geneva Convention for the Language Wars </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2014-01-17T14:30:00" pubdate> January 17, 2014 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/programming.html"> Programming </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <p>I don&#8217;t tend to get too sniffy about the quality of discourse on the
+Internet. I have some appreciation for even the most pointless, uninformed
+flamewars. (And maybe my take on Web site comments is for another post.) But
+there&#8217;s an increasingly popular topic of articles and blog posts which is starting to annoy
+me a little. You&#8217;ve likely read them&#8212;they have titles like: &#8220;Python is Eating R&#8217;s Lunch,&#8221; &#8220;Why
+Python is Going to Take Over Data Science,&#8221; &#8220;Why Python is a Pain in the Ass and
+Will Never Beat R,&#8221; &#8220;Why Everyone Will Live on the Moon and Code in Julia in 5
+Years,&#8221; etc.</p>
+<p>This style of article obviously isn&#8217;t unique to data analysis
+languages. It&#8217;s a classic nerd flamewar, in the proud tradition of text editor wars
+and browser wars. Perhaps an added inflammatory agent here is the Data Science hype
+machine.</p>
+<p>And that&#8217;s all okay. Go on the Internet and bitch about languages you don&#8217;t like, or tell
+everyone why your preferred one is awesome. That&#8217;s what
+<a href="http://news.ycombinator.com" title="Hacker News">the Internet&#8217;s here for</a>. And Lord knows I&#8217;ve done it myself.</p>
+<p>My only problem is that it distracts from more important, more
+interesting conversations about what&#8217;s happening with data analysis
+languages. Instead of pissing matches and popularity contests, the real
+interesting phenomena is how developers are comparing notes, sharing cool
+innovations, and increasing interoperability. A great example is the IPython
+notebook. The notebook doesn&#8217;t make Python better than other languages&#8212;it makes
+<a href="http://nbviewer.ipython.org/url/beowulf.csail.mit.edu/18.337/fractals.ipynb" title="IJulia notebook">all</a> <a href="http://gibiansky.github.io/IHaskell/demo.html" title="IHaskell Notebook">languages</a> <a href="http://nbviewer.ipython.org/github/minad/iruby/blob/master/IRuby-Example.ipynb" title="IRuby notebook">better</a>.</p>
+<p>I think it&#8217;s a really fascinating time for folks who use and think about
+computer languages. The last 5 years or so has seen not only the introduction of
+really cool new languages, but also extraordinary developments in existing
+ones. I&#8217;m psyched about all these languages and I want them all to succeed and
+get better. Some days I want to code in R, some days in Python. Others in Julia,
+or Clojure, or F#, or even C+<span style="margin-left:-4px">+</span>. I don&#8217;t want any of them to stagnate or
+disappear, or be &#8220;beaten&#8221; by any of the others. And I don&#8217;t think that&#8217;s
+happening anyway.</p>
+<p>So what&#8217;s below is a somewhat tongue-in-cheek list of suggestions for
+facilitating productive and interesting discussions comparing languages. Many of them are not specific
+to our little R/Python/Matlab/Julia skirmishes, but apply to lots of different
+language wars (C+<span style="margin-left:-4px">+</span> vs. Java, Python vs. Perl, Ruby vs. Python, Clojure vs. Scala, Haskell vs.,
+I dunno, everybody?) The last section is comprised of a couple of very general
+notes about civility. I&#8217;m strongly in favor everyone&#8217;s right to be a smug prick
+on the Internet. But, you know, you should probably try not to be a smug prick
+on the Internet.</p>
+<p>And, please, feel free to add additions or suggestions in the comments, or in this <a href="https://gist.github.com/carljv/8554723" title="Gist">Gist</a></p>
+<h2>Section 1: Being Aware of Context</h2>
+<h3>§ 1, Article 1</h3>
+<p>Recognize that languages have goals and communities. It helps to evaluate them in
+that context. Features that are high priority to you may not be high priority to
+the majority of users in that language, and vice-versa.</p>
+<h3>§ 1, Article 2</h3>
+<p>Recognize that many smart, capable people are very productive in the language
+you&#8217;re slagging. The cool things science and industry are making in the language
+speaks far louder than your casual dismissals of it on a message board.</p>
+<p>The same logic goes for language developers. For example,
+<a href="http://had.co.nz" title="Hadley Wickham">Hadley Wickham</a> is a smart guy and a great programmer; he&#8217;s probably not one to
+waste his time improving a language that&#8217;s some irreparably broken
+dead-end. Same with <a href="http://continuum.io" title="Continuum">these guys</a>.</p>
+<h3>§ 1, Article 3</h3>
+<p>Recognize that language design is the art of the tradeoff. Don&#8217;t complain about
+a design choice until you understand the logic behind it. In many cases, your
+preferred design or feature was already considered, and would have led to
+undesirable outcomes elsewhere. It is helpful and
+interesting to disagree about how a tradeoff was managed, but do recognize that there
+was one.</p>
+<h3>§ 1, Article 4</h3>
+<p>Distinguish between a feature request and a language critique. If you come to a
+new language and miss some features of
+your old language, that&#8217;s fine. But that&#8217;s not necessarily a failing of the new
+language.</p>
+<p>A living, breathing language is a combination of both its features and its idioms. A
+feature may not exist because its programmers tend to write code in a way that
+obviates its need. Sometimes such idioms are crutches to compensate for truly
+useful features that are missing; other times they are interesting and elegant expressions of a
+problem that you&#8217;re just not accustomed to. Try to spot the difference.</p>
+<h3>§ 1, Article 5</h3>
+<p>Pay your dues before dismissing a language. If you gave up on something in a language after finding it too difficult,
+consider that the problem may be yours. It may not be, but at least
+consider it.</p>
+<h3>§ 1, Article 6</h3>
+<p>Don&#8217;t over-sell immature, alpha-version features, no matter how
+promising they are. Promises don&#8217;t cook rice. Sending unsuspecting users to
+buggy, incomplete libraries just harms your cause in the long run.</p>
+<p>Examples:</p>
+<ul>
+<li><span class="dquo">&#8220;</span>Julia has a fast-growing library of packages!&#8221; Sure, but less than a handful
+    are close to production quality.</li>
+<li><span class="dquo">&#8220;</span>And now ggplot has been ported to Python!&#8221; <a href="http://blog.yhathq.com/posts/ggplot-for-python.html" title="ggplot for Python">Not quite yet.</a></li>
+</ul>
+<p>Honest advertising of works-in-progress is encouraged, though. There&#8217;s nothing
+inherently wrong with immature libraries, many of which are fantastic.</p>
+<h3>§ 1, Article 7</h3>
+<p>Microbenchmarks are useful for understanding differences between languages and their
+execution, but are
+of limited use in pissing contests. No one knows exactly what percentage of the world&#8217;s
+working software is comprised of Fibonacci number calculations, but our best
+guess is not much. </p>
+<h2>Section 2: Being Interesting</h2>
+<h3>§ 2, Article 1</h3>
+<p>Whether one language is going to take over another is not that
+interesting, nor that meaningful. (When does a language get &#8220;taken over?&#8221; For
+Christ&#8217;s sakes, there&#8217;s still a non-trivial amount of <span class="caps">COBOL</span> running out there in the wild.)</p>
+<p>Competition is pointless, but comparison is not. Languages are  increasingly adopting ideas from
+each other, building interops with each other, and sharing
+tooling. Having conversations about this process is far more interesting than
+running popularity contests.</p>
+<h3>§ 2, Article 2</h3>
+<p>Avoid clichéd arguments. They are not necessarily incaccurate, but
+they are boring.</p>
+<p>Examples:</p>
+<ul>
+<li>R is a &#8220;<span class="caps">DSL</span>&#8221; or &#8220;not a real language&#8221; (see Article 2 below); R is &#8220;designed by statisticians,
+  not computer scientists.&#8221;</li>
+<li><span class="dquo">&#8220;</span>Semantic whitespace in Python sucks.&#8221; (Generally, arguments over
+  syntax are boring.)</li>
+<li><span class="dquo">&#8220;</span>Julia doesn&#8217;t have as many libraries as ${pretty much anything}.&#8221;</li>
+</ul>
+<p>In addition to arguments, also avoid clichéd phrases. (See, <em>e.g.</em>, &#8220;not ready
+for prime-time.&#8221;)</p>
+<h3>§ 2, Article 3</h3>
+<p>Supplement abstract terms or subjective impressions with concrete definitions
+and examples.</p>
+<p>Examples of statements that could use concrete support:</p>
+<ol>
+<li><span class="dquo">&#8220;</span>Code in language X is <em>more expressive</em> than language Y.&#8221;</li>
+<li><span class="dquo">&#8220;</span>R is a <em><span class="caps">DSL</span></em>, while Python is a <em>general purpose language.</em>&#8221;</li>
+</ol>
+<h2>Section 3: Being Civil</h2>
+<h3>§ 4, Article 1</h3>
+<p>Be sure that you can accurately summarize someone&#8217;s argument before you start
+composing your rebuttal.</p>
+<h3>§ 4, Article 2</h3>
+<p>You are not so smart that you are entitled to be smug. Some tips:</p>
+<ol>
+<li>Nix hyperbolic vocabulary. No one and nothing associated with any language
+      is &#8220;stupid,&#8221; &#8220;dumb,&#8221; &#8220;crazy&#8221;, &#8220;broken,&#8221; etc.</li>
+<li>Use of the word &#8220;fail&#8221; is strongly discouraged. Use of it as a noun is
+      strictly prohibited.</li>
+<li>It is no victory&#8212;not even a moral one&#8212;to find someone
+      <a href="http://xkcd.com/386/" title="XKCD">wrong on the internet</a>. Don&#8217;t treat it a such. Offer a polite
+      factual correction and allow for the possibility that you&#8217;ve misunderstood.</li>
+</ol>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/language-wars.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/language-wars.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/language-wars.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "language-wars.html";
+          var disqus_url = "http://slendermeans.org/language-wars.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

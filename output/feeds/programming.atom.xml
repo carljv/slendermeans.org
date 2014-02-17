@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Slender Means</title><link href="http://slendermeans.org/" rel="alternate"></link><link href="http://slendermeans.org/feeds/programming.atom.xml" rel="self"></link><id>http://slendermeans.org/</id><updated>2014-01-17T14:30:00-05:00</updated><entry><title>A Geneva Convention for the Language Wars</title><link href="http://slendermeans.org/language-wars.html" rel="alternate"></link><updated>2014-01-17T14:30:00-05:00</updated><author><name>Carl</name></author><id>tag:slendermeans.org,2014-01-17:language-wars.html</id><summary type="html">&lt;p&gt;I don&amp;#8217;t tend to get too sniffy about the quality of discourse on the
+Internet. I have some appreciation for even the most pointless, uninformed
+flamewars. (And maybe my take on Web site comments is for another post.) But
+there&amp;#8217;s an increasingly popular topic of articles and blog posts which is starting to annoy
+me a little. You&amp;#8217;ve likely read them&amp;#8212;they have titles like: &amp;#8220;Python is Eating R&amp;#8217;s Lunch,&amp;#8221; &amp;#8220;Why
+Python is Going to Take Over Data Science,&amp;#8221; &amp;#8220;Why Python is a Pain in the Ass and
+Will Never Beat R,&amp;#8221; &amp;#8220;Why Everyone Will Live on the Moon and Code in Julia in 5
+Years,&amp;#8221; etc.&lt;/p&gt;
+&lt;p&gt;This style of article obviously isn&amp;#8217;t unique to data analysis
+languages. It&amp;#8217;s a classic nerd flamewar, in the proud tradition of text editor wars
+and browser wars. Perhaps an added inflammatory agent here is the Data Science hype
+machine.&lt;/p&gt;
+&lt;p&gt;And that&amp;#8217;s all okay. Go on the Internet and bitch about languages you don&amp;#8217;t like, or tell
+everyone why your preferred one is awesome. That&amp;#8217;s what
+&lt;a href="http://news.ycombinator.com" title="Hacker News"&gt;the Internet&amp;#8217;s here for&lt;/a&gt;. And Lord knows I&amp;#8217;ve done it myself.&lt;/p&gt;
+&lt;p&gt;My only problem is that it distracts from more important, more
+interesting conversations about what&amp;#8217;s happening with data analysis
+languages. Instead of pissing matches and popularity contests, the real
+interesting phenomena is how developers are comparing notes, sharing cool
+innovations, and increasing interoperability. A great example is the IPython
+notebook. The notebook doesn&amp;#8217;t make Python better than other languages&amp;#8212;it makes
+&lt;a href="http://nbviewer.ipython.org/url/beowulf.csail.mit.edu/18.337/fractals.ipynb" title="IJulia notebook"&gt;all&lt;/a&gt; &lt;a href="http://gibiansky.github.io/IHaskell/demo.html" title="IHaskell Notebook"&gt;languages&lt;/a&gt; &lt;a href="http://nbviewer.ipython.org/github/minad/iruby/blob/master/IRuby-Example.ipynb" title="IRuby notebook"&gt;better&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;I think it&amp;#8217;s a really fascinating time for folks who use and think about
+computer languages. The last 5 years or so has seen not only the introduction of
+really cool new languages, but also extraordinary developments in existing
+ones. I&amp;#8217;m psyched about all these languages and I want them all to succeed and
+get better. Some days I want to code in R, some days in Python. Others in Julia,
+or Clojure, or F#, or even C+&lt;span style="margin-left:-4px"&gt;+&lt;/span&gt;. I don&amp;#8217;t want any of them to stagnate or
+disappear, or be &amp;#8220;beaten&amp;#8221; by any of the others. And I don&amp;#8217;t think that&amp;#8217;s
+happening anyway.&lt;/p&gt;
+&lt;p&gt;So what&amp;#8217;s below is a somewhat tongue-in-cheek list of suggestions for
+facilitating productive and interesting discussions comparing languages. Many of them are not specific
+to our little R/Python/Matlab/Julia skirmishes, but apply to lots of different
+language wars (C+&lt;span style="margin-left:-4px"&gt;+&lt;/span&gt; vs. Java, Python vs. Perl, Ruby vs. Python, Clojure vs. Scala, Haskell vs.,
+I dunno, everybody?) The last section is comprised of a couple of very general
+notes about civility. I&amp;#8217;m strongly in favor everyone&amp;#8217;s right to be a smug prick
+on the Internet. But, you know, you should probably try not to be a smug prick
+on the Internet.&lt;/p&gt;
+&lt;p&gt;And, please, feel free to add additions or suggestions in the comments, or in this &lt;a href="https://gist.github.com/carljv/8554723" title="Gist"&gt;Gist&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;Section 1: Being Aware of Context&lt;/h2&gt;
+&lt;h3&gt;§ 1, Article 1&lt;/h3&gt;
+&lt;p&gt;Recognize that languages have goals and communities. It helps to evaluate them in
+that context. Features that are high priority to you may not be high priority to
+the majority of users in that language, and vice-versa.&lt;/p&gt;
+&lt;h3&gt;§ 1, Article 2&lt;/h3&gt;
+&lt;p&gt;Recognize that many smart, capable people are very productive in the language
+you&amp;#8217;re slagging. The cool things science and industry are making in the language
+speaks far louder than your casual dismissals of it on a message board.&lt;/p&gt;
+&lt;p&gt;The same logic goes for language developers. For example,
+&lt;a href="http://had.co.nz" title="Hadley Wickham"&gt;Hadley Wickham&lt;/a&gt; is a smart guy and a great programmer; he&amp;#8217;s probably not one to
+waste his time improving a language that&amp;#8217;s some irreparably broken
+dead-end. Same with &lt;a href="http://continuum.io" title="Continuum"&gt;these guys&lt;/a&gt;.&lt;/p&gt;
+&lt;h3&gt;§ 1, Article 3&lt;/h3&gt;
+&lt;p&gt;Recognize that language design is the art of the tradeoff. Don&amp;#8217;t complain about
+a design choice until you understand the logic behind it. In many cases, your
+preferred design or feature was already considered, and would have led to
+undesirable outcomes elsewhere. It is helpful and
+interesting to disagree about how a tradeoff was managed, but do recognize that there
+was one.&lt;/p&gt;
+&lt;h3&gt;§ 1, Article 4&lt;/h3&gt;
+&lt;p&gt;Distinguish between a feature request and a language critique. If you come to a
+new language and miss some features of
+your old language, that&amp;#8217;s fine. But that&amp;#8217;s not necessarily a failing of the new
+language.&lt;/p&gt;
+&lt;p&gt;A living, breathing language is a combination of both its features and its idioms. A
+feature may not exist because its programmers tend to write code in a way that
+obviates its need. Sometimes such idioms are crutches to compensate for truly
+useful features that are missing; other times they are interesting and elegant expressions of a
+problem that you&amp;#8217;re just not accustomed to. Try to spot the difference.&lt;/p&gt;
+&lt;h3&gt;§ 1, Article 5&lt;/h3&gt;
+&lt;p&gt;Pay your dues before dismissing a language. If you gave up on something in a language after finding it too difficult,
+consider that the problem may be yours. It may not be, but at least
+consider it.&lt;/p&gt;
+&lt;h3&gt;§ 1, Article 6&lt;/h3&gt;
+&lt;p&gt;Don&amp;#8217;t over-sell immature, alpha-version features, no matter how
+promising they are. Promises don&amp;#8217;t cook rice. Sending unsuspecting users to
+buggy, incomplete libraries just harms your cause in the long run.&lt;/p&gt;
+&lt;p&gt;Examples:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;span class="dquo"&gt;&amp;#8220;&lt;/span&gt;Julia has a fast-growing library of packages!&amp;#8221; Sure, but less than a handful
+    are close to production quality.&lt;/li&gt;
+&lt;li&gt;&lt;span class="dquo"&gt;&amp;#8220;&lt;/span&gt;And now ggplot has been ported to Python!&amp;#8221; &lt;a href="http://blog.yhathq.com/posts/ggplot-for-python.html" title="ggplot for Python"&gt;Not quite yet.&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Honest advertising of works-in-progress is encouraged, though. There&amp;#8217;s nothing
+inherently wrong with immature libraries, many of which are fantastic.&lt;/p&gt;
+&lt;h3&gt;§ 1, Article 7&lt;/h3&gt;
+&lt;p&gt;Microbenchmarks are useful for understanding differences between languages and their
+execution, but are
+of limited use in pissing contests. No one knows exactly what percentage of the world&amp;#8217;s
+working software is comprised of Fibonacci number calculations, but our best
+guess is not much. &lt;/p&gt;
+&lt;h2&gt;Section 2: Being Interesting&lt;/h2&gt;
+&lt;h3&gt;§ 2, Article 1&lt;/h3&gt;
+&lt;p&gt;Whether one language is going to take over another is not that
+interesting, nor that meaningful. (When does a language get &amp;#8220;taken over?&amp;#8221; For
+Christ&amp;#8217;s sakes, there&amp;#8217;s still a non-trivial amount of &lt;span class="caps"&gt;COBOL&lt;/span&gt; running out there in the wild.)&lt;/p&gt;
+&lt;p&gt;Competition is pointless, but comparison is not. Languages are  increasingly adopting ideas from
+each other, building interops with each other, and sharing
+tooling. Having conversations about this process is far more interesting than
+running popularity contests.&lt;/p&gt;
+&lt;h3&gt;§ 2, Article 2&lt;/h3&gt;
+&lt;p&gt;Avoid clichéd arguments. They are not necessarily incaccurate, but
+they are boring.&lt;/p&gt;
+&lt;p&gt;Examples:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;R is a &amp;#8220;&lt;span class="caps"&gt;DSL&lt;/span&gt;&amp;#8221; or &amp;#8220;not a real language&amp;#8221; (see Article 2 below); R is &amp;#8220;designed by statisticians,
+  not computer scientists.&amp;#8221;&lt;/li&gt;
+&lt;li&gt;&lt;span class="dquo"&gt;&amp;#8220;&lt;/span&gt;Semantic whitespace in Python sucks.&amp;#8221; (Generally, arguments over
+  syntax are boring.)&lt;/li&gt;
+&lt;li&gt;&lt;span class="dquo"&gt;&amp;#8220;&lt;/span&gt;Julia doesn&amp;#8217;t have as many libraries as ${pretty much anything}.&amp;#8221;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;In addition to arguments, also avoid clichéd phrases. (See, &lt;em&gt;e.g.&lt;/em&gt;, &amp;#8220;not ready
+for prime-time.&amp;#8221;)&lt;/p&gt;
+&lt;h3&gt;§ 2, Article 3&lt;/h3&gt;
+&lt;p&gt;Supplement abstract terms or subjective impressions with concrete definitions
+and examples.&lt;/p&gt;
+&lt;p&gt;Examples of statements that could use concrete support:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;span class="dquo"&gt;&amp;#8220;&lt;/span&gt;Code in language X is &lt;em&gt;more expressive&lt;/em&gt; than language Y.&amp;#8221;&lt;/li&gt;
+&lt;li&gt;&lt;span class="dquo"&gt;&amp;#8220;&lt;/span&gt;R is a &lt;em&gt;&lt;span class="caps"&gt;DSL&lt;/span&gt;&lt;/em&gt;, while Python is a &lt;em&gt;general purpose language.&lt;/em&gt;&amp;#8221;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;Section 3: Being Civil&lt;/h2&gt;
+&lt;h3&gt;§ 4, Article 1&lt;/h3&gt;
+&lt;p&gt;Be sure that you can accurately summarize someone&amp;#8217;s argument before you start
+composing your rebuttal.&lt;/p&gt;
+&lt;h3&gt;§ 4, Article 2&lt;/h3&gt;
+&lt;p&gt;You are not so smart that you are entitled to be smug. Some tips:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Nix hyperbolic vocabulary. No one and nothing associated with any language
+      is &amp;#8220;stupid,&amp;#8221; &amp;#8220;dumb,&amp;#8221; &amp;#8220;crazy&amp;#8221;, &amp;#8220;broken,&amp;#8221; etc.&lt;/li&gt;
+&lt;li&gt;Use of the word &amp;#8220;fail&amp;#8221; is strongly discouraged. Use of it as a noun is
+      strictly prohibited.&lt;/li&gt;
+&lt;li&gt;It is no victory&amp;#8212;not even a moral one&amp;#8212;to find someone
+      &lt;a href="http://xkcd.com/386/" title="XKCD"&gt;wrong on the internet&lt;/a&gt;. Don&amp;#8217;t treat it a such. Offer a polite
+      factual correction and allow for the possibility that you&amp;#8217;ve misunderstood.&lt;/li&gt;
+&lt;/ol&gt;</summary><category term="programming"></category></entry><entry><title>I’ve seen the best minds of my generation destroyed by Matlab …</title><link href="http://slendermeans.org/julia-loops.html" rel="alternate"></link><updated>2013-05-11T16:52:00-04:00</updated><author><name>Carl</name></author><id>tag:slendermeans.org,2013-05-11:julia-loops.html</id><summary type="html">&lt;p&gt;(Note: this is very quick and not well thought out. Mostly a
+conversation starter as opposed to any real thesis on the subject.)&lt;/p&gt;
+&lt;p&gt;This post is a continuation of a Twitter conversation &lt;a href="https://twitter.com/johnmyleswhite/status/332920041626554369"&gt;here&lt;/a&gt;, started
+when John Myles White poked the hornets&amp;#8217; nest. (Python&amp;#8217;s nest? Where do
+Pythons live?)&lt;/p&gt;
+&lt;p&gt;&lt;img src="../images/jmw_tweet.jpg" width=450px /&gt;&lt;/p&gt;
+&lt;p&gt;The gist with John&amp;#8217;s code is &lt;a href="https://gist.github.com/johnmyleswhite/5556201"&gt;here&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;This isn&amp;#8217;t a very thoughtful post. But the conversation was becoming
+sort of a shootout and my thoughts (half-formed as they are) were a bit
+longer than a tweet. Essentially, I think the Python performance
+shootouts&amp;#8212;PyPy, Numba, Cython&amp;#8212;are missing the point.&lt;/p&gt;
+&lt;p&gt;The point is, I think, that loops are a crutch. A 3-nested for loop in
+Julia that increments a counter takes 8 lines of code (1 initialize
+counter, 3 for statements, 1 increment statement, 3 end statements).
+Only one of those lines tells me what the code does.&lt;/p&gt;
+&lt;p&gt;But most scientific programmers learned to code in imperative languages
+and that style of thinking and coding has become natural. I&amp;#8217;ve often
+seen comments like this:&lt;/p&gt;
+&lt;p&gt;&lt;img alt="forloop_tweet" src="../images/forloop_tweet.jpg" /&gt;&lt;/p&gt;
+&lt;p&gt;Which I think simply equates readability with familiarity. That isn&amp;#8217;t
+wrong, but it isn&amp;#8217;t the whole story.&lt;/p&gt;
+&lt;p&gt;Anyway, a lot of the responses to John&amp;#8217;s code were showing that, hey,
+you can get fast loops in Python, with either JITing (PyPy, Numba) or
+Cython. So here are my thoughts:&lt;/p&gt;
+&lt;p&gt;​1. Cython is great. I&amp;#8217;ve used it with great success myself. But Julia
+   gives me fast loops while keeping the dynamic typing; i.e., I&amp;#8217;m still
+   writing in Julia. Cython is a manifestation of what the Julia developers
+   call the &amp;#8220;two-language problem.&amp;#8221;  My programmer-productivity happens in
+   the slow, dynamic language, and I swap to a more painful language for
+   critical bottlenecks and glue the two together. Cython is a more
+   pleasant manifestation of the problem, especially since it lets you
+   evolve in an exploratory, piece-meal way from your first language to
+   your second language. But you still end up with code that is nice
+   dynamic-typing and abstractions on the outside; gross static typing and
+   low-level imperative stuff on the inside. (And Cython examples are often
+   clean and simple, but the code can get hairy very quickly.)&lt;/p&gt;
+&lt;p&gt;​2. One of the nice things about the slow for loops in Python and R is
+   that they force you to think about other ways to express your problem. R
+   and Python programmers start thinking about how they can exploit arrays
+   and other ADTs, and higher-order functions to express they&amp;#8217;re problem.
+   Avoiding the loop performance hit is the first reason, but then many of
+   them start to realize they like their code better this way. The
+   adjustment is hard at first, but once you get their, it&amp;#8217;s hard to go
+   back.&lt;/p&gt;
+&lt;p&gt;Forget about the Numpy, PyPy, Cython solutions to John&amp;#8217;s problem. I
+think it&amp;#8217;s safe to say his original pure Python code would be considered
+pretty un-Pythonic, to the extent that&amp;#8217;s a thing. Python programmers are
+discouraged from that style of writing-C-in-Python, for both performance
+reasons, and conceptual reasons. Python programmers just think the
+alternatives (e.g. list comprehensions) are more expressive and
+maintainable. They&amp;#8217;re not avoiding for loops because they&amp;#8217;re slow: they
+don&amp;#8217;t &lt;strong&gt;want&lt;/strong&gt; to write for loops.&lt;/p&gt;
+&lt;p&gt;Maybe Julia is the answer to this
+problem. Since list comprehensions, higher-order-functions (applies,
+maps, etc.) wrap imperative loops, and Julia loops are fast, then these
+things can be written in Julia and be fast.&lt;/p&gt;
+&lt;p&gt;But that requires some thought about how
+Julia devs want Julia programmers to program. Julia is great and
+really promising, and it&amp;#8217;s got an opportunity to let scientific
+programmers really raise their game. But I&amp;#8217;d hate the big pitch for
+Julia to be: hey, you can write fast loops! And it would basically
+become a refuge for people who never learned to properly code R and are
+are fed up with slow loops, or for Matlab guys who&amp;#8217;s licenses ran out.&lt;/p&gt;</summary><category term="julia"></category><category term="python"></category><category term="R"></category></entry></feed>

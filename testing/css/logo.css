@@ -1,0 +1,46 @@
+#S {
+    font-size: 275px;
+    -webkit-transform: scale(.125, 1);  /* .2, 2.75 */
+    margin-top: -35px;  /* - 200px */
+    margin-left: -80px; /* 0px */
+    float: left;
+}
+
+#logo {
+    background-image:url('../static/images/slide-and-calcc.png');
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+#M {
+    font-size: 270px;  /* 275px */
+    -webkit-transform: scale(.15, 1);
+    margin-top:  -95px; /* -55px */ ;
+    margin-left: -130px;
+    float: left;
+}
+
+#S, #M {
+    color: steelblue;
+    font-family: 'Dawning of a New Day', LAHeatROB;
+}
+
+#lender {
+    font-family: SourceSansPro-Light;
+    font-size: 58px;
+    -webkit-transform: scale(.4, 1);
+    margin-top: 125px;
+    margin-left: -145px; /* -92px; */
+    float: left;
+    letter-spacing: 5px;
+}
+
+#eans  {
+    font-family: SourceSansPro-Light;
+    font-size: 58px;
+    -webkit-transform: scale(.4, 1);
+    margin-top: 125px;
+    margin-left: -133px; /*-145px;*/
+    float: left;
+    letter-spacing: 5px;
+}

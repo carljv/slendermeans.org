@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/lowess-speed.html" rel = "bookmark"> How do you speed up 40,000 weighted least squares calculations? Skip 36,000 of them. </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2012-05-14T23:46:00" pubdate> May 14, 2012 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/data-analysis.html"> Data Analysis </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <p>Despite having finished all the programming for Chapter 2 of <span class="caps">MLFH</span> a
+while ago, there&#8217;s been a long hiatus since the<a href="../ml4h-ch2-p1.html">first post on that
+chapter</a>.</p>
+<h2>(S)lowess</h2>
+<p>Why the delay? The second part of the code focuses on two procedures:
+lowess scatterplot smoothing, and logistic regression. When implementing
+the former in <a href="http://statsmodels.sourceforge.net/devel/generated/statsmodels.nonparametric.api.lowess.html#statsmodels.nonparametric.api.lowess">statsmodels</a>, I found that it was running <em>dog slow</em> on
+the data&#8212;in this case a scatterplot of 10,000 height-vs.-weight points.
+Indeed, for these 10,000 points, lowess, run with the default
+parameters, required about 23 seconds. After importing modules and
+defining variables according to my <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/CH2">IPython notebook</a>, we can run
+<code>timeit</code> on the function:</p>
+<div class="highlight"><pre><span class="o">%</span><span class="n">timeit</span> <span class="o">-</span><span class="n">n</span> <span class="mi">3</span> <span class="n">lowess</span><span class="o">.</span><span class="n">lowess</span><span class="p">(</span><span class="n">heights</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+</pre></div>
+
+
+<p>This results in</p>
+<div class="highlight"><pre><span class="mi">3</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="o">:</span> <span class="mf">42.6</span> <span class="n">s</span> <span class="n">per</span> <span class="n">loop</span>
+</pre></div>
+
+
+<p>on the machine I&#8217;m writing this on  (a Windows laptop with a 2.67 GHz i5
+processor; timings are faster, but still in the 30 sec. range on my 2.5
+GHz i7 Macbook).</p>
+<p>An R user&#8212;or really a user of any other statistical package&#8212;is going
+to be confused here. We&#8217;re all used to lowess being a relatively
+instantaneous procedure. It&#8217;s an oft-used option for graphics packages
+like Lattice and ggplot2 &#8212; and it doesn&#8217;t take 20-30 seconds to
+generate a plot with a lowess curve superimposed. So what&#8217;s the deal? Is
+something wrong with the statsmodels implementation?</p>
+<h2>The naive lowess algorithm</h2>
+<p>Short answer: no. Long answer: yeah, kinda. Let&#8217;s start by looking at
+the lowess algorithm in general, sticking to the 2-D y-vs.-x scatterplot
+case. (I don&#8217;t really find multi-dimensional lowess useful anyway; maybe
+others put it to frequent use. If so, I&#8217;d like to hear about it).</p>
+<p>Let&#8217;s say we have data <em>{x<sub>1</sub>, &#8230;, x<sub>n</sub>}</em> and <em>{y<sub>1</sub>, &#8230;, y<sub>n</sub>}</em>. The
+idea is to fit a set of values <em>{y<sup>*</sup><sub>1</sub>, &#8230;, y<sup>*</sup><sub>n</sub>}</em> where each is the
+prediction at <em>x<sub>i</sub></em> from a weighted regression using a fixed
+neighborhood of points around <em>x<sub>i</sub></em>. The weighting scheme puts less
+weight on points that are far from <em>x<sub>i</sub></em>. The regression can be linear,
+or polynomial, but linear is typical, and lowess procedures that use
+polynomials with more than 2 degrees are rare.</p>
+<p>After we get this first set of fits, we usually run the regressions a
+few more times, each time modifying the weights to take into account
+residuals from the previous fit. These &#8220;robustifying&#8221; iterations apply
+successively less weight to outlying points in the data, reducing their
+influence on the final curve.</p>
+<p>Here&#8217;s the recipe:</p>
+<ol>
+<li>Select the number of neighbors, <em>k</em>, to use in each local
+    regression, and the number of robustifying iterations.</li>
+<li>Sort the data, both <em>x </em>and <em>y</em>,<em> </em>by the order of the <em>x</em>-values.</li>
+<li>For each <em>x<sub>i</sub></em> in <em>{x<sub>1</sub>, &#8230; x<sub>n</sub>}</em>:<ol>
+<li>Find the <em>k</em> points nearest to <em>x<sub>i</sub></em> (the <em>neighborhood</em>).</li>
+<li>Calculate the weights for each <em>x<sub>j</sub></em> in the neighborhood. This
+    requires:<ol>
+<li>Calculating the distance between each <em>x<sub>j</sub></em> and <em>x<sub>i</sub></em> and
+    applying a weighting function to these distances.</li>
+<li>Take the weights calculated from the previous fit&#8217;s
+    residuals (if this is not the first fit) and multiply them
+    by the distance weights.</li>
+</ol>
+</li>
+<li>Run a regression of the <em>y<sub>j</sub></em>s on the <em>x<sub>j</sub></em>s in the
+    neighborhood, using the weights calculated in part B above.
+    Predict <em>y<sup>*</sup><sub>i</sub></em>.</li>
+</ol>
+</li>
+<li>Calculate the residuals from this fitted series of <em>{y<sup>*</sup><sub>1</sub>, &#8230;,
+    y<sup>*</sup><sub>n</sub>}</em>, and compute a weight from each of them.</li>
+<li>Repeat 3 and 4 for the specified number of robustifying iterations.</li>
+</ol>
+<p>Clearly, this is an expensive procedure. For 10,000 points and 3
+robustifying iterations (which is the default in R and statsmodels),
+you&#8217;re calculating weights and running regressions 40,000 times (1
+initial fit + 3 robustifying iterations).  Running R&#8217;s <code>lm.fit</code> (which
+is the lean, fast engine under <code>lm</code>) 40,000 times costs about 11
+seconds. Add on all the costs from weight calculations&#8212;which will
+happen 40,000 &times; <em>k</em> times, since a weight needs to be calculated for
+each point&#8217;s neightbor&#8212;-and it&#8217;s not surprising that the statsmodels
+version is as slow as it is. It is an inherently expensive algorithm.</p>
+<h2>Cheating our way to a faster lowess</h2>
+<p>The question is, why is R&#8217;s lowess so fast? The answer is that R&#8212;-and
+most other implementations, going back to Clevelands <a href="http://www.netlib.org/go/lowess.f">lowess.f</a> Fortan
+program&#8212;don&#8217;t perform lowess calculations on all that data.</p>
+<p>If you look at the <a href="http://stat.ethz.ch/R-manual/R-patched/library/stats/html/lowess.html">R help file for lowess</a>, you&#8217;ll see that in
+addition to the parameters we&#8217;d expect&#8212;the data <code>x</code> and <code>y</code>; a
+parameter to determine the size of the neighborhood; and the number of
+robustifying iterations&#8212;there&#8217;s an argument called <code>delta</code>.</p>
+<p>The idea behind <code>delta</code> is the following: <em>x<sub>i</sub></em> that are close together
+aren&#8217;t very interesting. If we&#8217;ve already calculated <em>y<sup>*</sup><sub>i</sub></em> from the
+neighborhood of data around <em>x<sub>i</sub></em>, and |<em>x<sub>i+1</sub></em> - <em>x<sub>i</sub></em>| &lt; <code>delta</code>,
+then we don&#8217;t really need to calculate <em>y<sup>*</sup><sub>i+1</sub></em>. It&#8217;s bound to be near <em>y<sup>*</sup><sub>i</sub></em>.</p>
+<p>Instead let&#8217;s go out to an <em>x<sub>j</sub></em> that&#8217;s farther away from <em>x<sub>i</sub></em>&#8212;-say
+the farthest one still within <code>delta</code> distance. Let&#8217;s fit another
+weighted regression here. All those points in between&#8212;within that delta
+distance&#8212;can be approximated by a line going between the two regression
+fits we made.   Then, just keep skipping along in these delta-sized
+steps&#8212;back-filling the predictions by linear interpolation as we
+go&#8212;until the end of the data.</p>
+<p>How much work have we saved ourselves? Assume as above 10,000 points and
+4 iterations. If the <em>x</em>&#8216;s are uniformly distributed along the axis, and
+we take <code>delta</code> to be <code>0.01 * (max(x) - min(x))</code> (which is the default
+value in R), then we&#8217;re only running 100 regressions per iteration, or
+400 overall. Compared to the 40,000 that statsmodels is running, we can
+see why R is much faster. It&#8217;s cheating!</p>
+<p>This kind of approximating is fine, really. It&#8217;s just assuming that, if
+our model is <em>y = f(x) + e</em> and <em>f(x)</em> is what we&#8217;re trying to estimate
+with lowess, we can take the linear approximation of it in small
+neighborhoods.</p>
+<h2>Implementing a faster lowess in Python</h2>
+<p>Algorithms for lowess written in low level languages aren&#8217;t hard to
+find. In addition to Cleveland&#8217;s <a href="http://www.netlib.org/go/lowess.f">Fortran implementation</a>,
+there&#8217;s also a <a href="http://svn.r-project.org/R/trunk/src/library/stats/src/lowess.c">C version</a> used by R (which is basically a direct
+translation of Cleveland&#8217;s, but without all the pesky commenting to let
+you know what it&#8217;s doing).</p>
+<p>The <a href="https://github.com/statsmodels/statsmodels/blob/master/statsmodels/nonparametric/smoothers_lowess.py">statsmodel version</a> though, is nicely organized&#8212;broken into
+sub-functions with  clear names, and exploiting vectorized operations.
+But it&#8217;s slowness is not because it doesn&#8217;t exploit the <code>delta</code> trick.
+It also runs some expensive operations, like a call to SciPy&#8217;s <code>lstsq</code>
+function in each tight loop.</p>
+<p>So, in addition to adding the delta trick, we&#8217;d like to speed up those
+calculations in the tight loop (part 3 in the list above) as much as
+possible. Luckily, Cython lets us split the difference.</p>
+<p>My Cython version of lowess is in my github repo, <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/CH2/lowess%20work">here</a>, in the file
+cylowess.py. There&#8217;s also an IPython notebook demonstrating it in
+action, and files comprising a testing suite, comparing its output to
+R&#8217;s.</p>
+<p>Let&#8217;s take a look at some real squiggly data to see how it works. The
+Silverman motorcycle collision data, which is available as <code>mcycle</code> in
+R&#8217;s <code>MASS</code> package, is great test data for non-parametric curve fitting
+procedures. In addition to not having any simple parametric shape, it&#8217;s
+got some edge case issues that can cause problems, like repeated
+x-values.</p>
+<p>This plot compares my lowess implementation with statsmodels&#8217; and R&#8217;s:</p>
+<p><a href="../images/motorcycle-lowess-comparisons.png">
+  <img src="../images/motorcycle-lowess-comparisons.png" width=350px />
+</a></p>
+<p>The aggregate difference between R&#8217;s lowess and mine?</p>
+<div class="highlight"><pre><span class="k">print</span> <span class="s">&#39;R and New Lowess <span class="caps">MAD</span>: </span><span class="si">%5.2e</span><span class="s">&#39;</span> <span class="o">%</span>
+<span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">r_lowess</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">new_lowess</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]))</span>
+
+
+<span class="n">R</span> <span class="ow">and</span> <span class="n">New</span> <span class="n">Lowess</span> <span class="n"><span class="caps">MAD</span></span><span class="p">:</span> <span class="mf">1.62e-13</span>
+</pre></div>
+
+
+<p>So it looks like it works.</p>
+<p>Now let&#8217;s look at some timings. I&#8217;ll create some test data: 10,000
+points, where <code>x</code> is uniformly distributed on [0, 20], and
+<code>y = sin(x) + N(0, 0.5)</code>.</p>
+<p>Statsmodel&#8217;s lowess:</p>
+<div class="highlight"><pre><span class="o">%</span><span class="n">timeit</span> <span class="o">-</span><span class="n">n</span> <span class="mi">3</span> <span class="n">smlw</span><span class="o">.</span><span class="n">lowess</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+
+<span class="mi">3</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">22.8</span> <span class="n">s</span> <span class="n">per</span> <span class="n">loop</span>
+</pre></div>
+
+
+<p>The new Cythonized lowess:</p>
+<div class="highlight"><pre><span class="o">%</span><span class="n">timeit</span> <span class="o">-</span><span class="n">n</span> <span class="mi">3</span> <span class="n">cyl</span><span class="o">.</span><span class="n">lowess</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>
+
+
+<span class="mi">3</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mf">10.8</span> <span class="n">s</span> <span class="n">per</span> <span class="n">loop</span>
+</pre></div>
+
+
+<p>This is without the <code>delta</code> trick. Skimming the fat off of those
+tight-looped operations and Cythonizing them cut the run time in half.
+11 seconds still sucks, though, so let&#8217;s see what <code>delta</code> gets us.</p>
+<div class="highlight"><pre><span class="n">delta</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">x</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> \<span class="o">*</span> <span class="mf">0.01</span>
+<span class="o">%</span><span class="n">timeit</span> <span class="o">-</span><span class="n">n</span> <span class="mi">3</span> <span class="n">cyl</span><span class="o">.</span><span class="n">lowess</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">delta</span> <span class="o">=</span> <span class="n">delta</span><span class="p">)</span>
+
+
+<span class="mi">3</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="p">:</span> <span class="mi">125</span> <span class="n">ms</span> <span class="n">per</span> <span class="n">loop</span>
+</pre></div>
+
+
+<p>Much better. That&#8217;s the kind of time skipping 36,000 weighted
+least-squares calculations will save you. Given that this is some curvy
+data, is all this linear interpolation acceptable? I&#8217;ll re-run both with
+a better level of the <code>frac</code> parameter; the default is 2/3, but I&#8217;ll
+reduce it to 1/10 to use smaller neighborhoods in the regression and
+allow for more curvature. Here&#8217;s the plot:</p>
+<div class="highlight"><pre><span class="n">sm_lowess</span> <span class="o">=</span> <span class="n">smlw</span><span class="p">.</span><span class="n">lowess</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">frac</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">new_lowess</span> <span class="o">=</span> <span class="n">cyl</span><span class="p">.</span><span class="n">lowess</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">frac</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">delta</span> <span class="o">=</span> <span class="n">delta</span><span class="p">)</span>
+</pre></div>
+
+
+<p><a href="../images/sine-10k-pts-lowess-compare.png">
+  <img src="../images/sine-10k-pts-lowess-compare.png" width=400px />
+</a></p>
+<p>Which looks just as good as the non-interpolated version, but doesn&#8217;t
+leave you twiddling your thumbs.</p>
+<h2>Conclusion</h2>
+<p>After all this, we have a version of lowess that&#8217;s competitive with R&#8217;s
+<code>lowess</code> function. R also has a much richer <code>loess</code> function, for which
+there&#8217;s no real statmodels equivalent. <code>loess</code> is a full-blown class
+from which one can make predictions and compute confidence intervals,
+among other things. It also allows for fitting a higher-dimensional
+surface, not just a curve. But I have a day job, so that&#8217;s all for some
+other time. This kind of simple lowess is typically enough for most
+needs.</p>
+<p>With this obsessive compulsive diversion into the guts of lowess out of
+the way, I&#8217;ll wrap up Chapter 2 of <span class="caps">MLFH</span> in my next post.</p>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/lowess-speed.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/lowess-speed.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/lowess-speed.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "lowess-speed.html";
+          var disqus_url = "http://slendermeans.org/lowess-speed.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

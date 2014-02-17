@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <title> Slender Means </title>
+  <meta charset="utf-8">
+  <link rel="stylesheet" type="text/css" href="css/reset.css">
+  <link rel="stylesheet" type="text/css" href="css/layout.css">
+  <link rel="stylesheet" type = "text/css"
+        href="../../themes/static/css/MyFontsWebfontsKit.css">
+  <link rel="stylesheet" type="text/css" href="css/type.css">
+  <link rel="stylesheet" type="text/css"
+        href="../../themes/static/css/tango_code.css">
+<link rel="stylesheet" type="text/css" href="css/logo.css"
+
+</head>
+
+<body>
+  <header>
+    <img src="/Users/cvogel/Desktop/slide-and-calc.png" id="logo">
+    <!--<img src="/Users/cvogel/Desktop/sm_logo_alt.png" id="logo1">-->
+    <div id="slogan">I'd like to drop my trousers to the world<br> I am a man of means, of</div>
+    <a href="base.html"><div id = "logo1">
+    <div id="S">S</div><div id="lender">lender</div>
+    <div id="M">M</div><div id="eans">eans</div>
+    </div></a>
+    <nav> <!-- Main navigation bar -->
+      <ul>
+        <li><a href="index.html">          Home            </a></li>
+        <li><a href="archives.html">       Archives        </a></li>
+        <li><a href="about.html">          About           </a></li>
+        <li><a href="blogroll.html">       Blogroll        </a></li>
+        <li><a href="will-it-python.html"> Will it Python? </a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="content">
+    <article>
+                     <h1>Introduction</h1>
+
+              <p>I&#8217;m not going to write much about this chapter. In my opinion the <i>payoff-to-effort ratio</i> for this project is pretty low. The algorithm for ranking e-mails is pretty straightforward, but in my opinion seriously flawed. Most of the code in the chapter (and there&#8217;s a lot of it) revolves around parsing the text in the files. It&#8217;s a good exercise in thinking through feature extraction, but it&#8217;s not got a lot of new <span class="caps">ML</span> concepts. And from my perspective, there&#8217;s not much opportunity to show off any Python goodness. But, I&#8217;ll hit a couple of points that are new and&nbsp;interesting.</p>
+              <h2>Subheading</h2>
+              <p>The complete code is at the Github repo <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/ch4">here</a>, and you can read the notebook via nbviewer <a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/ch4/ch4.ipynb">here</a>.</p>
+              <h3>Sub-sub-heading</h3>
+              <p><strong>1. Vectorized string methods in pandas.</strong> Back in <a href="http://slendrmeans.wordpress.com/2012/04/18/will-it-python-machine-learning-for-hackers-chapter-1-part-2-cleaning-date-and-location-data/">Chapter 1</a>, I groused about lacking vectorized functions for operations on strings or dates in pandas. If it wasn&#8217;t a numpy ufunc, you had to use the pandas <code>map()</code> method. That&#8217;s changed a lot over the summer, and since pandas 0.9.0, we can call <a href="http://pandas.pydata.org/pandas-docs/stable/basics.html#vectorized-string-methods">vectorized string methods</a>.</p>
+              <p>For example, here&#8217;s the code in my chapter for program that identifies e-mails that are part of a thread, by looking for &#8220;re:&#8221;-like prefixes on the&nbsp;subjects.</p>
+
+              <div class="highlight">
+                <pre>
+<span class="n">reply_pattern</span>   <span class="o">=</span> <span class="s">&#39;(re:|re\[\d\]:)&#39;</span>
+<span class="n">fwd_pattern</span> <span class="o">=</span> <span class="s">&#39;(fw:|fw[\d]:)&#39;</span>
+
+<span class="k">def</span> <span class="nf">thread_flag</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns True if string s matches the thread patterns.</span>
+<span class="sd">    If s is a pandas Series, returns a Series of booleans.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">reply_pattern</span><span class="p">,</span> <span class="n">s</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">contains</span><span class="p">(</span><span class="n">reply_pattern</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">clean_subject</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Removes all the reply and forward labeling from a</span>
+<span class="sd">    string (an e-mail subject) s.</span>
+<span class="sd">    If s is a pandas Series, returns a Series of cleaned</span>
+<span class="sd">    strings.</span>
+<span class="sd">    This will help find the initial message in the thread</span>
+<span class="sd">    (which won&#39;t have any of the reply/forward labeling.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">basestring</span><span class="p">):</span>
+        <span class="n">s_clean</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">reply_pattern</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+        <span class="n">s_clean</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="n">fwd_pattern</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">s_clean</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+        <span class="n">s_clean</span> <span class="o">=</span> <span class="n">s_clean</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">s_clean</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">reply_pattern</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+        <span class="n">s_clean</span> <span class="o">=</span> <span class="n">s_clean</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">fwd_pattern</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">I</span><span class="p">)</span>
+        <span class="n">s_clean</span> <span class="o">=</span> <span class="n">s_clean</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">s_clean</span>
+              </pre></div>
+
+
+              <p>In <code>thread_flag</code>, if the input is a pandas series of e-mail subject lines, then the function will use a vectorized string function, called with <code>.str.contains()</code> to see if a pattern matching a reply-type prefix is in the subject. The function will therefore return a pandas series of booleans, that are <code>True</code> for all the subjects that have a reply pattern, and <code>False</code> for all the subjects that&nbsp;don&#8217;t.</p>
+              <p>The function <code>clean_subjects</code>, if given a pandas Series input, will use the vectorized string methods <code>.str.replace()</code> and <code>.str.strip()</code> to clean the re- and fwd-like patterns out of the&nbsp;subjects.</p>
+              <p>Notice there are some differences between the naming of pandas string methods and the base string methods or <code>re</code> module functions that perform similar operations on single strings. For example, there&#8217;s no <code>contains</code> function in <code>re</code>; we use <code>re.search()</code>. Similarly <code>.str.replace()</code> does what we&#8217;d use <code>re.sub()</code> to do on a single&nbsp;string.</p>
+              <p><strong>2. More term-document matrices</strong> In <a href="http://slendrmeans.wordpress.com/2012/12/20/will-it-python-machine-learning-for-hackers-chapter-3-naive-bayes-text-classification/">Chapter 3</a> we built a term-document matrix to extract term-frequency features from a set of e-mails. This chapter has a similar exercise, applied to both e-mail messages and their subjects. In the code for that chapter, I built a <span class="caps">TDM</span> function that wrapped the term-document matrix function in the <code>textmining</code> package, adding some options that tried to mimic the <code>tdm</code> function in R&#8217;s <code>tm</code> package. I use that same function, <code>tdm_df</code>, here. In the post for that chapter, I lamented that I couldn&#8217;t find a decent term-document matrix function for Python. The one in <code>textmining</code> was too barebones and I was surprised there was nothing that fit the bill in&nbsp;<span class="caps">NLTK</span>.</p>
+              <p>In comments to that post, Vishal Goklani pointed me to the <a href="http://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html#sklearn.feature_extraction.text.CountVectorizer"><code>CountVectorizer</code></a> function in scikits-learn (in the <code>sklearn.feature_extraction.text</code> module). Despite the rather generic name, this will give you a <span class="caps">TDM</span> from a set of documents, returned in the form of a sparse matrix. Here&#8217;s quick-and-dirty wrapper function that returns a <span class="caps">TDM</span> in the form of a pandas&nbsp;DataFrame.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">sklearn_tdm_df</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;            </span>
+<span class="sd">    Create a term-document matrix (<span class="caps">TDM</span>) in the form of a pandas DataFrame</span>
+<span class="sd">    Uses sklearn&#39;s CountVectorizer function.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    docs: a sequence of documents (files, filenames, or the content) to be</span>
+<span class="sd">        included in the <span class="caps">TDM</span>. See the `input` argument to CountVectorizer.</span>
+<span class="sd">    **kwargs: keyword arguments for CountVectorizer options.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tdm_df: A pandas DataFrame with the term-document matrix. Columns are terms,</span>
+<span class="sd">        rows are documents.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c"># Initialize the vectorizer and get term counts in each document.</span>
+    <span class="n">vectorizer</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="n">word_counts</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+    <span class="c"># .vocabulary_ is a Dict whose keys are the terms in the documents,</span>
+    <span class="c"># and whose entries are the columns in the matrix returned by fit_transform()</span>
+    <span class="n">vocab</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">vocabulary_</span>
+
+    <span class="c"># Make a dictionary of Series for each term; convert to DataFrame</span>
+    <span class="n">count_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">w</span><span class="p">:</span> <span class="n">Series</span><span class="p">(</span><span class="n">word_counts</span><span class="o">.</span><span class="n">getcol</span><span class="p">(</span><span class="n">vocab</span><span class="p">[</span><span class="n">w</span><span class="p">])</span><span class="o">.</span><span class="n">data</span><span class="p">)</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">vocab</span><span class="p">}</span>
+    <span class="n">tdm_df</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">(</span><span class="n">count_dict</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tdm_df</span>
+
+<span class="c"># Call the function on e-mail messages. The token_pattern is set so that terms are only</span>
+<span class="c"># words with two or more letters (no numbers or punctuation)</span>
+<span class="n">message_tdm</span> <span class="o">=</span> <span class="n">sklearn_tdm_df</span><span class="p">(</span><span class="n">train_df</span><span class="p">[</span><span class="s">&#39;message&#39;</span><span class="p">],</span>
+                             <span class="n">stop_words</span> <span class="o">=</span> <span class="s">&#39;english&#39;</span><span class="p">,</span>
+                             <span class="n">charset_error</span> <span class="o">=</span> <span class="s">&#39;ignore&#39;</span><span class="p">,</span>
+                             <span class="n">token_pattern</span> <span class="o">=</span> <span class="s">&#39;[a-zA-Z]{2,}&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+              <p><strong>3. Timezone issues and rank instability.</strong> In the book, the authors compute stats measuring how active threads are. This depends on the time-stamps of the messages, which the authors parse out of the e-mail files. They ignore the time-zone information in the time-stamps, and this seems to create some bugs. For example, the following thread has two&nbsp;e-mails:</p>
+              <div class="highlight"><pre><span class="nl">Name:</span> <span class="p">[</span><span class="n">sadev</span><span class="p">]</span> <span class="p">[</span><span class="n">bug</span> <span class="mi">840</span><span class="p">]</span> <span class="n">spam_level_char</span> <span class="n">option</span> <span class="n">change</span><span class="o">/</span><span class="n">removal</span>
+                  <span class="mi">734</span>    <span class="mi">2002</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mo">06</span> <span class="mi">10</span><span class="o">:</span><span class="mi">56</span><span class="o">:</span><span class="mi">23</span><span class="o">-</span><span class="mo">07</span><span class="o">:</span><span class="mo">00</span>
+                  <span class="mi">763</span>    <span class="mi">2002</span><span class="o">-</span><span class="mi">09</span><span class="o">-</span><span class="mo">06</span> <span class="mi">13</span><span class="o">:</span><span class="mi">56</span><span class="o">:</span><span class="mi">19</span><span class="o">-</span><span class="mo">04</span><span class="o">:</span><span class="mo">00</span>
+              </pre></div>
+
+
+              <p>If you ignore the timezones, it looks like 763 comes three hours after 734. But looking at the timezones, you can see that 734 actually comes <em>four seconds after</em> 763. So this is a far more active thread than the code in the book&nbsp;calculates.</p>
+              <p>This sort of issue has a pretty big effect on the ranks of the messages. The rank is just the product of 5 feature weights (based on sender info., thread activity, and term features). Even though the authors scale the individual feature weights (typically with log-scales), by calculating the final rank as a product, you can get big rank difference based on what might seem to be practically similar features (even without any bugs)&#8212;for example, in some cases it doesn&#8217;t take a big difference to double a feature&#8217;s weight, which then doubles the e-mail&#8217;s rank.So it seems to me the ranking procedure in the book is not very stable. This is fine, since it&#8217;s just meant to be illustrative, but of course you want to be aware of this issue for a more serious&nbsp;exercise.</p>
+              <h1>Conclusion</h1>
+              <p>I didn&#8217;t go into much detail here. If you&#8217;re interested in seeing a lot of Python and pandas text parsing in action, definitely check out the <a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/ch4/ch4.ipynb">code</a>.</p>
+    </article>
+  </section>
+
+  <footer>
+    <div id="credit"> Designed by C. Vogel 2013 </div>
+    <div id = "colophon-link"> <a href="colophon.html"> Colophon </a> </div>
+  </footer>
+
+</body>
+</html>

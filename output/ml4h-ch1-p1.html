@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch1-p1.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 1, Part 1: Loading data </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2012-04-14T04:00:00" pubdate> April 14, 2012 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <h2>Preface</h2>
+<p>This is my first <em>Will it Python?</em> post. These posts document
+my experiences trying to port complete and interesting R projects to
+Python. I&#8217;m beginning by going through the recently published <a href="http://shop.oreilly.com/product/0636920018483.do"><em>Machine
+Learning for Hackers</em></a> (<span class="caps">MLFH</span>) by <a href="http://www.drewconway.com">Drew Conway</a> and <a href="http://johnmyleswhite.com">John Miles
+White</a>.</p>
+<p>More information on the posts is <a href="../pages/will-it-python.html">here</a>, and archives are <a href="../category/will-it-python.html">here</a>.</p>
+<h2>Introduction</h2>
+<p>The first chapter of <span class="caps">MLFH</span> is a gentle introduction to loading,
+manipulating and graphing data in R. To keep the tutorial interesting,
+the authors have found a fun dataset of <a href="https://github.com/johnmyleswhite/ML_for_Hackers/tree/master/01-Introduction/data/ufo"><span class="caps">UFO</span> sightings</a> to work
+through.</p>
+<p>Since this chapter is mainly devoted to loading and manipulating data, a
+lot of the R functionality they exploit is going to have an analog in
+<a href="http://pandas.pydata.org/">Pandas</a>. Even though there&#8217;s not too much exciting going on in this
+chapter, it&#8217;s a great way to explore how basic data tasks get done in
+Python. It turns out there are some interesting differences between how
+R and Python handle even this simple stuff.</p>
+<p>In this first post, I&#8217;ll focus on just getting the data into the work
+environment. The complete code for the chapter is located in a Github
+repo, <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/CH1">here</a>.</p>
+<h2>Data with inconsistent column lengths: break or compensate?</h2>
+<p>The raw data is contained in a tab-separated file and the authors use
+R&#8217;s <code>read.delim()</code> function to read it into an R dataframe. The data seem
+to load smoothly, and there are no errors or warnings. There are no
+headers in the data, so the authors set the <code>headers</code> argument
+of <code>read.delim()</code> to <code>FALSE</code> and name the columns of dataframe after
+it&#8217;s loaded.</p>
+<p>The same procedure in Python uses the <code>read_table()</code> function in Pandas:</p>
+<div class="highlight"><pre><span class="n">ufo</span> <span class="o">=</span> <span class="n">read_table</span><span class="p">(</span><span class="s">&#39;data/ufo/ufo_awesome.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">,</span>
+<span class="n">na_values</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)</span>
+</pre></div>
+
+
+<p>This, though, will raise an exception, complaining that there are the
+&#8220;wrong number of columns.&#8221; R loaded the data without complaint, so
+what&#8217;s going on?</p>
+<p>It turns out that <code>read_table()</code> is right to complain. Let&#8217;s use
+Python&#8217;s basic file <span class="caps">IO</span> to read each line of the file, and separate the
+line into columns by splitting it at tab characters. We&#8217;d expect each
+line to have six columns. As soon as we hit a line that doesn&#8217;t, I&#8217;ll
+break the line-reading loop, and print out the line number and the
+columns it was split into. This will tell us where the first (if any)
+bad line is in the file, and give a look at what&#8217;s wrong with it.</p>
+<div class="highlight"><pre><span class="n">inpath</span> <span class="o">=</span> <span class="s">&#39;data/ufo/ufo_awesome.tsv&#39;</span>
+<span class="n">inf</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">inpath</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inf</span><span class="p">):</span>
+    <span class="n">splitline</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\\</span><span class="s">t&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">splitline</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">6</span><span class="p">:</span>
+        <span class="n">first_bad_line</span> <span class="o">=</span> <span class="n">splitline</span>
+        <span class="k">print</span> <span class="s">&quot;First bad row:&quot;</span><span class="p">,</span> <span class="n">i</span>
+        <span class="k">for</span> <span class="n">j</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">first_bad_line</span><span class="p">):</span>
+            <span class="k">print</span> <span class="n">j</span><span class="p">,</span> <span class="n">col</span>
+        <span class="k">break</span>
+
+<span class="n">inf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+
+<p>This code prints the following output:</p>
+<div class="highlight"><pre><span class="n">First</span> <span class="n">bad</span> <span class="n">row</span><span class="o">:</span> <span class="mi">754</span>
+<span class="mi">0</span> <span class="mi">19950704</span>
+<span class="mi">1</span> <span class="mi">19950706</span>
+<span class="mi">2</span> <span class="n">Orlando</span><span class="p">,</span> <span class="n"><span class="caps">FL</span></span>
+<span class="mi">3</span>
+<span class="mi">4</span> <span class="mi">4</span><span class="o">-</span><span class="mi">5</span> <span class="n">min</span>
+<span class="mi">5</span> <span class="n">I</span> <span class="n">would</span> <span class="n">like</span> <span class="n">to</span> <span class="n">report</span> <span class="n">three</span> <span class="n">yellow</span> <span class="n">oval</span> <span class="n">lights</span> <span class="n">which</span> <span class="n">passed</span> <span class="n">over</span>
+<span class="n">Orlando</span><span class="p">,</span><span class="n">Florida</span> <span class="n">on</span> <span class="n">July</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1995</span> <span class="n">at</span> <span class="n">aproximately</span> <span class="mi">21</span><span class="o">:</span><span class="mi">30</span> <span class="p">(</span><span class="mi">9</span><span class="o">:</span><span class="mi">30</span> <span class="n">pm</span><span class="p">).</span> <span class="n">These</span>
+<span class="n">were</span> <span class="n">the</span> <span class="k">sizeof</span> <span class="n">Venus</span> <span class="p">(</span><span class="n">which</span> <span class="n">they</span> <span class="n">passed</span> <span class="n">close</span> <span class="n">by</span><span class="p">).</span> <span class="n">Two</span> <span class="n">of</span> <span class="n">them</span> <span class="n">traveled</span>
+<span class="n">one</span> <span class="n">after</span> <span class="n">the</span> <span class="n">otherat</span> <span class="n">exactly</span> <span class="n">the</span> <span class="n">same</span> <span class="n">speed</span> <span class="n">and</span> <span class="n">path</span> <span class="n">heading</span>
+<span class="n">south</span><span class="o">-</span><span class="n">southeast</span><span class="p">.</span> <span class="n">The</span> <span class="n">third</span> <span class="n">oneappeared</span> <span class="n">about</span> <span class="n">a</span> <span class="n">minute</span> <span class="n">later</span> <span class="n">following</span>
+<span class="n">the</span> <span class="n">same</span> <span class="n">path</span> <span class="n">as</span> <span class="n">the</span> <span class="n">other</span> <span class="n">two</span><span class="p">.</span> <span class="n">Thewhole</span> <span class="n">sighting</span> <span class="n">lasted</span> <span class="n">about</span> <span class="mi">4</span><span class="o">-</span><span class="mi">5</span>
+<span class="n">minutes</span><span class="p">.</span> <span class="n">There</span> <span class="n">were</span> <span class="mi">4</span> <span class="n">other</span> <span class="n">witnesses</span> <span class="n">oldenough</span> <span class="n">to</span> <span class="n">report</span> <span class="n">the</span> <span class="n">sighting</span><span class="p">.</span>
+<span class="n">My</span> <span class="mi">4</span> <span class="n">year</span> <span class="n">old</span> <span class="n">and</span> <span class="mi">5</span> <span class="n">year</span> <span class="n">old</span> <span class="n">children</span> <span class="n">were</span> <span class="n">theones</span> <span class="n">who</span> <span class="n">called</span> <span class="n">my</span>
+<span class="n">attention</span> <span class="n">to</span> <span class="n">the</span> <span class="o">&amp;</span><span class="n">quot</span><span class="p">;</span><span class="n">moving</span> <span class="n">stars</span><span class="o">&amp;</span><span class="n">quot</span><span class="p">;.</span> <span class="n">These</span> <span class="n">objects</span> <span class="n">moved</span>
+<span class="n">fasterthan</span> <span class="n">an</span> <span class="n">airplane</span> <span class="n">and</span> <span class="n">did</span> <span class="n">not</span> <span class="n">resemble</span> <span class="n">an</span> <span class="n">aircraft</span><span class="p">,</span> <span class="n">and</span> <span class="n">were</span> <span class="n">moving</span>
+<span class="n">much</span> <span class="n">slowerthan</span> <span class="n">a</span> <span class="n">shooting</span> <span class="n">star</span><span class="p">.</span> <span class="n">As</span> <span class="k">for</span> <span class="n">them</span> <span class="n">being</span> <span class="n">fireworks</span><span class="p">,</span> <span class="n">their</span> <span class="n">path</span>
+<span class="n">was</span> <span class="n">too</span> <span class="n">regularand</span> <span class="n">coordinated</span><span class="p">.</span> <span class="n">If</span> <span class="n">anybody</span> <span class="k">else</span> <span class="n">saw</span> <span class="n">this</span> <span class="n">phenomenon</span><span class="p">,</span>
+<span class="n">please</span> <span class="n">contact</span> <span class="n">me</span> <span class="n">at</span><span class="o">:</span>
+<span class="mi">6</span> <span class="n">ler</span><span class="err">@</span><span class="n">gnv</span><span class="p">.</span><span class="n">ifas</span><span class="p">.</span><span class="n">ufl</span><span class="p">.</span><span class="n">edu</span>
+</pre></div>
+
+
+<p>So we see that in row 754 of the file, we came across a line with seven
+columns (six tabs). The sixth column of the data is a &#8220;long&#8221; description
+of the <span class="caps">UFO</span> sighting, and here it looks like there was a tab character
+within the long description, creating extraneous columns.</p>
+<p>Why didn&#8217;t R have a problem with this line? We can see what happened if
+we look on page 15 of the <span class="caps">MLFH</span>. There the authors show rows of the data
+where the first column–the date of the sigthing–doesn&#8217;t match a date
+format. The first instance of a bad observation in the first column of
+the R data is <code>ler@gnv.ifas.ufl.edu</code>, which we just saw is actually the
+first instance of a spurious seventh column. Apparently, <code>read.delim()</code>
+is inferring the number of columns from the first few rows, then pushing
+any extra columns to a new row.</p>
+<p>I think I much prefer the Pandas behavior here to R&#8217;s. Even though R
+actually did get the data loaded with no fuss, it ended up mangling it
+pretty badly. Given the size of the dataset, the rarity of these bad
+rows, and the authors&#8217; cleaning process, it may not have mattered much
+at the end of the analysis. But that&#8217;s not going to be true in every
+case – and here, R isn&#8217;t even throwing a warning to indicate that
+something might be fishy with the raw data.</p>
+<p>Note though, that if the authors had used <code>read.delim()</code> with a
+<code>col.names</code> argument, then R would have raised an error when it came
+across a row with more columns than were indicated by the supplied list
+of column names.</p>
+<p>This is a pretty boring problem, but an important one. To sum up:</p>
+<blockquote>
+<p><strong>Lesson 1</strong>: R&#8217;s <code>read.delim()</code> without either <code>header = TRUE</code> or a
+<code>col.names</code> argument is dangerous. If you have to load the data to
+figure out what the column names should be, try loading it again with
+the column names you&#8217;ve assigned.</p>
+</blockquote>
+<h2>Preparing the raw data to load into a data frame.</h2>
+<p>Now that we&#8217;ve discovered irregularities in the raw data that are
+preventing it from fitting neatly into a data frame, we have to fix
+them.</p>
+<p>There are two options, both involve processing the file line-by-line.
+First, we can take the data in the columns after the sixth and append
+them to the end of the data in the sixth column. The sixth column is a
+long text discription of the event, and the extra columns are likely to
+be continuations of that description. But, we don&#8217;t actually end up
+caring about the long description in our analysis, so I&#8217;ll take a second
+approach and just delete those extra columns.</p>
+<p>The procedure is encapsulated in the function below. It reads lines from
+the original file, <code>inpath</code>, cleans them, and writes the result to
+<code>outpath</code>. Note that this function doesn&#8217;t actually return anything;
+it&#8217;s just a side-effect on the <code>outpath</code> file.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">ufotab_to_sixcols</span><span class="p">(</span><span class="n">inpath</span><span class="p">,</span> <span class="n">outpath</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Keep only the first 6 columns of data from messy <span class="caps">UFO</span> <span class="caps">TSV</span> file.</span>
+
+<span class="sd">The <span class="caps">UFO</span> data set is only supposed to have six columns. But...</span>
+
+<span class="sd">The sixth column is a long written description of the <span class="caps">UFO</span> sighting, and</span>
+<span class="sd">sometimes is broken by tab characters which create extra columns.</span>
+
+<span class="sd">For these records, we only keep the first six columns. This typically</span>
+<span class="sd">cuts off some of the long description.</span>
+
+<span class="sd">Sometimes a line has less than six columns. These are not written to</span>
+<span class="sd">the output file (i.e., they&#39;re dropped from the data). These records</span>
+<span class="sd">are usually so comprimised as to be uncleanable anyway.</span>
+
+<span class="sd">This function has (is) a side effect on the outpath file, to which it</span>
+<span class="sd">writes output.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+
+<span class="n">inf</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">inpath</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">)</span>
+<span class="n">outf</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">outpath</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">inf</span><span class="p">:</span>
+<span class="n">splitline</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span>
+<span class="c"># Skip short lines, which are dirty beyond repair, anyway.</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">splitline</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+<span class="k">continue</span>
+
+<span class="n">newline</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;</span><span class="se">\t</span><span class="s">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">splitline</span><span class="p">[</span> <span class="p">:</span><span class="mi">6</span><span class="p">])</span>
+<span class="c"># Records that have been truncated won&#39;t end in a newline character</span>
+<span class="c"># so add one.</span>
+<span class="k">if</span> <span class="n">newline</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span> <span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="p">:</span>
+<span class="n">newline</span> <span class="o">+=</span> <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span>
+
+<span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">newline</span><span class="p">)</span>
+
+<span class="n">inf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="n">outf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+
+
+<p>This function performs the following steps:</p>
+<ol>
+<li>Open the input file for reading and the output file for writing.</li>
+<li>Read a line from the original file.</li>
+<li>Split the line into columns at the tab characters using the
+    <code>split()</code> method.</li>
+<li>If line is split into less than six columns, ignore this line and go
+    read the next one.</li>
+<li>Otherwise rejoin the first six columns of the split line back
+    together with tab characters using the <code>join()</code> method. This results
+    in <code>newline</code>.</li>
+<li>If there&#8217;s not a line break character at the end of <code>newline</code> (which
+    will happen if we&#8217;ve cut off the ending column because it was past
+    the sixth column), then add one on.</li>
+<li>Write <code>newline</code> to the output file.</li>
+<li>Repeat 2-7 with the next line of the input file.</li>
+</ol>
+<p>Note that step 4 means that short lines with less than six columns (5
+tabs) don&#8217;t get written to the cleaned file. I haven&#8217;t investigated in
+depth why some rows are too short and whether there&#8217;s a way to fix those
+rows instead of tossing them out, but it&#8217;s unlikely the fix would be
+simple or reliable.</p>
+<p>I run the function to create a cleaned-up tab-separated file called
+<code>ufo_awesome_6col.tsv</code>. (The path to the input file, <code>inpath</code>, was
+already defined).</p>
+<div class="highlight"><pre><span class="n">outpath</span> <span class="o">=</span> <span class="s">&#39;data/ufo/ufo_awesome_6col.tsv&#39;</span>
+<span class="n">ufotab_to_sixcols</span><span class="p">(</span><span class="n">inpath</span><span class="p">,</span> <span class="n">outpath</span><span class="p">)</span>
+</pre></div>
+
+
+<h2>Trying <code>read_table()</code> again.</h2>
+<p>Now I&#8217;ll try using Pandas and <code>read_table()</code> again to load the file into
+a data frame. (Since I know what the column names are supposed to be,
+I&#8217;ll just pass them to the function instead of adding them later.)</p>
+<div class="highlight"><pre><span class="n">ufo</span> <span class="o">=</span> <span class="n">read_table</span><span class="p">(</span><span class="s">&#39;data/ufo/ufo_awesome_6col.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s">&#39;</span><span class="se">\\</span><span class="s">t&#39;</span><span class="p">,</span>
+                  <span class="n">na_values</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="p">,</span>  <span class="n">header</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span>
+                  <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;date_occurred&#39;</span><span class="p">,</span> <span class="s">&#39;date_reported&#39;</span><span class="p">,</span>
+                           <span class="s">&#39;location&#39;</span><span class="p">,</span> <span class="s">&#39;short_desc&#39;</span><span class="p">,</span> <span class="s">&#39;duration&#39;</span><span class="p">,</span>
+                           <span class="s">&#39;long_desc&#39;</span><span class="p">])</span>
+</pre></div>
+
+
+<p>And this now runs without a hitch. We&#8217;ll use the <code>head()</code> and
+<code>to_string()</code> methods of a Pandas data frame to compare the first six
+rows of the data to what&#8217;s shown in the table on p. 14 of <span class="caps">MLFH</span>.</p>
+<div class="highlight"><pre><span class="n">ufo</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">6</span><span class="p">)</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">formatters</span> <span class="o">=</span>
+                       <span class="p">{</span><span class="s">&#39;long_desc&#39;</span> <span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span><span class="p">[</span> <span class="p">:</span><span class="mi">21</span><span class="p">]})</span>
+</pre></div>
+
+
+<p>The dictionary in the <code>formatters</code> argument tells <code>to_string()</code> to only
+print the first 21 characters in the long description. The result is the
+following table:</p>
+<div class="highlight"><pre>   <span class="n">date_occurred</span>  <span class="n">date_reported</span>              <span class="n">location</span>  <span class="n">short_desc</span> <span class="n">duration</span>                <span class="n">long_desc</span>
+<span class="mi">0</span>       <span class="mi">19951009</span>       <span class="mi">19951009</span>         <span class="n">Iowa</span> <span class="n">City</span><span class="p">,</span> <span class="n"><span class="caps">IA</span></span>         <span class="n">NaN</span>      <span class="n">NaN</span>    <span class="n">Man</span> <span class="n">repts</span><span class="p">.</span> <span class="n">witnessing</span>
+<span class="mi">1</span>       <span class="mi">19951010</span>       <span class="mi">19951011</span>         <span class="n">Milwaukee</span><span class="p">,</span> <span class="n"><span class="caps">WI</span></span>         <span class="n">NaN</span>    <span class="mi">2</span> <span class="n">min</span><span class="p">.</span>     <span class="n">Man</span> <span class="n">on</span> <span class="n">Hwy</span> <span class="mi">43</span> <span class="n"><span class="caps">SW</span></span> <span class="n">of</span>
+<span class="mi">2</span>       <span class="mi">19950101</span>       <span class="mi">19950103</span>           <span class="n">Shelton</span><span class="p">,</span> <span class="n"><span class="caps">WA</span></span>         <span class="n">NaN</span>      <span class="n">NaN</span>     <span class="n">Telephoned</span> <span class="n">Report</span><span class="o">:</span><span class="n"><span class="caps">CA</span></span>
+<span class="mi">3</span>       <span class="mi">19950510</span>       <span class="mi">19950510</span>          <span class="n">Columbia</span><span class="p">,</span> <span class="n"><span class="caps">MO</span></span>         <span class="n">NaN</span>    <span class="mi">2</span> <span class="n">min</span><span class="p">.</span>   <span class="n">Man</span> <span class="n">repts</span><span class="p">.</span> <span class="n">son</span><span class="o">&amp;</span><span class="n">apos</span><span class="p">;</span><span class="n">s</span>
+<span class="mi">4</span>       <span class="mi">19950611</span>       <span class="mi">19950614</span>           <span class="n">Seattle</span><span class="p">,</span> <span class="n"><span class="caps">WA</span></span>         <span class="n">NaN</span>      <span class="n">NaN</span>    <span class="n">Anonymous</span> <span class="n">caller</span> <span class="n">rept</span>
+<span class="mi">5</span>       <span class="mi">19951025</span>       <span class="mi">19951024</span>  <span class="n">Brunswick</span> <span class="n">County</span><span class="p">,</span> <span class="n"><span class="caps">ND</span></span>         <span class="n">NaN</span>   <span class="mi">30</span> <span class="n">min</span><span class="p">.</span>   <span class="n">Sheriff</span><span class="o">&amp;</span><span class="n">apos</span><span class="p">;</span><span class="n">s</span> <span class="n">office</span>
+</pre></div>
+
+
+<p>And this matches the authors&#8217; table on p. 14. So we&#8217;re off to a good
+start. In the next post we&#8217;ll clean this data up some more and do some
+munging to get at the information we&#8217;re interested in.</p>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/ml4h-ch1-p1.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/ml4h-ch1-p1.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/ml4h-ch1-p1.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "ml4h-ch1-p1.html";
+          var disqus_url = "http://slendermeans.org/ml4h-ch1-p1.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

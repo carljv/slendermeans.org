@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+  <header class="article-list-title">
+    <h1 class="page-title"> posts in the <strong>Julia</strong> category </h1>
+  </header>
+
+    <div id="content">
+      <div id="post-list">
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/julia-iterators.html" rel = "bookmark"> Tricked out iterators in Julia </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2014-01-13T15:15:00" pubdate> January 13, 2014 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/julia.html"> Julia </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+<script src="./scripts/gadfly.js"></script>
+
+<h2>Introduction</h2>
+<p>I want to spend some time messing about with iterators in Julia. I think they
+not only provide a familiar and useful entry point into Julia&#8217;s type system and dispatch
+model, they&#8217;re also interesting in their own right.<a name="fnm-multdisp" href="#fn-multdisp" class="footnote-mark">1</a> Clever application of iterators can
+help to simplify complicated loops, better express their intent, and improve
+memory usage.</p>
+<p>A word of warning about the code here. Much of the it isn&#8217;t idiomatic Julia and I wouldn&#8217;t
+necessarily recommend using this style in a serious project. I also can&#8217;t speak
+to its performance vis-a-vis more obvious Julian alternatives. In some cases,
+the style of the code examples below may help reduce memory usage, but
+performance is not my main concern. (This may be the first blogpost about Julia
+unconcerned with speed). Instead, I&#8217;m just interested in different ways of
+expressing iteration problems.</p>
+<p>For anyone who&#8217;d like to play along at home, there&#8217;s an IJulia notebook of
+this material on <a href="https://github.com/carljv/Julia-Iterators/blob/master/iterator_tricks.ipynb">Github</a>, which can be viewed on nbviewer <a href="http://nbviewer.ipython.org/urls/raw2.github.com/carljv/Julia-Iterators/master/iterator_tricks.ipynb?create=1">here</a>.</p>
+<h2>The Iterator Protocol</h2>
+<p>What do I mean by iterators?<a name="fnm-iterable" href="#fn-iterable"
+class="footnote-mark">2</a> I mean any <code>I</code> in Julia that works on ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/julia-iterators.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/julia-iterators.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+      </div> <!-- End post-list -->
+<p class="paginator">
+    Page 1 / 1
+</p>
+    </div>
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

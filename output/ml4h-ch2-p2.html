@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch2-p2.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 2, Part 2: Logistic regression with statsmodels </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2012-12-21T04:04:00" pubdate> December 21, 2012 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <h2>Introduction</h2>
+<p>I last left chapter 2 of <em>Maching Learning for Hackers</em> (a long time
+ago), running some kernel density estimators on height and weight data
+(see <a href="../ml4h-ch2-p1.html">here</a>. The next part of the chapter plots a scatterplot of
+weight vs. height and runs a lowess smoother through it. I&#8217;m not going
+to write any more about the lowess function in statsmodels. I&#8217;ve
+discussed some issues with it (i.e. it&#8217;s slow) <a href="../lowess-speed.html">here</a>. And it&#8217;s my
+sense that the lowess <span class="caps">API</span>, as it is now in statsmodels, is not long for
+this world. The code is all in the IPython notebooks in <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/CH2">the Github
+repo</a> and is pretty straightforward.</p>
+<h2>Patsy and statsmodels formulas</h2>
+<p>What I want to skip to here is the logistic regressions the authors run
+to close out the chapter. Back in the spring, I coded up the chapter in
+<a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/CH2/ch2.ipynb">this notebook</a>. At this point, there wasn&#8217;t really much cohesion
+between pandas and statsmodels. You&#8217;d end up doing data exploration and
+munging with pandas, then pulling what you needed out of dataframes into
+numpy arrays, and passing those arrays to statsmodels. (After writing
+seemingly needless boilerplate code like
+<code>X = sm.add_constant(X, prepend = True)</code>. Who&#8217;s out there running all
+these regressions without constant terms, such that it makes sense to
+force the use to explicitly add a constant vector to the data matrix?)</p>
+<p>Over the summer, though, something quite cool happened. <a href="https://patsy.readthedocs.org/en/latest/#">patsy</a>
+brought a formula interface to Python, and it got integrated into a
+number components of statsmodels. Skipper Seabold&#8217;s <a href="http://jseabold.net/presentations/seabold_pydata2012.html#slide1">Pydata
+presentation</a> is a good overview and demo. In a nutshell, statsmodels
+now talks to your pandas dataframes via an expressive &#8220;formula&#8221;
+description of your model.</p>
+<p>For example, imagine we had a dataframe, <code>df</code>, with variables <code>x1</code>,
+<code>x2</code>, and <code>y</code>. If we wanted to regress <code>y</code> on <code>x1</code> and <code>x2</code> with the
+standard statmodels <span class="caps">API</span>, we&#8217;d code something like the following:</p>
+<div class="highlight"><pre><span class="n">Xmat</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">add_constant</span><span class="p">(</span><span class="n">df</span><span class="p">[[</span><span class="s">&#39;x1&#39;</span><span class="p">,</span> <span class="s">&#39;x2&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">prepend</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+<span class="n">yvec</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s">&#39;y&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">ols_model</span> <span class="o">=</span> <span class="n"><span class="caps">OLS</span></span><span class="p">(</span><span class="n">yvec</span><span class="p">,</span> <span class="n">Xmat</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Which is tolerable with short variable names. Once you start using
+longer names or need more <span class="caps">RHS</span> variables it becomes a mess. With patsy
+and the formula <span class="caps">API</span>, you just have:</p>
+<div class="highlight"><pre><span class="n">ols_model</span> <span class="o">=</span> <span class="n">ols</span><span class="p">(</span><span class="s">&#39;y \~ x1 + x2&#39;</span><span class="p">,</span> <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Which is just as simple as using <code>lm</code> in R. You can also specify
+variable transformations and interactions in the formula, without
+needing to pre-compute variable for them. It&#8217;s pretty slick.</p>
+<p>All of this is still brand new, and largely undocumented, so proceed
+with caution. But I&#8217;ve gotten very excited incorporating it into my
+code. Stuff I wrote just 5 or 6 months ago looks clunky and outdated.</p>
+<p>So I&#8217;ve updated the IPython notebook for chapter 2, <a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/CH2/ch2_with_formulas.ipynb">here</a>, to
+incorporate the formula <span class="caps">API</span>. That&#8217;s what I&#8217;ll discuss in the rest of the
+post.</p>
+<h2>Logistic regression with formulas in statmodels</h2>
+<p>The authors run a logistic regression to see if they can use a person&#8217;s
+height and weight to determine their gender. I&#8217;m not really sure why
+you&#8217;d run such a model (or how meaningful it is once you run it, given
+how co-linear height and weight are), but it&#8217;s easy enough for
+illustrating how to mechanically run a logistic regression and use it to
+linearly separate groups.</p>
+<p>The dataset contains variables <code>Height</code>, <code>Weight</code>, and <code>Gender</code>. The
+latter is a string encoded either <code>Male</code> or <code>Female</code>. To run a logistic
+regression, we&#8217;ll want to transform this to a numerical 0/1 variable. We
+can do this a number of ways, but I&#8217;ll use the <code>map</code> method.</p>
+<div class="highlight"><pre><span class="n">heights_weights</span><span class="p">[</span><span class="s">&#39;Male&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">heights_weights</span><span class="p">[</span><span class="s">&#39;Gender&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">({</span><span class="s">&#39;Male&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s">&#39;Female&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>
+</pre></div>
+
+
+<p>The <code>statstmodels.formula.api</code> module has a number of functions,
+including <code>ols</code>, <code>logit</code>, and <code>glm</code>. If we import <code>logit</code> from the
+module we can run a logistic regression easily.</p>
+<div class="highlight"><pre><span class="n">male_logit</span> <span class="o">=</span> <span class="n">logit</span><span class="p">(</span><span class="n">formula</span> <span class="o">=</span> <span class="s">&#39;Male \~ Height + Weight&#39;</span><span class="p">,</span> <span class="n">df</span> <span class="o">=</span> <span class="n">heights_weights</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">male_logit</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+
+
+<p>With these results:</p>
+<div class="highlight"><pre><span class="nx">Optimization</span> <span class="nx">terminated</span> <span class="nx">successfully</span><span class="p">.</span>
+<span class="nx">Current</span> <span class="kd">function</span> <span class="nx">value</span><span class="o">:</span> <span class="mf">2091.297971</span>
+<span class="nx">Iterations</span> <span class="mi">8</span>
+<span class="nx">Logit</span> <span class="nx">Regression</span> <span class="nx">Results</span>
+
+<span class="o">==============================================================================</span>
+<span class="nx">Dep</span><span class="p">.</span> <span class="nx">Variable</span><span class="o">:</span> <span class="nx">Male</span> <span class="nx">No</span><span class="p">.</span> <span class="nx">Observations</span><span class="o">:</span> <span class="mi">10000</span>
+<span class="nx">Model</span><span class="o">:</span> <span class="nx">Logit</span> <span class="nx">Df</span> <span class="nx">Residuals</span><span class="o">:</span> <span class="mi">9997</span>
+<span class="nx">Method</span><span class="o">:</span> <span class="nx"><span class="caps">MLE</span></span> <span class="nx">Df</span> <span class="nx">Model</span><span class="o">:</span> <span class="mi">2</span>
+<span class="nb">Date</span><span class="o">:</span> <span class="nx">Thu</span><span class="p">,</span> <span class="mi">20</span> <span class="nx">Dec</span> <span class="mi">2012</span> <span class="nx">Pseudo</span> <span class="nx">R</span><span class="o">-</span><span class="nx">squ</span><span class="p">.</span><span class="o">:</span> <span class="mf">0.6983</span>
+<span class="nx">Time</span><span class="o">:</span> <span class="mi">14</span><span class="o">:</span><span class="mi">41</span><span class="o">:</span><span class="mi">33</span> <span class="nx">Log</span><span class="o">-</span><span class="nx">Likelihood</span><span class="o">:</span> <span class="o">-</span><span class="mf">2091.3</span>
+<span class="nx">converged</span><span class="o">:</span> <span class="nx">True</span> <span class="nx"><span class="caps">LL</span></span><span class="o">-</span><span class="nx">Null</span><span class="o">:</span> <span class="o">-</span><span class="mf">6931.5</span>
+<span class="nx"><span class="caps">LLR</span></span> <span class="nx">p</span><span class="o">-</span><span class="nx">value</span><span class="o">:</span> <span class="mf">0.000</span>
+
+<span class="o">==============================================================================</span>
+<span class="nx">coef</span> <span class="nx">std</span> <span class="nx">err</span> <span class="nx">z</span> <span class="nx">P</span><span class="err">\</span><span class="o">&gt;|</span><span class="nx">z</span><span class="o">|</span> <span class="cp">[</span><span class="mf">95.0</span><span class="o">%</span> <span class="nx">Conf.</span> <span class="nx">Int.</span><span class="cp">]</span>
+
+<span class="o">------------------------------------------------------------------------------</span>
+<span class="nx">Intercept</span> <span class="mf">0.6925</span> <span class="mf">1.328</span> <span class="mf">0.521</span> <span class="mf">0.602</span> <span class="o">-</span><span class="mf">1.911</span> <span class="mf">3.296</span>
+<span class="nx">Height</span> <span class="o">-</span><span class="mf">0.4926</span> <span class="mf">0.029</span> <span class="o">-</span><span class="mf">17.013</span> <span class="mf">0.000</span> <span class="o">-</span><span class="mf">0.549</span> <span class="o">-</span><span class="mf">0.436</span>
+<span class="nx">Weight</span> <span class="mf">0.1983</span> <span class="mf">0.005</span> <span class="mf">38.663</span> <span class="mf">0.000</span> <span class="mf">0.188</span> <span class="mf">0.208</span>
+
+<span class="o">==============================================================================</span>
+</pre></div>
+
+
+<p>Just for fun, we can also run the logistic regression via a <span class="caps">GLM</span> with a
+binomial family and logit link. This is similar to how I&#8217;d run it in R.</p>
+<div class="highlight"><pre><span class="n">male_glm_logit</span> <span class="o">=</span> <span class="n">glm</span><span class="p">(</span><span class="s">&#39;Male \~ Height + Weight&#39;</span><span class="p">,</span> <span class="n">df</span> <span class="o">=</span>
+<span class="n">heights_weights</span><span class="p">,</span>
+<span class="n">family</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">families</span><span class="o">.</span><span class="n">Binomial</span><span class="p">(</span><span class="n">sm</span><span class="o">.</span><span class="n">families</span><span class="o">.</span><span class="n">links</span><span class="o">.</span><span class="n">logit</span><span class="p">))</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">male_glm_logit</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+
+
+<p>And the results are the same:</p>
+<div class="highlight"><pre><span class="n">Generalized</span> <span class="n">Linear</span> <span class="n">Model</span> <span class="n">Regression</span> <span class="n">Results</span>
+
+<span class="o">==============================================================================</span>
+<span class="n">Dep</span><span class="p">.</span> <span class="n">Variable</span><span class="o">:</span> <span class="n">Male</span> <span class="n">No</span><span class="p">.</span> <span class="n">Observations</span><span class="o">:</span> <span class="mi">10000</span>
+<span class="nl">Model:</span> <span class="n"><span class="caps">GLM</span></span> <span class="n">Df</span> <span class="n">Residuals</span><span class="o">:</span> <span class="mi">9997</span>
+<span class="n">Model</span> <span class="n">Family</span><span class="o">:</span> <span class="n">Binomial</span> <span class="n">Df</span> <span class="n">Model</span><span class="o">:</span> <span class="mi">2</span>
+<span class="n">Link</span> <span class="n">Function</span><span class="o">:</span> <span class="n">logit</span> <span class="n">Scale</span><span class="o">:</span> <span class="mf">1.0</span>
+<span class="nl">Method:</span> <span class="n"><span class="caps">IRLS</span></span> <span class="n">Log</span><span class="o">-</span><span class="n">Likelihood</span><span class="o">:</span> <span class="o">-</span><span class="mf">2091.3</span>
+<span class="nl">Date:</span> <span class="n">Thu</span><span class="p">,</span> <span class="mi">20</span> <span class="n">Dec</span> <span class="mi">2012</span> <span class="n">Deviance</span><span class="o">:</span> <span class="mf">4182.6</span>
+<span class="nl">Time:</span> <span class="mi">14</span><span class="o">:</span><span class="mi">41</span><span class="o">:</span><span class="mi">37</span> <span class="n">Pearson</span> <span class="n">chi2</span><span class="o">:</span> <span class="mf">9.72e+03</span>
+<span class="n">No</span><span class="p">.</span> <span class="n">Iterations</span><span class="o">:</span> <span class="mi">8</span>
+
+<span class="o">==============================================================================</span>
+<span class="n">coef</span> <span class="n">std</span> <span class="n">err</span> <span class="n">t</span> <span class="n">P</span><span class="err">\</span><span class="o">&gt;|</span><span class="n">t</span><span class="o">|</span> <span class="p">[</span><span class="mf">95.0</span><span class="o">%</span> <span class="n">Conf</span><span class="p">.</span> <span class="n">Int</span><span class="p">.]</span>
+
+<span class="o">------------------------------------------------------------------------------</span>
+<span class="n">Intercept</span> <span class="mf">0.6925</span> <span class="mf">1.328</span> <span class="mf">0.521</span> <span class="mf">0.602</span> <span class="o">-</span><span class="mf">1.911</span> <span class="mf">3.296</span>
+<span class="n">Height</span> <span class="o">-</span><span class="mf">0.4926</span> <span class="mf">0.029</span> <span class="o">-</span><span class="mf">17.013</span> <span class="mf">0.000</span> <span class="o">-</span><span class="mf">0.549</span> <span class="o">-</span><span class="mf">0.436</span>
+<span class="n">Weight</span> <span class="mf">0.1983</span> <span class="mf">0.005</span> <span class="mf">38.663</span> <span class="mf">0.000</span> <span class="mf">0.188</span> <span class="mf">0.208</span>
+
+<span class="o">==============================================================================</span>
+</pre></div>
+
+
+<p>Now we can use the coefficients to plot a separating line in height-weight space.</p>
+<div class="highlight"><pre><span class="n">logit_pars</span> <span class="o">=</span> <span class="n">male_logit</span><span class="o">.</span><span class="n">params</span>
+<span class="n">intercept</span> <span class="o">=</span> <span class="o">-</span><span class="n">logit_pars</span><span class="p">[</span><span class="s">&#39;Intercept&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">logit_pars</span><span class="p">[</span><span class="s">&#39;Weight&#39;</span><span class="p">]</span>
+<span class="n">slope</span> <span class="o">=</span> <span class="o">-</span><span class="n">logit_pars</span><span class="p">[</span><span class="s">&#39;Height&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">logit_pars</span><span class="p">[</span><span class="s">&#39;Weight&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<p>Let&#8217;s plot the data, color-coded by sex, and the separating line.</p>
+<div class="highlight"><pre><span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="c"># Women points (coral)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">heights_f</span><span class="p">,</span> <span class="n">weights_f</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;Female&#39;</span><span class="p">,</span>
+<span class="n">mfc</span> <span class="o">=</span> <span class="s">&#39;None&#39;</span><span class="p">,</span> <span class="n">mec</span><span class="o">=</span><span class="s">&#39;coral&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="o">.</span><span class="mi">4</span><span class="p">)</span>
+<span class="c"># Men points (blue)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">heights_m</span><span class="p">,</span> <span class="n">weights_m</span><span class="p">,</span> <span class="s">&#39;.&#39;</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;Male&#39;</span><span class="p">,</span>
+<span class="n">mfc</span> <span class="o">=</span> <span class="s">&#39;None&#39;</span><span class="p">,</span> <span class="n">mec</span><span class="o">=</span><span class="s">&#39;steelblue&#39;</span><span class="p">,</span> <span class="n">alpha</span> <span class="o">=</span> <span class="o">.</span><span class="mi">4</span><span class="p">)</span>
+<span class="c"># The separating line</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">array</span><span class="p">([</span><span class="mi">50</span><span class="p">,</span> <span class="mi">80</span><span class="p">]),</span> <span class="n">intercept</span> <span class="o">+</span> <span class="n">slope</span> <span class="o">*</span> <span class="n">array</span><span class="p">([</span><span class="mi">50</span><span class="p">,</span> <span class="mi">80</span><span class="p">]),</span>
+<span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s">&#39;#<span class="caps">461B7E</span>&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Height (in.)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Weight (lbs.)&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">loc</span><span class="o">=</span><span class="s">&#39;upper left&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><a href="../images/logit_hw_sex_separate.png">
+    <img src="../images/logit_hw_sex_separate.png" width=450px />
+</a></p>
+<h2>Conclusion</h2>
+<p>There are several more examples using Patsy formulas with statsmodels
+functions in later chapters. If you&#8217;re accustomed to R&#8217;s formula
+notation, the transition from running models in R to running models in
+statsmodels is easy. One of the annoying things in Python versus R is
+the need to pull arrays out of pandas dataframes, because the functions
+you want to apply to the data (say estimating models, or plotting) don&#8217;t
+interface with the dataframe, but instead numpy arrays. It&#8217;s not
+terrible, but it adds a layer of friction in the analysis. So it&#8217;s great
+that statsmodels is starting to integrate well with pandas.</p>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/ml4h-ch2-p2.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/ml4h-ch2-p2.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/ml4h-ch2-p2.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "ml4h-ch2-p2.html";
+          var disqus_url = "http://slendermeans.org/ml4h-ch2-p2.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

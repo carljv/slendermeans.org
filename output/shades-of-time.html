@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/shades-of-time.html" rel = "bookmark"> Shades of Time: I don&#8217;t buy it, and that&#8217;s why it&#8217;s so great. </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2012-04-22T04:00:00" pubdate> April 22, 2012 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/data-visualization.html"> Data Visualization </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <p>Over the weekend <a href="http://drewconway.com/zia">Drew Conway</a> posted about a data analysis project
+he&#8217;d just completed called <a href="http://www.drewconway.com/zia/?p=2874"><em>Shades of Time</em></a>. Very briefly, he took a
+<a href="http://www.reddit.com/r/datasets/comments/s0fld/all_time_magazine_covers_march_1923_to_march_2012/">dataset</a> of Time magazine covers from 1923 to March 2012, then used
+some Python libraries to identify the faces in the covers and identify
+the skin tone of each face. The result is a really great
+interactive <a href="http://labs.drewconway.com/time/">visualization</a> implemented in <a href="http://mbostock.github.com/d3/">d3.js</a>.</p>
+<p>From looking at this data, Drew, with some caveats, observes that &#8220;it
+does appear that the variance in skin tones have [sic] changed over
+time, and in fact the tones are getting darker.&#8221; He also notes that
+there are more faces on covers in later years.</p>
+<h2>Why I don&#8217;t believe it</h2>
+<p>There&#8217;s no real statistical testing done here–no formal quantification
+how skin-tone representation on covers is changing over time. Instead, I
+think he&#8217;s drawing his conclusion on the vizualization alone, especially
+the scatterplot in the bottom panel that seems to show more darker tones
+appearing later in the date (starting in the 70&#8217;s, the skin-tone
+dispersion in his data starts to increase).</p>
+<p>He notes that there are difficulties in both identifying faces and skin
+tones. After going through his analysis, I think these algorithms are
+fragile enough, and the categorization of faces and skin tones is poor
+enough, that I don&#8217;t really buy his conclusion that cover face diversity
+is increasing.</p>
+<p>For example, I reviewed many of the data classified with a dark skin
+tone that seemed to be contributing to the visual impression of
+increasing diversity. A good number of them weren&#8217;t faces at all, but
+objects like guns, or parts of the word &#8220;<span class="caps">TIME</span>.&#8221;</p>
+<p>Many others were famous white guys. Here&#8217;s a list I made from my cursory
+review:</p>
+<ol>
+<li>James Taylor (1971)</li>
+<li>Archie Bunker/Carrol O&#8217;Connor (1973)</li>
+<li>Joni Mitchell (1974)</li>
+<li>Gerald Ford (1974, 1975)</li>
+<li>Francisco Franco (1975)</li>
+<li>Jimmy Carter (1976)</li>
+<li>Queen Elizabeth (1976)</li>
+<li>John Irving (1981)</li>
+<li>Ronald Reagan (1985)</li>
+<li>Willem Defoe, Charlie Sheen (1987)</li>
+<li>Ollie North (1987)</li>
+<li>Dan Rather (1988)</li>
+<li>Michael Eisner (1988)</li>
+<li>Statue In Congress (1990)</li>
+<li>Garth Brooks (1992)</li>
+<li>Roger Keith Coleman (1992)</li>
+<li>Serbian Detention Camp Prisoners (1992)</li>
+<li>Michael Chrichton (1995)</li>
+<li>Bill Clinton (I know he&#8217;s the first black president, but I don&#8217;t think that should count) (1998)</li>
+<li>Monica Lewinsky (1998)</li>
+<li>John Travolta (1998)</li>
+<li>Slobodan Milosevic (1999)</li>
+<li>Ted Kaczynski (1999)</li>
+<li>John McCain (2000)</li>
+<li>Jerry Levin (2000)</li>
+<li>George Bush (2000)</li>
+<li>Francis Collins (2000)</li>
+<li>Yoda (2002)</li>
+<li>Trent Lott (2002)</li>
+<li>Joe Wilson (2003)</li>
+<li>Brad Pitt (2004)</li>
+<li>John Kerry (2004)</li>
+<li>George Bush (2004)</li>
+<li>Bono (2006)</li>
+<li>Bill Gates (2006)</li>
+<li>Jesus Christ (2006)</li>
+<li>John McCain (2006)</li>
+<li>Rick Warren (2008)</li>
+<li>Sarah Palin (2008)</li>
+<li>Lloyd Blankfein (2009)</li>
+<li>Tom Hanks (2010)</li>
+<li>Jonathan Franzen (2010)</li>
+<li>George Washington (2010)</li>
+</ol>
+<p>Now, no classification algorithm is perfect, and these covers are
+complicated, heterogeneous inputs. But just from eyeballing it, this one
+seems so inaccurate on this data, that I don&#8217;t trust that the observed
+dispersion is the result of more correctly classified darker faces on
+covers.</p>
+<h2>Why it&#8217;s still awesome</h2>
+<p>While I don&#8217;t think the classification process here is accurate enough
+to let us draw inferences about skin tone diversity, the fact that I
+could come to this conclusion after 30 minutes of poking around on a web
+site really says some interesting things about the process and
+presentation of the project.</p>
+<p>For one, I think it&#8217;s a fantastic use of dynamic visualization. I don&#8217;t
+think any aesthetic aspect of it is novel or noteworthy, instead I think
+it&#8217;s innovative on a more meta level. Often times we think for
+visualizations as serving one of two processes. The first is pre-model:
+exploration of raw data to suggest questions, patterns, or models. The
+second is post-model: presentation of results or model diagnostics.</p>
+<p>I&#8217;ve been skeptical of d3 and similar frameworks, because I&#8217;ve rarely
+seen dynamic or interactive graphs that do a much better job at these
+two types of tasks than static graphs. At least not so much better as to
+justify the added costs of producing them and delivering them to an
+audience. Also, a lot of what I&#8217;ve seen that&#8217;s been represented as cool
+stuff you can do with d3–or Processing, or whatever–is mostly pretty
+junk; stuff like busy stream graphs and chord graphs and other things
+I&#8217;d put in the high-effort/low-reward quadrant of Kaiser Fung&#8217;s
+<a href="http://statisticsforum.wordpress.com/2011/07/31/one-difference-between-statistical-graphics-and-infoviz-is-the-return-on-effort/">return-on-effort matrix</a>.</p>
+<p>The visualization for <em>Shades of Time</em>, though, is impressive to me
+because it&#8217;s not really exploring raw data, or presenting
+results–instead it&#8217;s illustrating the <em>process</em> of analyzing the data.
+To get the list above, I started from the time series chart at the
+bottom that seemed to show increasing diversity. Then I noted the points
+in that chart that I felt were most influencing that conclusion. I could
+then find them in the scrolling chart on the left, click, see on the
+right panel what raw data (what image on what cover) generated that
+point, and determine whether the classifier was giving a meaningful
+result.</p>
+<p>After going through it long enough, I decided there really wasn&#8217;t enough
+meaningful output coming from the classifier for me to comfortably
+believe Drew&#8217;s observation. Nonetheless, I think it&#8217;s incredibly novel
+and useful to have a visualization that lets me so easily do a
+mini-replication of the analysis. This one lets you walk through the
+major steps, from raw data (the covers in the right panel) to
+quantification/classification (the skin tone tiles in the left panel) to
+aggregation and interpretation (the time series scatter plot on the
+bottom).</p>
+<p>It really makes me rethink some of the possibilities of interactive
+graphics. This isn&#8217;t just a <a href="http://www.nytimes.com/interactive/2008/02/23/movies/20080223_REVENUE_GRAPHIC.html">stream graph of box office receipts</a> or
+the <a href="http://www.babynamewizard.com/">Baby Name Wizard</a>, which are mostly just raw data explorers. I
+think it suggests a whole different application and conceptual framework
+for interactive graphics. That is, how do we illustrate to an audience
+the <em>process</em> by which we went from raw data to conclusions, and let
+them follow along and investigate that process?</p>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/shades-of-time.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/shades-of-time.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/shades-of-time.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "shades-of-time.html";
+          var disqus_url = "http://slendermeans.org/shades-of-time.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Slender Means</title><link href="http://slendermeans.org/" rel="alternate"></link><link href="http://slendermeans.org/feeds/data-visualization.atom.xml" rel="self"></link><id>http://slendermeans.org/</id><updated>2012-04-22T04:00:00-04:00</updated><entry><title>Shades of Time: I don’t buy it, and that’s why it’s so great.</title><link href="http://slendermeans.org/shades-of-time.html" rel="alternate"></link><updated>2012-04-22T04:00:00-04:00</updated><author><name>Carl</name></author><id>tag:slendermeans.org,2012-04-22:shades-of-time.html</id><summary type="html">&lt;p&gt;Over the weekend &lt;a href="http://drewconway.com/zia"&gt;Drew Conway&lt;/a&gt; posted about a data analysis project
+he&amp;#8217;d just completed called &lt;a href="http://www.drewconway.com/zia/?p=2874"&gt;&lt;em&gt;Shades of Time&lt;/em&gt;&lt;/a&gt;. Very briefly, he took a
+&lt;a href="http://www.reddit.com/r/datasets/comments/s0fld/all_time_magazine_covers_march_1923_to_march_2012/"&gt;dataset&lt;/a&gt; of Time magazine covers from 1923 to March 2012, then used
+some Python libraries to identify the faces in the covers and identify
+the skin tone of each face. The result is a really great
+interactive &lt;a href="http://labs.drewconway.com/time/"&gt;visualization&lt;/a&gt; implemented in &lt;a href="http://mbostock.github.com/d3/"&gt;d3.js&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;From looking at this data, Drew, with some caveats, observes that &amp;#8220;it
+does appear that the variance in skin tones have [sic] changed over
+time, and in fact the tones are getting darker.&amp;#8221; He also notes that
+there are more faces on covers in later years.&lt;/p&gt;
+&lt;h2&gt;Why I don&amp;#8217;t believe it&lt;/h2&gt;
+&lt;p&gt;There&amp;#8217;s no real statistical testing done here–no formal quantification
+how skin-tone representation on covers is changing over time. Instead, I
+think he&amp;#8217;s drawing his conclusion on the vizualization alone, especially
+the scatterplot in the bottom panel that seems to show more darker tones
+appearing later in the date (starting in the 70&amp;#8217;s, the skin-tone
+dispersion in his data starts to increase).&lt;/p&gt;
+&lt;p&gt;He notes that there are difficulties in both identifying faces and skin
+tones. After going through his analysis, I think these algorithms are
+fragile enough, and the categorization of faces and skin tones is poor
+enough, that I don&amp;#8217;t really buy his conclusion that cover face diversity
+is increasing.&lt;/p&gt;
+&lt;p&gt;For example, I reviewed many of the data classified with a dark skin
+tone that seemed to be contributing to the visual impression of
+increasing diversity. A good number of them weren&amp;#8217;t faces at all, but
+objects like guns, or parts of the word &amp;#8220;&lt;span class="caps"&gt;TIME&lt;/span&gt;.&amp;#8221;&lt;/p&gt;
+&lt;p&gt;Many others were famous white guys. Here&amp;#8217;s a list I made from my cursory
+review:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;James Taylor (1971)&lt;/li&gt;
+&lt;li&gt;Archie Bunker/Carrol O&amp;#8217;Connor (1973)&lt;/li&gt;
+&lt;li&gt;Joni Mitchell (1974)&lt;/li&gt;
+&lt;li&gt;Gerald Ford (1974, 1975)&lt;/li&gt;
+&lt;li&gt;Francisco Franco (1975)&lt;/li&gt;
+&lt;li&gt;Jimmy Carter (1976)&lt;/li&gt;
+&lt;li&gt;Queen Elizabeth (1976)&lt;/li&gt;
+&lt;li&gt;John Irving (1981)&lt;/li&gt;
+&lt;li&gt;Ronald Reagan (1985)&lt;/li&gt;
+&lt;li&gt;Willem Defoe, Charlie Sheen (1987)&lt;/li&gt;
+&lt;li&gt;Ollie North (1987)&lt;/li&gt;
+&lt;li&gt;Dan Rather (1988)&lt;/li&gt;
+&lt;li&gt;Michael Eisner (1988)&lt;/li&gt;
+&lt;li&gt;Statue In Congress (1990)&lt;/li&gt;
+&lt;li&gt;Garth Brooks (1992)&lt;/li&gt;
+&lt;li&gt;Roger Keith Coleman (1992)&lt;/li&gt;
+&lt;li&gt;Serbian Detention Camp Prisoners (1992)&lt;/li&gt;
+&lt;li&gt;Michael Chrichton (1995)&lt;/li&gt;
+&lt;li&gt;Bill Clinton (I know he&amp;#8217;s the first black president, but I don&amp;#8217;t think that should count) (1998)&lt;/li&gt;
+&lt;li&gt;Monica Lewinsky (1998)&lt;/li&gt;
+&lt;li&gt;John Travolta (1998)&lt;/li&gt;
+&lt;li&gt;Slobodan Milosevic (1999)&lt;/li&gt;
+&lt;li&gt;Ted Kaczynski (1999)&lt;/li&gt;
+&lt;li&gt;John McCain (2000)&lt;/li&gt;
+&lt;li&gt;Jerry Levin (2000)&lt;/li&gt;
+&lt;li&gt;George Bush (2000)&lt;/li&gt;
+&lt;li&gt;Francis Collins (2000)&lt;/li&gt;
+&lt;li&gt;Yoda (2002)&lt;/li&gt;
+&lt;li&gt;Trent Lott (2002)&lt;/li&gt;
+&lt;li&gt;Joe Wilson (2003)&lt;/li&gt;
+&lt;li&gt;Brad Pitt (2004)&lt;/li&gt;
+&lt;li&gt;John Kerry (2004)&lt;/li&gt;
+&lt;li&gt;George Bush (2004)&lt;/li&gt;
+&lt;li&gt;Bono (2006)&lt;/li&gt;
+&lt;li&gt;Bill Gates (2006)&lt;/li&gt;
+&lt;li&gt;Jesus Christ (2006)&lt;/li&gt;
+&lt;li&gt;John McCain (2006)&lt;/li&gt;
+&lt;li&gt;Rick Warren (2008)&lt;/li&gt;
+&lt;li&gt;Sarah Palin (2008)&lt;/li&gt;
+&lt;li&gt;Lloyd Blankfein (2009)&lt;/li&gt;
+&lt;li&gt;Tom Hanks (2010)&lt;/li&gt;
+&lt;li&gt;Jonathan Franzen (2010)&lt;/li&gt;
+&lt;li&gt;George Washington (2010)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Now, no classification algorithm is perfect, and these covers are
+complicated, heterogeneous inputs. But just from eyeballing it, this one
+seems so inaccurate on this data, that I don&amp;#8217;t trust that the observed
+dispersion is the result of more correctly classified darker faces on
+covers.&lt;/p&gt;
+&lt;h2&gt;Why it&amp;#8217;s still awesome&lt;/h2&gt;
+&lt;p&gt;While I don&amp;#8217;t think the classification process here is accurate enough
+to let us draw inferences about skin tone diversity, the fact that I
+could come to this conclusion after 30 minutes of poking around on a web
+site really says some interesting things about the process and
+presentation of the project.&lt;/p&gt;
+&lt;p&gt;For one, I think it&amp;#8217;s a fantastic use of dynamic visualization. I don&amp;#8217;t
+think any aesthetic aspect of it is novel or noteworthy, instead I think
+it&amp;#8217;s innovative on a more meta level. Often times we think for
+visualizations as serving one of two processes. The first is pre-model:
+exploration of raw data to suggest questions, patterns, or models. The
+second is post-model: presentation of results or model diagnostics.&lt;/p&gt;
+&lt;p&gt;I&amp;#8217;ve been skeptical of d3 and similar frameworks, because I&amp;#8217;ve rarely
+seen dynamic or interactive graphs that do a much better job at these
+two types of tasks than static graphs. At least not so much better as to
+justify the added costs of producing them and delivering them to an
+audience. Also, a lot of what I&amp;#8217;ve seen that&amp;#8217;s been represented as cool
+stuff you can do with d3–or Processing, or whatever–is mostly pretty
+junk; stuff like busy stream graphs and chord graphs and other things
+I&amp;#8217;d put in the high-effort/low-reward quadrant of Kaiser Fung&amp;#8217;s
+&lt;a href="http://statisticsforum.wordpress.com/2011/07/31/one-difference-between-statistical-graphics-and-infoviz-is-the-return-on-effort/"&gt;return-on-effort matrix&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;The visualization for &lt;em&gt;Shades of Time&lt;/em&gt;, though, is impressive to me
+because it&amp;#8217;s not really exploring raw data, or presenting
+results–instead it&amp;#8217;s illustrating the &lt;em&gt;process&lt;/em&gt; of analyzing the data.
+To get the list above, I started from the time series chart at the
+bottom that seemed to show increasing diversity. Then I noted the points
+in that chart that I felt were most influencing that conclusion. I could
+then find them in the scrolling chart on the left, click, see on the
+right panel what raw data (what image on what cover) generated that
+point, and determine whether the classifier was giving a meaningful
+result.&lt;/p&gt;
+&lt;p&gt;After going through it long enough, I decided there really wasn&amp;#8217;t enough
+meaningful output coming from the classifier for me to comfortably
+believe Drew&amp;#8217;s observation. Nonetheless, I think it&amp;#8217;s incredibly novel
+and useful to have a visualization that lets me so easily do a
+mini-replication of the analysis. This one lets you walk through the
+major steps, from raw data (the covers in the right panel) to
+quantification/classification (the skin tone tiles in the left panel) to
+aggregation and interpretation (the time series scatter plot on the
+bottom).&lt;/p&gt;
+&lt;p&gt;It really makes me rethink some of the possibilities of interactive
+graphics. This isn&amp;#8217;t just a &lt;a href="http://www.nytimes.com/interactive/2008/02/23/movies/20080223_REVENUE_GRAPHIC.html"&gt;stream graph of box office receipts&lt;/a&gt; or
+the &lt;a href="http://www.babynamewizard.com/"&gt;Baby Name Wizard&lt;/a&gt;, which are mostly just raw data explorers. I
+think it suggests a whole different application and conceptual framework
+for interactive graphics. That is, how do we illustrate to an audience
+the &lt;em&gt;process&lt;/em&gt; by which we went from raw data to conclusions, and let
+them follow along and investigate that process?&lt;/p&gt;</summary><category term="python"></category></entry></feed>

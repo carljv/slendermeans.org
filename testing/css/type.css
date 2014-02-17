@@ -1,0 +1,176 @@
+/*
+ * TYPE.CSS: Typographical styles
+ *
+ * Carl Vogel 2013
+ */
+
+
+
+html {
+    /* base font size 20px with 1.45 line-height --
+       'rem' units will scale off this base measure */
+    font: normal 125%/1.5 serif;
+}
+
+body {
+    line-height: inherit;
+}
+
+/********************************************************/
+/*                     NAVIGATION                       */
+/********************************************************/
+nav li {
+    list-style-type: none;
+    font-family: SourceSansPro-Light;
+    font-weight: 300;
+    font-size: 26px;
+    margin-bottom: 10px;
+}
+
+nav li a {
+    text-decoration: none;
+    color: black;
+}
+
+nav li a:hover {
+    color: rgb(175, 175, 175);
+}
+
+/********************************************************/
+/*                      ARTICLES                        */
+/********************************************************/
+article {
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    -o-hyphens: auto;
+    hyphens: auto;
+    word-wrap: break-word;
+    color: #222222;
+    line-height: inherit;
+}
+
+/* --------------
+ * ARTICLE HEADER
+ * -------------- */
+article header {
+
+}
+
+article .post-info {
+
+}
+
+/* ----------
+ * PARAGRAPHS
+ * ---------- */
+article p {
+    font-family: IowanOldStyleBTPro-Roman;
+    margin: auto auto 1.5em; /* bottom margin for paragraphs */
+
+}
+
+article p + p {
+    text-indent: 1.25em; /* indent subsequent paragraphs */
+    margin-top: -1.25em; /* no top margin on subsequent paragraphs */
+}
+
+article p b, strong {
+    font-family: IowanOldStyleBTPro-Bold;
+    font-weight: normal;
+}
+
+article p i, em {
+    font-family: IowanOldStyleBTPro-Italic;
+    font-style: normal;
+}
+
+/* --------
+ * HEADINGS
+ * -------- */
+article h1, h2, h3, h4, h5, h6 {
+    line-height: 1;
+    margin-top: 0;
+    text-rendering: optimizeLegibility;
+    /*  voodoo to enable ligatures and kerning |
+        https://developer.mozilla.org/en-US/docs/CSS/text-rendering */
+    color: #444444;
+}
+
+article h1, h2 {
+    font-family: VerbExCondSemibold;
+    font-weight: normal;
+}
+
+article h3 {
+    font-family: VerbExCondLight-Italic;
+    font-weight: normal;
+    font-size: 1.1rem;
+}
+
+article h1 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+}
+
+article h2 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+article h3 {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+}
+
+
+/* ----
+ * CODE
+ * ---- */
+code {
+    font-family: SourceCodePro-Regular;
+    font-size: .9rem;
+}
+
+ .highlight pre {
+    font-family: SourceCodePro-Regular, monospace;
+    font-size: 0.66rem;
+    padding: 0 0 0 2em;
+    margin: .66rem 0 2em 2em;
+    border-left: dotted 1px gray;
+}
+
+/* -----
+ * LINKS
+ * ----- */
+article p a:link, a:visited {
+    text-decoration: none;
+    color: inherit;
+    border-bottom: dotted 1px;
+}
+
+
+/********************************************************/
+/*                       FOOTER                         */
+/********************************************************/
+
+#credit {
+    font-family: VerbExCondLight;
+    font-size: 14px;
+}
+
+#colophon-link {
+    font-family: SourceSansPro-Regular;
+    font-size: 14px;
+    padding: 2px 10px 0px 10px;
+}
+
+#colophon-link a {
+    text-decoration: none;
+    color: rgb(50, 50, 50);
+}
+
+#colophon-link :hover {
+    color: #E9E9E3;
+    background: rgb(50, 50, 50);
+}

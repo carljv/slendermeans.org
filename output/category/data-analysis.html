@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+  <header class="article-list-title">
+    <h1 class="page-title"> posts in the <strong>Data Analysis</strong> category </h1>
+  </header>
+
+    <div id="content">
+      <div id="post-list">
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/lowess-speed.html" rel = "bookmark"> How do you speed up 40,000 weighted least squares calculations? Skip 36,000 of them. </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-05-14T23:46:00" pubdate> May 14, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/data-analysis.html"> Data Analysis </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <p>Despite having finished all the programming for Chapter 2 of <span class="caps">MLFH</span> a
+while ago, there&#8217;s been a long hiatus since the<a href="../ml4h-ch2-p1.html">first post on that
+chapter</a>.</p>
+<h2>(S)lowess</h2>
+<p>Why the delay? The second part of the code focuses on two procedures:
+lowess scatterplot smoothing, and logistic regression. When implementing
+the former in <a href="http://statsmodels.sourceforge.net/devel/generated/statsmodels.nonparametric.api.lowess.html#statsmodels.nonparametric.api.lowess">statsmodels</a>, I found that it was running <em>dog slow</em> on
+the data&#8212;in this case a scatterplot of 10,000 height-vs.-weight points.
+Indeed, for these 10,000 points, lowess, run with the default
+parameters, required about 23 seconds. After importing modules and
+defining variables according to my <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/CH2">IPython notebook</a>, we can run
+<code>timeit</code> on the function:</p>
+<div class="highlight"><pre><span class="o">%</span><span class="n">timeit</span> <span class="o">-</span><span class="n">n</span> <span class="mi">3</span> <span class="n">lowess</span><span class="o">.</span><span class="n">lowess</span><span class="p">(</span><span class="n">heights</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+</pre></div>
+
+
+<p>This results in</p>
+<div class="highlight"><pre><span class="mi">3</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="o">:</span> <span class="mf">42.6</span> <span class="n">s</span> <span class="n">per</span> <span class="n">loop</span>
+</pre></div>
+
+
+<p>on the machine I&#8217;m writing this on  (a Windows laptop with a 2.67 GHz i5
+processor; timings are faster, but still in the 30 sec. range on my 2.5
+GHz i7 Macbook).</p>
+<p>An R user&#8212;or really a user of any other statistical package&#8212;is going
+to be confused here. We&#8217;re all used to lowess being a relatively
+instantaneous procedure. It&#8217;s an oft-used option for ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/lowess-speed.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/lowess-speed.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+      </div> <!-- End post-list -->
+<p class="paginator">
+    Page 1 / 1
+</p>
+    </div>
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

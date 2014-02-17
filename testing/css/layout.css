@@ -1,0 +1,118 @@
+/*********************************************************
+ * LAYOUT.CSS: Layout for the base template of the site
+ * ----------------------------------------------------
+ *
+ * The site layout is a simple 1-column layout, with
+ * articles or page content in the central column.
+ *
+ * For readability, this column has a width that is
+ * flexible with regards to text size, but not to window
+ * width. The column width is set to be approximately 60
+ * characters of text, regardless of the window/viewport
+ * size.
+ *
+ * The header of the page contains the site graphic/logo
+ * on the left, and a vertical list of navigation links
+ * to the site's pages on the right. This header is a
+ * fixed no. of pixels wide, and centered within the
+ * window.
+ *
+ * The footer of the page contains a short credit on the
+ * left and a link to the site's colophon on the right.
+ * The footer spans the width of the window.
+ *
+ *
+ *             <#LOGO>          <NAV>
+ *    -------------------------------------
+ *    |   | *** GRAPHIC *** |  LINK 1 |   |
+ *    |   | *** FOR THE *** |  LINK 2 |   | << <HEADER #TOP-MATTER>
+ *    |   | *** WEBSITE *** |  LINK 3 |   |
+ *    |   | ** GOES HERE ** |  LINK 4 |   |
+ *    -------------------------------------
+ *    |        |                 |        |
+ *    |        |HEADER           |        |
+      |        |-byline-         |        |
+ *    |        |This is some text|        |
+ *    |        |for an article   |        |  << <ARTICLE>
+ *    |        |it is relatively |        |
+ *    |        |narrow for read- |        |
+ *    |        |ability and does |        |
+ *    |        |not expand with  |        |
+ *    |        |the window.      |        |
+ *    |        |                 |        |
+ *    -------------------------------------
+ *    | Credit                   Colophon |  << <FOOTER>
+ *    -------------------------------------
+ *
+ *
+ * C. Vogel 2013
+ ********************************************************/
+
+
+body {
+    width: 100%;
+}
+
+header {
+    max-width: 700px;
+    height: 300px;
+    margin: 0 auto 50px auto;
+    overflow: hidden;
+}
+
+
+#logo {
+    float: left;
+    height: 300px;
+    width: 475px;
+ }
+
+nav {
+    margin-left: 0;
+    margin-top: 25px;
+    padding-left: 25px;
+    float: left;
+    vertical-middle: center;
+}
+
+/* Articles are centered and around 60 characters wide */
+article {
+    max-width: 700px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Code listings can break out of the article
+   width, since we don't want to break code
+   arbitrarily. */
+article .highlight pre {
+    width: 10000px;
+}
+
+/* --------------------------------------------------------
+ * Footer at bottom of page contains a design/copyright
+ * credit at left and a link to the site's colophon at far
+ * right.
+ * ---------------------------------------------------- */
+
+footer {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    margin: 200px 0 0 0;
+    border-top: solid 1px;
+    overflow: hidden;
+}
+
+#credit {
+    display: inline;
+    text-align: left;
+    padding: 10px;
+}
+
+#colophon-link {
+    display: inline;
+    float: right;
+    text-align: right;
+}

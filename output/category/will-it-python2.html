@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+  <header class="article-list-title">
+    <h1 class="page-title"> posts in the <strong>Will it Python</strong> category </h1>
+  </header>
+
+    <div id="content">
+      <div id="post-list">
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch1-p4.html" rel = "bookmark"> <i>Machine Learning for Hackers</i>, Chapter 1, Part 4: Data aggregation and reshaping. </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-04-26T04:00:00" pubdate> April 26, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <h2>Introduction</h2>
+<p>In the <a href="../ml4h-ch1-p3.html">last part</a> I made some simple summaries of the cleaned <span class="caps">UFO</span>
+data: basic descriptive statistics and historgrams. At the very end, I
+did some simple data aggregation by summing up the sightings by date,
+and plotted the resulting time series. In this part, I&#8217;ll go further
+with the aggregation, totalling sightings by state and month.</p>
+<p>This takeaway from this part is that Pandas dataframes have some
+powerful methods for aggregating and manipulating data. I&#8217;ll show
+<code>groupby</code>, <code>reindex</code>, hierarchical indices, and <code>stack</code> and <code>unstack</code> in
+action.</p>
+<h2>The shape of data: the long and the wide of it</h2>
+<p>The first step in aggregating and reshaping data is to figure out the
+final form you want the data to be in. This form is basically defined by
+<em>content</em> and <em>shape</em>.</p>
+<p>We know what we want the content to be: an entry in the data should give
+the number of sightings in a state/month combination.</p>
+<p>We have two choices for the shape: wide or long. The wide version of
+this data would have months as the rows and states as the columns; it
+would be a 248 by 51 table with the number of sigthings as entries. This ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch1-p4.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch1-p4.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch1-p3.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 1, Part 3: Simple summaries and plots. </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-04-19T04:00:00" pubdate> April 19, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <h2>Introduction</h2>
+<p>See <a href="../ml4h-ch1-p1.html">Part 1</a> and <a href="../ml4h-ch1-p2.html">Part 2</a> for previous work.</p>
+<p>In this part, I&#8217;ll replicate the authors&#8217; exploration of the <span class="caps">UFO</span>
+sighting dates via histograms. The key takeaways:</p>
+<ol>
+<li>The plotting methods in Pandas are easy and useful.</li>
+<li>Unlike R <code>Dates</code>, Python <code>datetimes</code> aren&#8217;t compatible with a lot of
+    mathematical operations. We&#8217;ll see that you can&#8217;t apply quantile or
+    histogram methods to them directly.</li>
+</ol>
+<h2>Quick data summary methods and datetime complications.</h2>
+<p>For those playing along at home, I&#8217;m at p. 19 of the book. The first
+thing the authors do here is get a statistical summary of the sighting
+dates in the data, which are recorded in the <code>DateOccurred</code> variable
+(which I&#8217;ve named <code>date_occurred</code> in my code). This is easy in R using
+the <code>summary</code> function, which provides the minimum, maximum, and
+quartiles of the data by default.</p>
+<p>Pandas has similar functionality, in a method called <code>describe</code>, which
+gives the same for numeric variables, plus the count of non-null values
+and the mean and standard deviation. For example:</p>
+<div class="highlight"><pre><span class="n">s1</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+<span class="k">print</span> <span class="n">s1</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+
+
+<p>outputs what we&#8217;d expect from a series of randomly-generated standard
+normals:</p>
+<div class="highlight"><pre><span class="n">count</span> <span class="mf">100.000000</span>
+<span class="n">mean</span> <span class="o">-</span><span class="mf">0.149274 ...</span></pre></div>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch1-p3.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch1-p3.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch1-p2.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 1, Part 2: Cleaning date and location data </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-04-18T04:00:00" pubdate> April 18, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <h2>Introduction</h2>
+<p>In the <a href="../ml4h-ch1-p1.html">previous post</a>, I loaded the raw <span class="caps">UFO</span> data into a Pandas data
+frame after cleaning up some irregularities in the text file. Since
+we&#8217;re ultimately concerned with analyzing <span class="caps">UFO</span> sightings over time and
+space, the next step is to clean those variables and prepare them for
+analysis and vizualization.</p>
+<p>Some Python techniques to note in this part are:</p>
+<ul>
+<li>Like in the last part, Python string methods are going to come in
+    really handy, and be a simple, expressive solution to a lot of
+    problems.</li>
+<li>When those aren&#8217;t enough, Python has a pretty straightforward set of
+    functions for implementing regular expressions.</li>
+<li>The <code>map()</code> method in Pandas can be used to &#8220;vectorize&#8221; functions
+    along a Series (i.e. a data frame column) and is similar to R&#8217;s
+    <code>apply</code>. In general, using a NumPy <code>ufunc</code> (vectorized function) is
+    preferable, but not all operations can be expressed in <code>ufunc</code>s.
+    This is especially true for non-numeric operations, such as for
+    strings or dates.</li>
+</ul>
+<h2>Cleaning dates: mapping and subsetting.</h2>
+<p>The first two columns of the data are dates in <code>YYMMDDD</code> format, and
+Pandas imported them as integers. R has a function, <code>as.Date</code> that will
+operate on a vector ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch1-p2.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch1-p2.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch1-p1.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 1, Part 1: Loading data </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-04-14T04:00:00" pubdate> April 14, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <h2>Preface</h2>
+<p>This is my first <em>Will it Python?</em> post. These posts document
+my experiences trying to port complete and interesting R projects to
+Python. I&#8217;m beginning by going through the recently published <a href="http://shop.oreilly.com/product/0636920018483.do"><em>Machine
+Learning for Hackers</em></a> (<span class="caps">MLFH</span>) by <a href="http://www.drewconway.com">Drew Conway</a> and <a href="http://johnmyleswhite.com">John Miles
+White</a>.</p>
+<p>More information on the posts is <a href="../pages/will-it-python.html">here</a>, and archives are <a href="../category/will-it-python.html">here</a>.</p>
+<h2>Introduction</h2>
+<p>The first chapter of <span class="caps">MLFH</span> is a gentle introduction to loading,
+manipulating and graphing data in R. To keep the tutorial interesting,
+the authors have found a fun dataset of <a href="https://github.com/johnmyleswhite/ML_for_Hackers/tree/master/01-Introduction/data/ufo"><span class="caps">UFO</span> sightings</a> to work
+through.</p>
+<p>Since this chapter is mainly devoted to loading and manipulating data, a
+lot of the R functionality they exploit is going to have an analog in
+<a href="http://pandas.pydata.org/">Pandas</a>. Even though there&#8217;s not too much exciting going on in this
+chapter, it&#8217;s a great way to explore how basic data tasks get done in
+Python. It turns out there are some interesting differences between how
+R and Python handle even this simple stuff.</p>
+<p>In this first post, I&#8217;ll focus on just getting the data into the work
+environment. The complete code for the chapter is located in a Github
+repo, <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/CH1">here</a>.</p>
+<h2>Data with inconsistent column lengths: break ...</h2>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch1-p1.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch1-p1.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+      </div> <!-- End post-list -->
+<p class="paginator">
+        <a href="http://slendermeans.org/category/will-it-python.html">&laquo;</a>
+    Page 2 / 2
+</p>
+    </div>
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

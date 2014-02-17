@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div id="archive-content">
+    <div id="archive-list">
+      <h1 class="page-title">Archives</h1>
+      <dl>
+        {% for article in dates %}
+          <dt class="archive-date">{{ article.locale_date }}</dt>
+          <dd class="archive-title"><a href="{{ SITEURL }}/{{ article.url }}">{{ article.title }}</a></dd>
+        {% endfor %}
+      </dl>
+    </div>
+
+    <nav id="category-list">
+      <h1 class="page-title">Categories</h1>
+        <ul>
+          {% for category, articles in categories %}
+           <li class="category"><a class="category-link" href="{{ SITEURL }}/{{ category.url }}">{{ category }}</a>  {{ articles|length() }}</li>
+          {% endfor %}
+        </ul>
+    </nav>
+  </div>
+{% endblock %}

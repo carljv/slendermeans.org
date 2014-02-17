@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch2-p1.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 2, Part 1: Summary stats and density estimators </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2012-05-01T04:00:00" pubdate> May 01, 2012 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <p>Chapter 2 of <span class="caps">MLFH</span> summarizes techniques for exploring your data:
+determining data types, computing quantiles and other summary
+statistics, and plotting simple exploratory graphics. I&#8217;m not going to
+replicate it in its entirety; I&#8217;m just going to hit some of the more
+involved or interesting parts. The IPython notebook I created for this
+chapter, which lives <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/CH2">here</a>, contains more code than I&#8217;ll present on
+the blog.</p>
+<p>This part&#8217;s highlights:</p>
+<ol>
+<li>Pandas objects, as we&#8217;ve seen before, have methods that provide
+    simple summary statistics.</li>
+<li>The plotting methods in Pandas let you pass parameters to the
+    Matplotlib functions they call. I&#8217;ll use this feature to mess around
+    with histogram bins.</li>
+<li>The <code>gaussian_kde</code> (kernel density estimator) function in
+    <code>scipy.stats.kde</code> provides density estimates similar to R&#8217;s
+    <code>density</code> function for Gaussian kernels. The <code>kdensity</code> function, in
+    <code>statsmodels.nonparametric.kde</code> provides that and other kernels, but
+    given the state of <code>statsmodels</code>&#8216; documentation, you would probably
+    only find this function by accident. It&#8217;s also substantially slower
+    than <code>gaussian_kde</code> on large data. *<em>[Not quite so! See
+    update at the end.]</em></li>
+</ol>
+<h2>Height and weight data</h2>
+<p>The data analyzed in this chapter are the sexes, heights and weights, of
+10,000 people. The raw file is a <span class="caps">CSV</span> that I import using <code>read_table</code> in
+Pandas:</p>
+<div class="highlight"><pre><span class="n">heights_weights</span> <span class="o">=</span>
+<span class="n">read_table</span><span class="p">(</span><span class="s">&#39;data/01_heights_weights_genders.csv&#39;</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Inspecting the data with <code>head</code>,</p>
+<div class="highlight"><pre><span class="k">print</span> <span class="n">heights_weights</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+
+
+<p>gives us:</p>
+<div class="highlight"><pre> <span class="n">Gender</span>    <span class="n">Height</span>     <span class="n">Weight</span>
+<span class="mi">0</span>  <span class="n">Male</span> <span class="mf">73.847017</span> <span class="mf">241.893563</span>
+<span class="mi">1</span>  <span class="n">Male</span> <span class="mf">68.781904</span> <span class="mf">162.310473</span>
+<span class="mi">2</span>  <span class="n">Male</span> <span class="mf">74.110105</span> <span class="mf">212.740856</span>
+<span class="mi">3</span>  <span class="n">Male</span> <span class="mf">71.730978</span> <span class="mf">220.042470</span>
+<span class="mi">4</span>  <span class="n">Male</span> <span class="mf">69.881796</span> <span class="mf">206.349801</span>
+<span class="mi">5</span>  <span class="n">Male</span> <span class="mf">67.253016</span> <span class="mf">152.212156</span>
+<span class="mi">6</span>  <span class="n">Male</span> <span class="mf">68.785081</span> <span class="mf">183.927889</span>
+<span class="mi">7</span>  <span class="n">Male</span> <span class="mf">68.348516</span> <span class="mf">167.971110</span>
+<span class="mi">8</span>  <span class="n">Male</span> <span class="mf">67.018950</span> <span class="mf">175.929440</span>
+<span class="mi">9</span>  <span class="n">Male</span> <span class="mf">63.456494</span> <span class="mf">156.399676</span>
+</pre></div>
+
+
+<p>So it looks like heights are in inches, and weights are in pounds. It
+also looks like the dataset is evenly split between men and women, since</p>
+<div class="highlight"><pre><span class="n">heights_weights</span><span class="p">.</span><span class="n">groupby</span><span class="p">(</span><span class="err">&#39;</span><span class="n">Gender</span><span class="err">&#39;</span><span class="p">)[</span><span class="err">&#39;</span><span class="n">Gender</span><span class="err">&#39;</span><span class="p">].</span><span class="n">count</span><span class="p">()</span>
+</pre></div>
+
+
+<p>results in:</p>
+<div class="highlight"><pre><span class="n">Gender</span>
+<span class="n">Female</span> <span class="mi">5000</span>
+<span class="n">Male</span> <span class="mi">5000</span>
+</pre></div>
+
+
+<p>The data are simple, clean, and appear to have imported correctly. So,
+we can start looking at some simple summaries.</p>
+<h2>Numeric summaries, especially quantiles</h2>
+<p>The first part of Chapter 2 covers the basic summary statistics: means,
+medians, variances, and quantiles. The authors hand-roll the mean,
+median, and variance functions to see how each is calculated. All of
+these methods are available as methods to Pandas series, or as NumPy
+functions (which are typically what&#8217;s called by equivalent Pandas
+methods).</p>
+<p>The <code>describe</code> method of Pandas series and data frames, which we saw in
+<a href="../ml4h-ch1-p3.html">Part 3 of Chapter 1</a>, gives summary statistics. The summary stats for
+the height variable are:</p>
+<div class="highlight"><pre><span class="n">heights</span> <span class="o">=</span> <span class="n">heights_weights</span><span class="p">[</span><span class="s">&#39;Height&#39;</span><span class="p">]</span>
+<span class="n">heights</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+
+<span class="n">count</span> <span class="mf">10000.000000</span>
+<span class="n">mean</span> <span class="mf">66.367560</span>
+<span class="n">std</span> <span class="mf">3.847528</span>
+<span class="nb">min</span> <span class="mf">54.263133</span>
+<span class="mi">25</span><span class="o">%</span> <span class="mf">63.505620</span>
+<span class="mi">50</span><span class="o">%</span> <span class="mf">66.318070</span>
+<span class="mi">75</span><span class="o">%</span> <span class="mf">69.174262</span>
+<span class="nb">max</span> <span class="mf">78.998742</span>
+</pre></div>
+
+
+<p>The heights all lay within a reasonable range, with no apparent outliers
+from bad data. The default quantile range in <code>describe</code> is 50%, so we
+get the 75th and 25th percentiles. This can be changed with the
+<code>percentile_width</code> argument; for example, <code>percentile_width = 90</code> would
+give the 95th and 5th percentiles.</p>
+<p>There doesn&#8217;t seem to be a direct analog to R&#8217;s <code>range</code> function, which
+calculates the difference between the maximum and minimum value of a
+vector, nor for the <code>quantile</code>, which can calculate the quantiles at any
+given a series of probabilities. These are easy enough to replicate
+though.</p>
+<blockquote>
+<p><strong>Note: </strong>Nathaniel Smith, in comments, points out that R&#8217;s <code>range</code>
+function doesn&#8217;t do this either, but just returns the min and max of a
+vector. There <em>is</em> a function for this in NumPy, though: the
+<code>my_range</code> function below gives the same result as would
+<code>np.ptp(heights.values)</code>. <code>ptp</code> is the &#8220;peak-to-peak&#8221; (min-to-max)
+function.</p>
+</blockquote>
+<p>Range is trivial:</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">my_range</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Difference between the max and min of an array or Series</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="k">return</span> <span class="n">s</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Calling this, we get a range of 78.99 &minus; 54.26 = 24.63 inches.</p>
+<p>Next, a <code>quantiles</code> function to mimic R&#8217;s. We can just make a wrapper
+around the <code>quantile</code> method, mapping it along a sequence of provided
+probabilities.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">my_quantiles</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Calculate quantiles of a series.</span>
+
+<span class="sd">Parameters:</span>
+<span class="sd">-----------</span>
+<span class="sd">s : a pandas Series</span>
+<span class="sd">prob : a tuple (or other iterable) of probabilities at</span>
+<span class="sd">which to compute quantiles. Must be an iterable,</span>
+<span class="sd">even for a single probability (e.g. prob = (0.50,)</span>
+<span class="sd">not prob = 0.50).</span>
+
+<span class="sd">Returns:</span>
+<span class="sd">--------</span>
+<span class="sd">A pandas series with the probabilities as an index.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="n">q</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">prob</span><span class="p">]</span>
+<span class="k">return</span> <span class="n">Series</span><span class="p">(</span><span class="n">q</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">prob</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Note that the default argument gives quartiles. We can get deciles by
+calling:</p>
+<div class="highlight"><pre><span class="k">print</span> <span class="n">my_quantiles</span><span class="p">(</span><span class="n">heights</span><span class="p">,</span> <span class="n">prob</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">1.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">))</span>
+</pre></div>
+
+
+<p>which spits out:</p>
+<div class="highlight"><pre><span class="mf">0.0</span> <span class="mf">54.263133</span>
+<span class="mf">0.1</span> <span class="mf">61.412701</span>
+<span class="mf">0.2</span> <span class="mf">62.859007</span>
+<span class="mf">0.3</span> <span class="mf">64.072407</span>
+<span class="mf">0.4</span> <span class="mf">65.194221</span>
+<span class="mf">0.5</span> <span class="mf">66.318070</span>
+<span class="mf">0.6</span> <span class="mf">67.435374</span>
+<span class="mf">0.7</span> <span class="mf">68.558072</span>
+<span class="mf">0.8</span> <span class="mf">69.811620</span>
+<span class="mf">0.9</span> <span class="mf">71.472149</span>
+<span class="mf">1.0</span> <span class="mf">78.998742</span>
+</pre></div>
+
+
+<blockquote>
+<p><strong>Note</strong>: the <code>quantiles</code> function I&#8217;ve written is a little awkward
+when dealing with a single quantile. Because the list comprehension
+that computes the qunatiles requires that the <code>prob</code> argument be an
+iterable, you would have to pass a list, tuple, array or other
+iterable with a single value. You can&#8217;t just pass it a float. I&#8217;ve hit
+this issue a few times writing Python functions–where it&#8217;s difficult
+to make code robust to both iterable and singleton arguments. If
+anyone has tips on this (should I really be doing type checking?), I&#8217;d
+be thrilled to hear them.</p>
+</blockquote>
+<h2>Histograms</h2>
+<p>Next the authors mess around with histograms and density plots to
+explore the distribution of the data. Noting that different bin sizes
+for histograms can affect how we perceive the data&#8217;s distribution, they
+plot histograms for a few different bin widths.</p>
+<p>In Matplotlib, bins are not specified by their width, as is possible
+ggplot. We can either give Matplotlib the number of bins we want it to
+plot, or specify the actual bin-edge locations. It&#8217;s not difficult to
+translate a desired bin width into either one of these types of
+argument. I&#8217;ll provide the sequence of bins.</p>
+<p>First, 1-inch bins:</p>
+<div class="highlight"><pre><span class="n">bins1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">heights</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">heights</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">heights</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span> <span class="o">=</span> <span class="n">bins1</span><span class="p">,</span> <span class="n">fc</span> <span class="o">=</span> <span class="s">&#39;steelblue&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><a href="../images/height_hist_bins1.png">
+  <img src= "../images/height_hist_bins1.png" width=450px />
+</a></p>
+<p>Note how I&#8217;m using the Pandas <code>hist</code> method, which, using a <code>**kwargs</code>
+argument, can pass parameters to the Matplotlib plotting functions.
+Next, 5-inch bins:</p>
+<div class="highlight"><pre><span class="n">bins5</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">heights</span><span class="o">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">heights</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mf">5.</span><span class="p">)</span>
+<span class="n">heights</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span> <span class="o">=</span> <span class="n">bins5</span><span class="p">,</span> <span class="n">fc</span> <span class="o">=</span> <span class="s">&#39;steelblue&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><a href="../images/height_hist_bins5.png">
+  <img src= "../images/height_hist_bins5.png" width=450px />
+</a></p>
+<p>And finally, 0.001-inch bins:</p>
+<div class="highlight"><pre><span class="n">bins001</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="n">heights</span><span class="p">.</span><span class="n">min</span><span class="p">(),</span> <span class="n">heights</span><span class="p">.</span><span class="n">max</span><span class="p">(),</span> <span class="mf">.001</span><span class="p">)</span>
+<span class="n">heights</span><span class="p">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span> <span class="o">=</span> <span class="n">bins001</span><span class="p">,</span> <span class="n">fc</span> <span class="o">=</span> <span class="err">&#39;</span><span class="n">steelblue</span><span class="err">&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">savefig</span><span class="p">(</span><span class="err">&#39;</span><span class="n">height_hist_bins001</span><span class="p">.</span><span class="n">png</span><span class="err">&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p><a href="../images/height_hist_bins001.png">
+  <img src= "../images/height_hist_bins001.png" width=450px />
+</a></p>
+<p>These all match the figures in the book, so I&#8217;m probably doing it right.</p>
+<h2>Kernel density estimators in SciPy and statsmodels</h2>
+<p>R&#8217;s <code>density</code> function computes kernel density estimates. The default
+kernel is Gaussian, but you can also use Epanechnikov, rectangular,
+triangular, biweight, cosine kernels.</p>
+<p>In Python, it looks like you have two options for kernel density. The
+first is <code>gaussian_kde</code> from the <code>scipy.stats.kde</code> module. This provides
+a Gaussian kernel density estimate only. The other is <code>kdensity</code> in the
+<code>statsmodels.nonparametric.kde</code> module, which provides alternative
+kernels similar to R.</p>
+<p>I actually wasn&#8217;t aware of the <code>kdensity</code> function for a while, until I
+stumbled upon a mention of it on a mailing list archive. I couldn&#8217;t find
+it in the statsmodels <a href="http://statsmodels.sourceforge.net/">documentation</a>. Statsmodels, generally, seems
+to have a lot of undocumented functionality; not surprising for a young,
+rapidly-expanding project.</p>
+<p>Playing with both functions, I found some pros and cons for each.
+Obviously <code>kdensity</code> provides an option of kernels, whereas
+<code>gaussian_kde</code> does not. <code>kdensity</code> also generates simpler output than
+<code>gaussian_kde</code>. <code>kdensity</code> provides a tuple of two arrays–the grid of
+points at which the density was estimated, and the estimated density of
+those points. <code>gaussian_kde</code> provides an object that you have to
+evaluate on a set of points to get an array of estimated densities. So
+essentially, you&#8217;re calling it twice, and I don&#8217;t see much point to that
+redundancy.</p>
+<p>On the other hand <code>kdensity</code> gets <em>much</em> slower than <code>gaussian_kde</code> as
+the number of points increases. For the 10,000 points in the = <code>heights</code>
+array, <code>gaussian_kde</code> took about 3.3 seconds to output the array of
+estimated densities. <code>kdensity</code> wasn&#8217;t finished after several minutes. I
+haven&#8217;t looked carefully at the source code of the two functions, but I
+assume <code>kdensity</code>&#8216;s problem is that at some point it creates a temporary
+<code>NxN</code> array, which for <code>N = 10,000</code> is going to gum things up. Setting
+the <code>gridsize</code> argument in <code>kdensity</code> to something even as large as
+<code>5000</code>, cuts the size of the temporary array in half, and reduces the
+running time to about 3 seconds.</p>
+<p>This is probably worth exploring in a future post. In the meantime, I&#8217;m
+going stick with <code>gaussian_kde</code> and plot some densities.
+<strong>Note:</strong> See the update below. I&#8217;ve
+updated the <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/CH2" title="Chapter 2 github repo">IPython notebook</a> for this chapter to use Statsmodels&#8217;
+<span class="caps">KDE</span> class instead of SciPy.]</p>
+<p>First, heights:</p>
+<div class="highlight"><pre><span class="n">density</span> <span class="o">=</span> <span class="n">kde</span><span class="o">.</span><span class="n">gaussian_kde</span><span class="p">(</span><span class="n">heights</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">heights</span><span class="o">.</span><span class="n">values</span><span class="p">),</span>
+<span class="n">density</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">heights</span><span class="o">.</span><span class="n">values</span><span class="p">)))</span>
+</pre></div>
+
+
+<p><a href="../images/heights_density.png">
+  <img src= "../images/heights_density.png" width=450px />
+</a></p>
+<p>The sorting of the <code>heights</code> array is to make the lines connect nicely.
+Otherwise, the lines will connect from point-to-point in the order they
+occur in the array; we want the density curve to connect points
+left-to-right.</p>
+<p>Notice the slight bi-modality in the figure. What we&#8217;re likely seeing is
+a mixture of male and female distributions. We can plot those
+separately.</p>
+<div class="highlight"><pre><span class="c"># Pull out male and female heights as arrays over which to compute densities</span>
+<span class="n">heights_m</span> <span class="o">=</span> <span class="n">heights</span><span class="p">[</span><span class="n">heights_weights</span><span class="p">[</span><span class="s">&#39;Gender&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;Male&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">heights_f</span> <span class="o">=</span> <span class="n">heights</span><span class="p">[</span><span class="n">heights_weights</span><span class="p">[</span><span class="s">&#39;Gender&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;Female&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">density_m</span> <span class="o">=</span> <span class="n">kde</span><span class="o">.</span><span class="n">gaussian_kde</span><span class="p">(</span><span class="n">heights_m</span><span class="p">)</span>
+<span class="n">density_f</span> <span class="o">=</span> <span class="n">kde</span><span class="o">.</span><span class="n">gaussian_kde</span><span class="p">(</span><span class="n">heights_f</span><span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">heights_m</span><span class="p">),</span> <span class="n">density_m</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">heights_m</span><span class="p">)),</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;Male&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">heights_f</span><span class="p">),</span> <span class="n">density_f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">heights_f</span><span class="p">)),</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;Female&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+
+
+<p><a href="../images/height_density_bysex.png">
+  <img src= "../images/height_density_bysex.png" width=450px />
+</a></p>
+<p>We also have a weight variable we can plot.</p>
+<div class="highlight"><pre><span class="n">weights_m</span> <span class="o">=</span> <span class="n">heights_weights</span><span class="p">[</span><span class="n">heights_weights</span><span class="p">[</span><span class="s">&#39;Gender&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;Male&#39;</span><span class="p">][</span><span class="s">&#39;Weight&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">weights_f</span> <span class="o">=</span> <span class="n">heights_weights</span><span class="p">[</span><span class="n">heights_weights</span><span class="p">[</span><span class="s">&#39;Gender&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s">&#39;Female&#39;</span><span class="p">][</span><span class="s">&#39;Weight&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">density_m</span> <span class="o">=</span> <span class="n">kde</span><span class="o">.</span><span class="n">gaussian_kde</span><span class="p">(</span><span class="n">weights_m</span><span class="p">)</span>
+<span class="n">density_f</span> <span class="o">=</span> <span class="n">kde</span><span class="o">.</span><span class="n">gaussian_kde</span><span class="p">(</span><span class="n">weights_f</span><span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">weights_m</span><span class="p">),</span> <span class="n">density_m</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">weights_m</span><span class="p">)),</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;Male&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">weights_f</span><span class="p">),</span> <span class="n">density_f</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">weights_f</span><span class="p">)),</span> <span class="n">label</span> <span class="o">=</span> <span class="s">&#39;Female&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+
+
+<p><a href="../images/weight_density_bysex.png">
+  <img src= "../images/weight_density_bysex.png" width=450px />
+</a></p>
+<p>To finish up, let&#8217;s move each density plot to its own subplot, to match
+Figure 2-11 on page 51.</p>
+<div class="highlight"><pre><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrows</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sharex</span> <span class="o">=</span> <span class="n">True</span><span class="p">,</span> <span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">hspace</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">sort</span><span class="p">(</span><span class="n">weights_f</span><span class="p">),</span> <span class="n">density_f</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">sort</span><span class="p">(</span><span class="n">weights_f</span><span class="p">)),</span>
+<span class="n">label</span> <span class="o">=</span> <span class="err">&#39;</span><span class="n">Female</span><span class="err">&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">xaxis</span><span class="p">.</span><span class="n">tick_top</span><span class="p">()</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">legend</span><span class="p">()</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">sort</span><span class="p">(</span><span class="n">weights_m</span><span class="p">),</span> <span class="n">density_m</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">sort</span><span class="p">(</span><span class="n">weights_m</span><span class="p">)),</span>
+<span class="n">label</span> <span class="o">=</span> <span class="err">&#39;</span><span class="n">Male</span><span class="err">&#39;</span><span class="p">)</span>
+<span class="n">axes</span><span class="p">[</span><span class="mi">1</span><span class="p">].</span><span class="n">legend</span><span class="p">()</span>
+</pre></div>
+
+
+<p><a href="../images/weight_density_bysex_sublot.png">
+  <img src= "../images/weight_density_bysex_subplot.png" width=450px />
+</a></p>
+<p>Here I&#8217;m using the <code>subplots</code> function, same as in <a href="../ml4h-ch1-p5.html">Part 5 of Chapter
+1</a>, and sharing the x-axis to make clear the difference between the
+distributions&#8217; central tendencies.</p>
+<h2>Conclusion</h2>
+<p>I&#8217;ll wrap up Chapter 2 in the next post, where I&#8217;ll look at lowess
+smoothing in Statsmodels, and get a little taste of logistic regression.</p>
+<h2>Update!</h2>
+<p>Statsmodels honcho skipper seabold sets me straight in the comments.
+While the <code>kdensity</code> function is slow, statsmodels has an implementation
+which uses Fast Fourier Transforms for Gaussian kernels and is
+substantially faster than Scipy&#8217;s <code>gaussian_kde</code>.</p>
+<p>For the heights array:</p>
+<div class="highlight"><pre><span class="c"># Create a <span class="caps">KDE</span> object</span>
+<span class="n">heights_kde</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">nonparametric</span><span class="o">.</span><span class="n">kde</span><span class="o">.</span><span class="n"><span class="caps">KDE</span></span><span class="p">(</span><span class="n">heights</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+
+<span class="c"># Estimate the density by fitting the object (default Gaussian kernel via <span class="caps">FFT</span>)</span>
+<span class="n">heights_kde</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+</pre></div>
+
+
+<p>We can then plot this vector of estimated densities,
+<code>heights_kde.density</code> against the points in <code>heights_kde.support</code>.</p>
+<p>I&#8217;ve updated the <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/CH2" title="Chapter 2 github repo">IPython notebook</a> for this chapter to use
+Statsmodels&#8217; <span class="caps">KDE</span> throughout, so check it out for more detail.</p>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/ml4h-ch2-p1.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/ml4h-ch2-p1.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/ml4h-ch2-p1.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "ml4h-ch2-p1.html";
+          var disqus_url = "http://slendermeans.org/ml4h-ch2-p1.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

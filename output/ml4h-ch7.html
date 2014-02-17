@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch7.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 7: Numerical optimization with deterministic and stochastic  methods </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2013-02-12T18:51:00" pubdate> February 12, 2013 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <h2>Introduction</h2>
+<p>Chapter 7 of <em>Machine Learning for Hackers</em> is about numerical
+optimization. The authors organize the chapter around two examples of
+optimization. The first is a straightforward least-squares problem like
+that we&#8217;ve encountered already doing linear regressions, and is amenable
+to standard iterative algorithms (e.g. gradient descent). The second is
+a problem with a discrete search space, not clearly differentiable, and
+so lends itself to a stochastic/heuristic optimization technique (though
+we&#8217;ll see the optimization problem is basically artificial). The first
+problem gives us a chance to play around with Scipy&#8217;s optimization
+routines. The second problem has us hand-coding a Metropolis algorithm;
+this doesn&#8217;t show off much new Python, but it&#8217;s fun nonetheless.</p>
+<p>The notebook for this chapter is at the github report <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/ch7">here</a>, or you
+can view it online via nbviewer <a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/ch7/ch7.ipynb">here</a>.</p>
+<h2>Ridge regression by least-squares</h2>
+<p>In <a href="../ml4h-ch6.html">chapter 6</a> we estimated <span class="caps">LASSO</span> regressions, which added an L1
+penalty on the parameters to the <span class="caps">OLS</span> loss-function. The ridge regression
+works the same way, but applies an L2 penalty to the parameters. The
+ridge regression is a somewhat more straightforward optimization
+problem, since the L2 norm we use gives us a differentiable loss
+function.</p>
+<p>In this example, we&#8217;ll regress weight on height, similar to <a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/ch5/ch5.ipynb">chapter
+5</a>. We can specify the loss (sum of squared errors) function for the
+ridge regression with the following function in Python:</p>
+<div class="highlight"><pre><span class="n">y</span> <span class="o">=</span> <span class="n">heights_weights</span><span class="p">[</span><span class="s">&#39;Weight&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+<span class="n">Xmat</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">add_constant</span><span class="p">(</span><span class="n">heights_weights</span><span class="p">[</span><span class="s">&#39;Height&#39;</span><span class="p">],</span> <span class="n">prepend</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">ridge_error</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">Xmat</span><span class="p">,</span> <span class="n">lam</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Compute <span class="caps">SSE</span> of the ridge regression.</span>
+<span class="sd">    This is the normal regression <span class="caps">SSE</span>, plus the</span>
+<span class="sd">    L2 cost of the parameters.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">predicted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Xmat</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
+    <span class="n">sse</span> <span class="o">=</span> <span class="p">((</span><span class="n">y</span> <span class="o">-</span> <span class="n">predicted</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">sse</span> <span class="o">+=</span> <span class="n">lam</span> <span class="o">*</span> <span class="p">(</span><span class="n">params</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">sse</span>
+</pre></div>
+
+
+<p>The authors use R&#8217;s <code>optim</code> function, which defaults to the Nelder-Mead
+simplex algorithm. This algorithm doesn&#8217;t use any gradient or Hessian
+information to optimize the function. We&#8217;ll want to try out some
+gradient methods, though. Even though the functions for these methods
+will compute numerical gradients and Hessians for us, for the ridge
+problem these are easy enough to specify explicitly.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">ridge_grad</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">Xmat</span><span class="p">,</span> <span class="n">lam</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    The gradiant of the ridge regression <span class="caps">SSE</span>.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">grad</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Xmat</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">Xmat</span><span class="p">),</span> <span class="n">params</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Xmat</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="n">grad</span> <span class="o">+=</span> <span class="n">lam</span> <span class="o">*</span> <span class="n">params</span>
+    <span class="n">grad</span> <span class="o">*=</span> <span class="mi">2</span>
+    <span class="k">return</span> <span class="n">grad</span>
+
+<span class="k">def</span> <span class="nf">ridge_hess</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">Xmat</span><span class="p">,</span> <span class="n">lam</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">The hessian of the ridge regression <span class="caps">SSE</span>.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">Xmat</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">Xmat</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">lam</span>
+</pre></div>
+
+
+<p>Like the <span class="caps">LASSO</span> regressions we worked with in <a title>chapter 6</a>, the
+ridge requires a penalty parameter to weight the L2 cost of the
+coefficient parameters (called <code>lam</code> in the functions above; <code>lambda</code> is
+a keyword in Python). The authors assume we&#8217;ve already found an
+appropriate value via cross-validation, and that value is 1.0.</p>
+<p>We can now try to minimize the loss function with a couple of different
+algorithms. First the Nelder-Mead simplex, which should correspond to
+the authors&#8217; use of <code>optim</code> in R.</p>
+<div class="highlight"><pre><span class="c"># Starting values for the a, b (intercept, slope) parameters</span>
+<span class="n">params0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+
+<span class="c"># Nelder-Mead simplex</span>
+<span class="n">ridge_fit</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">fmin</span><span class="p">(</span><span class="n">ridge_error</span><span class="p">,</span> <span class="n">params0</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">Xmat</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;Solution: a = </span><span class="si">%8.3f</span><span class="s">, b = </span><span class="si">%8.3f</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ridge_fit</span><span class="p">)</span>
+
+<span class="n">Optimization</span> <span class="n">terminated</span> <span class="n">successfully</span><span class="o">.</span>
+<span class="n">Current</span> <span class="n">function</span> <span class="n">value</span><span class="p">:</span> <span class="mf">1612442.197636</span>
+<span class="n">Iterations</span><span class="p">:</span> <span class="mi">117</span>
+<span class="n">Function</span> <span class="n">evaluations</span><span class="p">:</span> <span class="mi">221</span>
+<span class="n">Solution</span><span class="p">:</span> <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">340.565</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mf">7.565</span>
+</pre></div>
+
+
+<p>Now the Newton conjugate-gradient method. We need to give this function
+a gradient; the Hessian is optional. First without the Hessian:</p>
+<div class="highlight"><pre><span class="n">ridge_fit</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">fmin_ncg</span><span class="p">(</span><span class="n">ridge_error</span><span class="p">,</span> <span class="n">params0</span><span class="p">,</span> <span class="n">fprime</span> <span class="o">=</span> <span class="n">ridge_grad</span><span class="p">,</span>
+<span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">Xmat</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;Solution: a = </span><span class="si">%8.3f</span><span class="s">, b = </span><span class="si">%8.3f</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ridge_fit</span><span class="p">)</span>
+
+<span class="n">Optimization</span> <span class="n">terminated</span> <span class="n">successfully</span><span class="o">.</span>
+<span class="n">Current</span> <span class="n">function</span> <span class="n">value</span><span class="p">:</span> <span class="mf">1612442.197636</span>
+<span class="n">Iterations</span><span class="p">:</span> <span class="mi">3</span>
+<span class="n">Function</span> <span class="n">evaluations</span><span class="p">:</span> <span class="mi">4</span>
+<span class="n">Gradient</span> <span class="n">evaluations</span><span class="p">:</span> <span class="mi">11</span>
+<span class="n">Hessian</span> <span class="n">evaluations</span><span class="p">:</span> <span class="mi">0</span>
+<span class="n">Solution</span><span class="p">:</span> <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">340.565</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mf">7.565</span>
+</pre></div>
+
+
+<p>Now supplying the Hessian:</p>
+<div class="highlight"><pre><span class="n">ridge_fit</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">fmin_ncg</span><span class="p">(</span><span class="n">ridge_error</span><span class="p">,</span> <span class="n">params0</span><span class="p">,</span> <span class="n">fprime</span> <span class="o">=</span>
+<span class="n">ridge_grad</span><span class="p">,</span>
+<span class="n">fhess</span> <span class="o">=</span> <span class="n">ridge_hess</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">Xmat</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;Solution: a = </span><span class="si">%8.3f</span><span class="s">, b = </span><span class="si">%8.3f</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ridge_fit</span><span class="p">)</span>
+
+<span class="n">Optimization</span> <span class="n">terminated</span> <span class="n">successfully</span><span class="o">.</span>
+<span class="n">Current</span> <span class="n">function</span> <span class="n">value</span><span class="p">:</span> <span class="mf">1612442.197636</span>
+<span class="n">Iterations</span><span class="p">:</span> <span class="mi">3</span>
+<span class="n">Function</span> <span class="n">evaluations</span><span class="p">:</span> <span class="mi">7</span>
+<span class="n">Gradient</span> <span class="n">evaluations</span><span class="p">:</span> <span class="mi">3</span>
+<span class="n">Hessian</span> <span class="n">evaluations</span><span class="p">:</span> <span class="mi">3</span>
+<span class="n">Solution</span><span class="p">:</span> <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">340.565</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mf">7.565</span>
+</pre></div>
+
+
+<p>Fortunately, we get the same results for all three methods. Supplying
+the Hessian to the Newton method shaves some time off, but in this
+simple application, it&#8217;s not really worth coding up a Hessian function
+(except for fun).</p>
+<p>Lastly, the <span class="caps">BFGS</span> method, supplied with the gradient:</p>
+<div class="highlight"><pre><span class="n">ridge_fit</span> <span class="o">=</span> <span class="n">opt</span><span class="o">.</span><span class="n">fmin_ncg</span><span class="p">(</span><span class="n">ridge_error</span><span class="p">,</span> <span class="n">params0</span><span class="p">,</span> <span class="n">fprime</span> <span class="o">=</span> <span class="n">ridge_grad</span><span class="p">,</span>
+<span class="n">fhess</span> <span class="o">=</span> <span class="n">ridge_hess</span><span class="p">,</span> <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">Xmat</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+<span class="k">print</span> <span class="s">&#39;Solution: a = </span><span class="si">%8.3f</span><span class="s">, b = </span><span class="si">%8.3f</span><span class="s"> &#39;</span> <span class="o">%</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">ridge_fit</span><span class="p">)</span>
+
+<span class="n">Optimization</span> <span class="n">terminated</span> <span class="n">successfully</span><span class="o">.</span>
+<span class="n">Current</span> <span class="n">function</span> <span class="n">value</span><span class="p">:</span> <span class="mf">1612442.197636</span>
+<span class="n">Iterations</span><span class="p">:</span> <span class="mi">3</span>
+<span class="n">Function</span> <span class="n">evaluations</span><span class="p">:</span> <span class="mi">7</span>
+<span class="n">Gradient</span> <span class="n">evaluations</span><span class="p">:</span> <span class="mi">3</span>
+<span class="n">Hessian</span> <span class="n">evaluations</span><span class="p">:</span> <span class="mi">3</span>
+<span class="n">Solution</span><span class="p">:</span> <span class="n">a</span> <span class="o">=</span> <span class="o">-</span><span class="mf">340.565</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mf">7.565</span>
+</pre></div>
+
+
+<p>For this simple problem, all of these methods work well. For more
+complicated problems, there are considerations which would lead you to
+prefer one over another, or perhaps to use them in combination. There
+are also several more methods available, some which allow you to solve
+constrained optimization problems. Check out the very good
+<a href="http://docs.scipy.org/doc/scipy/reference/tutorial/optimize.html">documentation</a>. Also note that if you&#8217;re not into hand-coding
+gradients, scipy has a function <code>derivative</code> in its <code>misc</code> module that
+will compute numerical derivatives. In many cases, the functions will do
+this automatically if you fail to provide a function to their gradient
+arguments.</p>
+<h2>Optimizing on sentences with the Metropolis algorithm</h2>
+<p>The second example in this chapter is a &#8220;code-breaking&#8221; exercise. We
+start with a message &#8220;here is some sample text&#8221;, which we encrypt using
+a Ceasar cipher that shifts each letter in the message to the next
+letter in the alphabet (with Z going to A). We can represent the cipher
+(or any cipher) in Python with a dict that maps each letter to its
+encrypted counterpart.</p>
+<div class="highlight"><pre><span class="n">letters</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;a&#39;</span><span class="p">,</span> <span class="s">&#39;b&#39;</span><span class="p">,</span> <span class="s">&#39;c&#39;</span><span class="p">,</span> <span class="s">&#39;d&#39;</span><span class="p">,</span> <span class="s">&#39;e&#39;</span><span class="p">,</span> <span class="s">&#39;f&#39;</span><span class="p">,</span> <span class="s">&#39;g&#39;</span><span class="p">,</span> <span class="s">&#39;h&#39;</span><span class="p">,</span>
+           <span class="s">&#39;i&#39;</span><span class="p">,</span> <span class="s">&#39;j&#39;</span><span class="p">,</span> <span class="s">&#39;k&#39;</span><span class="p">,</span> <span class="s">&#39;l&#39;</span><span class="p">,</span> <span class="s">&#39;m&#39;</span><span class="p">,</span> <span class="s">&#39;n&#39;</span><span class="p">,</span> <span class="s">&#39;o&#39;</span><span class="p">,</span> <span class="s">&#39;p&#39;</span><span class="p">,</span>
+           <span class="s">&#39;q&#39;</span><span class="p">,</span> <span class="s">&#39;r&#39;</span><span class="p">,</span> <span class="s">&#39;s&#39;</span><span class="p">,</span> <span class="s">&#39;t&#39;</span><span class="p">,</span> <span class="s">&#39;u&#39;</span><span class="p">,</span> <span class="s">&#39;v&#39;</span><span class="p">,</span> <span class="s">&#39;w&#39;</span><span class="p">,</span> <span class="s">&#39;x&#39;</span><span class="p">,</span>
+           <span class="s">&#39;y&#39;</span><span class="p">,</span> <span class="s">&#39;z&#39;</span><span class="p">]</span>
+
+<span class="n">ceasar_cipher</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="n">j</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">letters</span><span class="p">,</span> <span class="n">letters</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">+</span> <span class="n">letters</span><span class="p">[:</span><span class="mi">1</span><span class="p">])}</span>
+<span class="n">inverse_ceasar_cipher</span> <span class="o">=</span> <span class="p">{</span><span class="n">ceasar_cipher</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ceasar_cipher</span><span class="p">}</span>
+</pre></div>
+
+
+<p>The <code>inverse_ceasar_cipher</code> dict reverses the cipher, so we can get an
+original message back from one that&#8217;s been encrypted by the Ceasar
+cipher. Based on these structures, let&#8217;s make functions that will
+encrypt and decrypt text.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">cipher_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cipher_dict</span> <span class="o">=</span> <span class="n">ceasar_cipher</span><span class="p">):</span>
+    <span class="c"># Split the string into a list of characters to apply</span>
+    <span class="c"># the decoder over.</span>
+    <span class="n">strlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="n">ciphered</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">cipher_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">or</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">strlist</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">ciphered</span>
+
+<span class="k">def</span> <span class="nf">decipher_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cipher_dict</span> <span class="o">=</span> <span class="n">ceasar_cipher</span><span class="p">):</span>
+    <span class="c"># Split the string into a list of characters to apply</span>
+    <span class="c"># the decoder over.</span>
+    <span class="n">strlist</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="c"># Invert the cipher dictionary (k, v) -&gt; (v, k)</span>
+    <span class="n">decipher_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">cipher_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">cipher_dict</span><span class="p">}</span>
+
+    <span class="n">deciphered</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">decipher_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="ow">or</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">strlist</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">deciphered</span>
+</pre></div>
+
+
+<p>To decrypt our message, we&#8217;ll design a Metropolis algorithm that
+randomly proposes ciphers, decrypts the message according to the
+proposed cipher, and see&#8217;s how probable that message is based on a
+lexical database of word frequency in Wikipedia.</p>
+<p>The following functions are used to generate proposal ciphers for the
+Metropolis algorithm. The idea is to randomly generate ciphers and see
+what text they result in. If the text resulting from a proposed cipher
+is more likely (according to the lexical database) than the current
+cipher, we accept the proposal. If it&#8217;s not, we accept it wil a
+probability that is lower the less likely the resulting text is.</p>
+<p>The method of generating new proposals is important. The authors use a
+method that chooses a key (letter) at random from the current cipher,
+and swaps its with some other letter. For example, if we start with the
+Ceasar Cipher, our proposal might randomly choose to re-map A to N
+(instead of B). The proposal would then be the same a the Ceasar Cipher,
+but with A → N and M → B (since A originally mapped to B and M
+originally mapped to N). This proposal-generating mechanism is
+encapsulated in <code>propose_modified_cipher_from_cipher</code>.</p>
+<p>This is inefficient in a few ways. First, the letter chosen to modify in
+the cipher may not even appear in the text, so the proposed cipher won&#8217;t
+modify the text at all and you end up wasting cycles generating a lot of
+useless proposals. Second, we may end up picking a letter that occurs in
+a highly likely word, which will increase the probability of generating
+an inferior proposal.</p>
+<p>We&#8217;ll suggest another mechanism that, instead of selecting a letter from
+the current cipher to re-map, will choose a letter amongst the non-words
+in the current deciphered text. For example, if our current deciphered
+text is &#8220;hello wqrld&#8221;, we will only select amongst {w, q, r, l, d} to
+modify at random. The minimizes the chances that a modified cipher will
+turn real words into gibberish and produce less likely text. The
+function propose_modified_cipher_from_text performs this proposal
+mechanism.</p>
+<p>One way to think of this is that it&#8217;s analogous to tuning the variance
+of the proposal distribution in the typical Metropolis algorithm. If the
+variance is too low, our algorithm won&#8217;t efficiently explore the target
+distribution. If it&#8217;s too high, we&#8217;ll end up generating lots of lousy
+proposals. Our cipher proposal rules can suffer from similar problems.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">generate_random_cipher</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Randomly generate a cipher dictionary (a one-to-one letter -&gt; letter</span>
+<span class="sd">    map).</span>
+<span class="sd">    Used to generate the starting cipher of the algorithm.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">cipher</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">letters</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="n">letters</span><span class="p">[:]</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+    <span class="n">cipher_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span> <span class="k">for</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">output</span><span class="p">)}</span>
+
+    <span class="k">return</span> <span class="n">cipher_dict</span>
+
+<span class="k">def</span> <span class="nf">modify_cipher</span><span class="p">(</span><span class="n">cipher_dict</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">new_output</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Swap a single key in a cipher dictionary.</span>
+
+<span class="sd">    Old: a -&gt; b, ..., m -&gt; n, ...</span>
+<span class="sd">    New: a -&gt; n, ..., m -&gt; b, ...</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">decipher_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">cipher_dict</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span> <span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">cipher_dict</span><span class="p">}</span>
+    <span class="n">old_output</span> <span class="o">=</span> <span class="n">cipher_dict</span><span class="p">[</span><span class="nb">input</span><span class="p">]</span>
+
+    <span class="n">new_cipher</span> <span class="o">=</span> <span class="n">cipher_dict</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">new_cipher</span><span class="p">[</span><span class="nb">input</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_output</span>
+    <span class="n">new_cipher</span><span class="p">[</span><span class="n">decipher_dict</span><span class="p">[</span><span class="n">new_output</span><span class="p">]]</span> <span class="o">=</span> <span class="n">old_output</span>
+
+    <span class="k">return</span> <span class="n">new_cipher</span>
+
+<span class="k">def</span> <span class="nf">propose_modified_cipher_from_cipher</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cipher_dict</span><span class="p">,</span>
+                                        <span class="n">lexical_db</span> <span class="o">=</span> <span class="n">lexical_database</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Generates a new cipher by choosing and swapping a key in the</span>
+<span class="sd">    current cipher.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">text</span> <span class="c"># Unused</span>
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">cipher_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">new_output</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">letters</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">modify_cipher</span><span class="p">(</span><span class="n">cipher_dict</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">new_output</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">propose_modified_cipher_from_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cipher_dict</span><span class="p">,</span>
+    <span class="n">lexical_db</span> <span class="o">=</span> <span class="n">lexical_database</span><span class="p">):</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Generates a new cipher by choosing a swapping a key in the current</span>
+<span class="sd">    cipher, but only chooses keys that are letters that appear in the</span>
+<span class="sd">    gibberish words in the current text.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">deciphered</span> <span class="o">=</span> <span class="n">decipher_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cipher_dict</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">letters_to_sample</span> <span class="o">=</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">deciphered</span>
+    <span class="k">if</span> <span class="n">lexical_db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">])</span>
+    <span class="n">letters_to_sample</span> <span class="o">=</span> <span class="n">letters_to_sample</span> <span class="ow">or</span> <span class="s">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">deciphered</span><span class="p">))</span>
+
+    <span class="nb">input</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">letters_to_sample</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">new_output</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="n">letters</span><span class="p">,</span> <span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">modify_cipher</span><span class="p">(</span><span class="n">cipher_dict</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">new_output</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Next, we need to be able to compute a message&#8217;s likelihood (from the
+lexical database). The log-likelihood of a message is just the sum of
+the log-likelihoods of each word (one-gram) in the message. If the word
+is gibberish (i.e., doesn&#8217;t occur in the database) it gets a tiny
+probability set to the smallest floating-point precision.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">one_gram_prob</span><span class="p">(</span><span class="n">one_gram</span><span class="p">,</span> <span class="n">lexical_db</span> <span class="o">=</span> <span class="n">lexical_database</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">lexical_db</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">one_gram</span><span class="p">)</span> <span class="ow">or</span> <span class="n">np</span><span class="o">.</span><span class="n">finfo</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">eps</span>
+
+    <span class="k">def</span> <span class="nf">text_logp</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cipher_dict</span><span class="p">,</span> <span class="n">lexical_db</span> <span class="o">=</span> <span class="n">lexical_database</span><span class="p">):</span>
+    <span class="n">deciphered</span> <span class="o">=</span> <span class="n">decipher_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cipher_dict</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">logp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">one_gram_prob</span><span class="p">(</span><span class="n">w</span><span class="p">))</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span>
+    <span class="n">deciphered</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">logp</span>
+</pre></div>
+
+
+<p>We can now use these functions in our Metropolis algorithm. Each step in
+the metropolis algorithm proposes a cipher, deciphers the text according
+the proposal, and computes the log-likelihood of the deciphered message.
+If the likelihood of the deciphered message is better under the proposal
+cipher than the current cipher, we definitely accept that proposal for
+our next step. If not, we only accept the proposal with a probability
+based on the relative likelihood of the proposal to the current cipher.</p>
+<p>I&#8217;ll define this function to take an arbitrary proposal function via the
+<code>proposal_rule</code> argument. So far, this can be one of the two
+<code>propose_modified_cipher_from_*</code> functions defined above.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">metropolis_step</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cipher_dict</span><span class="p">,</span> <span class="n">proposal_rule</span><span class="p">,</span> <span class="n">lexical_db</span> <span class="o">=</span>
+    <span class="n">lexical_database</span><span class="p">):</span>
+    <span class="n">proposed_cipher</span> <span class="o">=</span> <span class="n">proposal_rule</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cipher_dict</span><span class="p">)</span>
+    <span class="n">lp1</span> <span class="o">=</span> <span class="n">text_logp</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">cipher_dict</span><span class="p">)</span>
+    <span class="n">lp2</span> <span class="o">=</span> <span class="n">text_logp</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">proposed_cipher</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">lp2</span> <span class="o">&gt;</span> <span class="n">lp1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">proposed_cipher</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">a</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">lp2</span> <span class="o">-</span> <span class="n">lp1</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">random</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;</span> <span class="n">a</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">proposed_cipher</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">cipher_dict</span>
+</pre></div>
+
+
+<p>To run the algorithm, just wrap the step function inside a loop. There&#8217;s
+no stopping rule for the algorithm, so we have to choose a number of
+iterations, and hope it&#8217;s enough to get us to the optimum. Let&#8217;s use
+250,000.</p>
+<div class="highlight"><pre><span class="n">message</span> <span class="o">=</span> <span class="s">&#39;here is some sample text&#39;</span>
+<span class="n">ciphered_text</span> <span class="o">=</span> <span class="n">cipher_text</span><span class="p">(</span><span class="n">message</span><span class="p">,</span> <span class="n">ceasar_cipher</span><span class="p">)</span>
+<span class="n">niter</span> <span class="o">=</span> <span class="mi">250000</span>
+
+<span class="k">def</span> <span class="nf">metropolis_decipher</span><span class="p">(</span><span class="n">ciphered_text</span><span class="p">,</span> <span class="n">proposal_rule</span><span class="p">,</span> <span class="n">niter</span><span class="p">,</span> <span class="n">seed</span> <span class="o">=</span> <span class="mi">4</span><span class="p">):</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">cipher</span> <span class="o">=</span> <span class="n">generate_random_cipher</span><span class="p">()</span>
+
+    <span class="n">deciphered_text_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">logp_list</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">niter</span><span class="p">):</span>
+    <span class="n">logp</span> <span class="o">=</span> <span class="n">text_logp</span><span class="p">(</span><span class="n">ciphered_text</span><span class="p">,</span> <span class="n">cipher</span><span class="p">)</span>
+    <span class="n">current_deciphered_text</span> <span class="o">=</span> <span class="n">decipher_text</span><span class="p">(</span><span class="n">ciphered_text</span><span class="p">,</span> <span class="n">cipher</span><span class="p">)</span>
+
+    <span class="n">deciphered_text_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_deciphered_text</span><span class="p">)</span>
+    <span class="n">logp_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logp</span><span class="p">)</span>
+
+    <span class="n">cipher</span> <span class="o">=</span> <span class="n">metropolis_step</span><span class="p">(</span><span class="n">ciphered_text</span><span class="p">,</span> <span class="n">cipher</span><span class="p">,</span> <span class="n">proposal_rule</span><span class="p">)</span>
+
+    <span class="n">results</span> <span class="o">=</span> <span class="n">DataFrame</span><span class="p">({</span><span class="s">&#39;deciphered_text&#39;</span><span class="p">:</span> <span class="n">deciphered_text_list</span><span class="p">,</span> <span class="s">&#39;logp&#39;</span><span class="p">:</span>
+    <span class="n">logp_list</span><span class="p">})</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">niter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">results</span>
+</pre></div>
+
+
+<p>First let&#8217;s look at the authors&#8217; proposal rule. While they managed to get a reasonable decrypted message
+in about 50,000 iterations, we&#8217;re still reading gibberish after 250,000.
+As they say in the book, their results are an artefact of a lucky seed
+value.</p>
+<div class="highlight"><pre><span class="n">results0</span> <span class="o">=</span> <span class="n">metropolis_decipher</span><span class="p">(</span><span class="n">ciphered_text</span><span class="p">,</span>
+<span class="n">propose_modified_cipher_from_cipher</span><span class="p">,</span> <span class="n">niter</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">results0</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="mi">10000</span><span class="p">::</span><span class="mi">10000</span><span class="p">]</span>
+
+               <span class="n">deciphered_text</span>       <span class="n">logp</span>
+ <span class="mi">10000</span> <span class="n">kudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fyrvbu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">86.585205</span>
+ <span class="mi">20000</span> <span class="n">wudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fbrkxu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">87.124919</span>
+ <span class="mi">30000</span> <span class="n">kudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fnrbau</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">86.585205</span>
+ <span class="mi">40000</span> <span class="n">wudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fmrjiu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">87.124919</span>
+ <span class="mi">50000</span> <span class="n">kudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fyrnbu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">86.585205</span>
+ <span class="mi">60000</span> <span class="n">kudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fxrnvu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">86.585205</span>
+ <span class="mi">70000</span> <span class="n">pudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fvrnlu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">87.561022</span>
+ <span class="mi">80000</span> <span class="n">kudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fvrxgu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">86.585205</span>
+ <span class="mi">90000</span> <span class="n">kudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fbrvtu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">86.585205</span>
+<span class="mi">100000</span> <span class="n">kudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fjrnlu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">86.585205</span>
+<span class="mi">110000</span> <span class="n">kudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fprbju</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">86.585205</span>
+<span class="mi">120000</span> <span class="n">kudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fnrjcu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">86.585205</span>
+<span class="mi">130000</span> <span class="n">kudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">flrvpu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">86.585205</span>
+<span class="mi">140000</span> <span class="n">puku</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">flrvxu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">88.028362</span>
+<span class="mi">150000</span> <span class="n">kudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fxrviu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">86.585205</span>
+<span class="mi">160000</span> <span class="n">pulu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">ftrdzu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">88.323162</span>
+<span class="mi">170000</span> <span class="n">wuzu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">flrxdu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">89.575925</span>
+<span class="mi">180000</span> <span class="n">kudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">firamu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">86.585205</span>
+<span class="mi">190000</span> <span class="n">wudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fyrzqu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">87.124919</span>
+<span class="mi">200000</span> <span class="n">wudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fnraxu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">87.124919</span>
+<span class="mi">210000</span> <span class="n">puku</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fjrnyu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">88.028362</span>
+<span class="mi">220000</span> <span class="n">puku</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">firyau</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">88.028362</span>
+<span class="mi">230000</span> <span class="n">pudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fkrcvu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">87.561022</span>
+<span class="mi">240000</span> <span class="n">kudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">ftrwzu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">86.585205</span>
+<span class="mi">250000</span> <span class="n">kudu</span> <span class="n">of</span> <span class="n">feru</span> <span class="n">fprxzu</span> <span class="n">hush</span> <span class="o">-</span><span class="mf">86.585205</span>
+</pre></div>
+
+
+<p>Now, let&#8217;s try the alternative proposal rule, which only chooses letters
+from gibberish words when it modifies the current cipher to propose a
+new one. The algorithm doesn&#8217;t find the actual message, but it actually
+finds a more likely message (according the the lexical database) within
+20,000 iterations.</p>
+<div class="highlight"><pre><span class="n">results1</span> <span class="o">=</span> <span class="n">metropolis_decipher</span><span class="p">(</span><span class="n">ciphered_text</span><span class="p">,</span>
+<span class="n">propose_modified_cipher_from_text</span><span class="p">,</span> <span class="n">niter</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">results1</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="mi">10000</span><span class="p">::</span><span class="mi">10000</span><span class="p">]</span>
+
+                <span class="n">deciphered_text</span>       <span class="n">logp</span>
+ <span class="mi">10000</span> <span class="n">were</span> <span class="n">mi</span> <span class="n">isle</span> <span class="n">izlkde</span> <span class="n">text</span> <span class="o">-</span><span class="mf">68.946850</span>
+ <span class="mi">20000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+ <span class="mi">30000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+ <span class="mi">40000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+ <span class="mi">50000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+ <span class="mi">60000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+ <span class="mi">70000</span> <span class="n">were</span> <span class="n">us</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">38.176725</span>
+ <span class="mi">80000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+ <span class="mi">90000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+<span class="mi">100000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+<span class="mi">110000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+<span class="mi">120000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+<span class="mi">130000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+<span class="mi">140000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+<span class="mi">150000</span> <span class="n">were</span> <span class="n">us</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">38.176725</span>
+<span class="mi">160000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+<span class="mi">170000</span> <span class="n">were</span> <span class="ow">is</span> <span class="n">some</span> <span class="n">sample</span> <span class="n">text</span> <span class="o">-</span><span class="mf">37.012894</span>
+<span class="mi">180000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+<span class="mi">190000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+<span class="mi">200000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+<span class="mi">210000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+<span class="mi">220000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+<span class="mi">230000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+<span class="mi">240000</span> <span class="n">were</span> <span class="k">as</span> <span class="n">some</span> <span class="n">simple</span> <span class="n">text</span> <span class="o">-</span><span class="mf">35.784429</span>
+<span class="mi">250000</span> <span class="n">were</span> <span class="ow">is</span> <span class="n">some</span> <span class="n">sample</span> <span class="n">text</span> <span class="o">-</span><span class="mf">37.012894</span>
+</pre></div>
+
+
+<p>The graph below plots the likelihood paths of the algorithm for the two
+proposal rules. The blue line is the log-likelihood of the original
+message we&#8217;re trying to recover.</p>
+<p><a href="../images/metropolis_likpaths.png">
+  <img src="../images/metropolis_likpaths.png" width=400px />
+</a></p>
+<h2>Direct calculation of the most likely message</h2>
+<p>The Metropolis algorithm is kind of pointless for this application. It&#8217;s
+really just jumping around looking for the most likely phrase. But since
+the likelihood of a message is just the sum of the log probabilities of
+the log probabilities of its component words, we just need to look for
+the most likely words of the lengths of the words of the ciphered
+message.</p>
+<p>If the message at some point is &#8220;fgk tp hpdt&#8221;, then, if run long enough,
+the algorithm should just find the most likely three-letter word, the
+most likely two-letter word, and the most likely four-letter word. But
+we can look these up directly.</p>
+<p>For example, the message we encrypted is &#8216;here is some sample text&#8217;,
+which has word lengths 4, 2, 4, 6, 4. What&#8217;s the most likely message
+with these word lengths?</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">maxprob_message</span><span class="p">(</span><span class="n">word_lens</span> <span class="o">=</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">lexical_db</span> <span class="o">=</span>
+<span class="n">lexical_database</span><span class="p">):</span>
+    <span class="n">db_word_series</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">lexical_db</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="n">db_word_len</span> <span class="o">=</span> <span class="n">db_word_series</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">len</span><span class="p">()</span>
+    <span class="n">max_prob_wordlist</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">logp</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">word_lens</span><span class="p">:</span>
+        <span class="n">db_words_i</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">db_word_series</span><span class="p">[</span><span class="n">db_word_len</span> <span class="o">==</span> <span class="n">i</span><span class="p">])</span>
+        <span class="n">db_max_prob_word</span> <span class="o">=</span> <span class="n">lexical_db</span><span class="p">[</span><span class="n">db_words_i</span><span class="p">]</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()</span>
+        <span class="n">logp</span> <span class="o">+=</span> <span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">lexical_db</span><span class="p">[</span><span class="n">db_words_i</span><span class="p">]</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        <span class="n">max_prob_wordlist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">db_max_prob_word</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">max_prob_wordlist</span><span class="p">,</span> <span class="n">logp</span>
+
+<span class="n">maxprob_message</span><span class="p">()</span>
+
+
+<span class="p">([</span><span class="s">&#39;with&#39;</span><span class="p">,</span> <span class="s">&#39;of&#39;</span><span class="p">,</span> <span class="s">&#39;with&#39;</span><span class="p">,</span> <span class="s">&#39;united&#39;</span><span class="p">,</span> <span class="s">&#39;with&#39;</span><span class="p">],</span> <span class="o">-</span><span class="mf">25.642396806584493</span><span class="p">)</span>
+</pre></div>
+
+
+<p>So, technically, we should have decoded our message to be &#8220;with of
+united with&#8221; instead of &#8220;here is some sample text&#8221;. This is not a
+shining endorsement of this methodology for decrypting messages.</p>
+<h2>Conclusion</h2>
+<p>While it was a fun exercise to code up the Metropolis decrypter in this
+chapter, it didn&#8217;t show off any new Python functionality. The ridge
+problem, while less interesting, showed off some of the optimization
+algorithms in Scipy. There&#8217;s a lot of good stuff in Scipy&#8217;s <code>optimize</code>
+module, and its <a href="http://docs.scipy.org/doc/scipy/reference/tutorial/optimize.html">documentation</a> is worth checking out.</p>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/ml4h-ch7.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/ml4h-ch7.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/ml4h-ch7.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "ml4h-ch7.html";
+          var disqus_url = "http://slendermeans.org/ml4h-ch7.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

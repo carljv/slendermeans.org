@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Slender Means</title><link href="http://slendermeans.org/" rel="alternate"></link><link href="http://slendermeans.org/feeds/administrative.atom.xml" rel="self"></link><id>http://slendermeans.org/</id><updated>2013-09-30T00:00:00-04:00</updated><entry><title>Pardon the dust</title><link href="http://slendermeans.org/pardon-the-dust.html" rel="alternate"></link><updated>2013-09-30T00:00:00-04:00</updated><author><name>Carl</name></author><id>tag:slendermeans.org,2013-09-30:pardon-the-dust.html</id><summary type="html">&lt;p&gt;&lt;strong&gt; Update 9/10/2013 &lt;/strong&gt; New posts are going up on the blog, but I&amp;#8217;m going to keep this post at the top for a while. Consider the site in beta for the moment, and please use the comment section of this post to report any issues. If you&amp;#8217;re using &lt;span class="caps"&gt;IE&lt;/span&gt; to try and view the site, I&amp;#8217;m sorry. But I&amp;#8217;m not that sorry.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt; Update 9/3/2013 &lt;/strong&gt; Things should be working reasonably well. A few kinks to work out, and I have to migrate the former site&amp;#8217;s comments, but the current site is pretty much ready to go.&lt;/p&gt;
+&lt;p&gt;&lt;br&gt;&lt;/p&gt;
+&lt;p&gt;This is the new home for my blog, &lt;em&gt;Slender Means&lt;/em&gt;. It&amp;#8217;s currently in-progress, and I&amp;#8217;m still finishing up the design, and fixing weird links and typos from the Wordpress to Pelican migration.&lt;/p&gt;
+&lt;p&gt;In the meantime, a more usable version sits at the old home: &lt;a href="http://slendrmeans.wordpress.com"&gt;http://slendrmeans.wordpress.com&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;Thanks for visiting!&lt;/p&gt;
+&lt;p&gt;-c.&lt;/p&gt;</summary><category term=""></category></entry></feed>

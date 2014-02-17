@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch1-p5.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 1, Part 5: Trellis graphs. </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2012-04-27T04:00:00" pubdate> April 27, 2012 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <h2>Introduction</h2>
+<p>This post will wrap up Chapter 1 of <span class="caps">MLFH</span>. The only task left is to
+replicate the authors&#8217; trellis graph on p. 26. The plot is made up of 50
+panels, one for each <span class="caps">U.S.</span> state, with each panel plotting the number of
+<span class="caps">UFO</span> sightings by month in that state.</p>
+<p>The key takeaways from this part are, unfortunately, a bunch of gripes
+about Matplotlib. Since I can&#8217;t transmit, blogospherically, the migraine
+I got over the two afternoons I spent wrestling with this graph, let me
+just try to succinctly list my grievances.</p>
+<ol>
+<li>Out-of-the-box, Matplotlib graphs are uglier than those produced by
+    either lattice or ggplot in R: The default color cycle is made up of
+    dark primary colors. Tick marks and labels are poorly placed in
+    anything but the simplest graphs. Non-data graph elements, like
+    bounding boxes and gridlines, are too prominent and take focus away
+    from the data elements.</li>
+<li>The <span class="caps">API</span> is deeply confusing and difficult to remember. You have
+    various objects that live in various containers. To make adjustments
+    to graphs, you have to remember what container the thing you want to
+    adjust lives in, remember what the object and its property is
+    called, and then remember how Matplotlib&#8217;s <em>getting</em> and <em>setting</em>
+    procedures work.</li>
+<li>The <code>pyplot</code> set of commands is supposed to provide convenience
+    functions, but these abstractions seem to leak early and often. Once
+    you need to make finer adjustments, you&#8217;re back to the underlying
+    <span class="caps">API</span> nightmare.</li>
+<li>The documentation is both clear and comprehensive. But where it is
+    clear, it is not comprehensive, and where it is comprehensive, it is
+    not clear. For example, the <a href="http://matplotlib.sourceforge.net/users/artists.html">Artist tutorial</a> is a pretty clear
+    big picture of Matplotlib&#8217;s <span class="caps">API</span>. Once you need any detail, though,
+    you&#8217;re dealing with <a href="http://matplotlib.sourceforge.net/api/artist_api.html#module-matplotlib.lines">this</a>.</li>
+<li>Creating trellis graphs requires way more manual work than in either
+    lattice or ggplot. The <code>supblot</code> functionality of Matplotlib is
+    highly flexible, but in most cases, the user is going to want the
+    code to do the thinking for them and not manually place every graph
+    (or do a bunch of bookkeeping with loops).</li>
+</ol>
+<p>With that off my chest, let me say that I have a ton of respect for
+Matplotlib&#8217;s developers. It is a massively complex library, and clearly
+very powerful and flexible. I have no doubt that Matplotlib gurus can do
+amazing things. I&#8217;m just trying to convey the non-guru&#8217;s perspective.
+Graphing libraries are difficult to design because they must be
+incredibly flexible and allow users to manipulate all of the myriad
+parts of the graph, but at the same time, they can&#8217;t overwhelm users
+with detail when the flexibility isn&#8217;t needed. How anyone does
+it–especially in an open-source project–I don&#8217;t know.</p>
+<p>It&#8217;s also possible that I&#8217;m just <em>Doing it Wrong</em>, and in fact there are
+easy ways to do all the things I&#8217;ve complained about. If that&#8217;s the
+case, I hope someone reading this will enlighten me.</p>
+<h2>Trellis graphs in R and Matplotlib</h2>
+<p>In my opinion, trellis graphs are the &#8220;killer app&#8221; of multivariate data
+visualization. I produce trellis line and scatter plots more than almost
+any other kind of visualization. As such, it&#8217;s important for me to be
+able to easily produce quality trellis graphs.</p>
+<p>Trellis graphs are easy to create in R. The two most popular high-level
+graphing packages in R, lattice and ggplot, both have simple methods for
+creating them. Indeed, creating trellis graphs is lattice&#8217;s <em>raison
+d&#8217;etre</em>, and the functionality and interface design in the package
+revolves around dealing with trellis graph and the panels within. In
+ggplot, the trellis is not such a central focus, but it still has
+easy-to-use methods for making and modifying trellis graphs (which it
+refers to as &#8220;faceted&#8221; graphs).</p>
+<p>For example, the graph we want to make is a one liner in lattice:</p>
+<div class="highlight"><pre>xyplot<span class="p">(</span>sightings <span class="o">~</span> year_month <span class="o">|</span> us_state<span class="p">,</span> data <span class="o">=</span> sightings_counts<span class="p">,</span>
+type <span class="o">=</span> <span class="s">&#39;l&#39;</span><span class="p">,</span> layout <span class="o">=</span> c<span class="p">(</span><span class="m">5</span><span class="p">,</span> <span class="m">10</span><span class="p">))</span>
+</pre></div>
+
+
+<p>Once you get the hang of R&#8217;s formula expressions–which doesn&#8217;t take
+long–this is an easy, expressive way to create a trellis graph. The
+authors use ggplot, which I find a bit less natural, but is still very
+easy.</p>
+<p>Part of what makes trellis graphs to straightforward in R is that the
+concept of factors, and their use as conditioning variables, is so
+well-baked into the language. Matplotlib is essentially a plotting
+utility for NumPy, so it&#8217;s designed to plot arrays, not rich data
+structures. Without factors, without a notion of conditioning, and to a
+lesser extent, without formulas, trellis graphs just don&#8217;t come
+naturally.</p>
+<p>Pandas, though, has structures that, if a plotting library was designed
+to understand them, might provide for easy trellis-ing. Even though
+Pandas doesn&#8217;t have factors, I could see, for example, a <code>plot</code> method
+for Pandas&#8217; <code>groupby</code> objects that produces trellis graphs by default.</p>
+<h2>Plotting the <span class="caps">UFO</span> trellis graph</h2>
+<p>With all that throat-clearing out of the way, let&#8217;s get down to plotting
+the graph. The authors plot 50 state panels, with a 10-by-5 layout.
+Since I&#8217;ve included <span class="caps">D.C.</span> in my data, I have to plot 51 panels. You can
+fit this in a 17-by-3 layout, but that&#8217;s pretty awkward. I&#8217;d like to
+have 4 columns instead, but to fit 51 graphs, I&#8217;ll need 13 columns.
+That&#8217;s 52 subplots, meaning the 13th row won&#8217;t have graphs in every
+column, only the first three. I&#8217;m going to call these last three graphs
+the <code>hangover</code> graphs, and I&#8217;m going to define it as its own variable to
+help inform the layout procedures I run later.</p>
+<p>Here are the layout parameters, then:</p>
+<div class="highlight"><pre><span class="n">nrow</span> <span class="o">=</span> <span class="mi">13</span><span class="p">;</span> <span class="n">ncol</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span> <span class="n">hangover</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">us_states</span><span class="p">)</span> <span class="o">%</span> <span class="n">ncol</span><span class="p">[</span><span class="o">/</span><span class="n">sourcecode</span><span class="p">]</span>
+</pre></div>
+
+
+<p>Now let me get the &#8220;framing&#8221; objects in place: the figure, the subplot
+layout, and the titles.</p>
+<div class="highlight"><pre><span class="n">fig</span><span class="p">,</span> <span class="n">axes</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">nrow</span><span class="p">,</span> <span class="n">ncol</span><span class="p">,</span> <span class="n">sharey</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span>
+<span class="n">figsize</span> <span class="o">=</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>
+
+<span class="n">fig</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="s">&#39;Monthly <span class="caps">UFO</span> Sightings by <span class="caps">U.S.</span> State</span><span class="se">\n</span><span class="s">January 1990 through August 2010&#39;</span><span class="p">,</span>
+             <span class="n">size</span> <span class="o">=</span> <span class="mi">12</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplots_adjust</span><span class="p">(</span><span class="n">wspace</span> <span class="o">=</span> <span class="o">.</span><span class="mo">05</span><span class="p">,</span> <span class="n">hspace</span> <span class="o">=</span> <span class="o">.</span><span class="mo">05</span><span class="p">)</span>
+</pre></div>
+
+
+<p>The <code>subplots</code> function is some recently-implement syntactic sugar
+around Matplotlib&#8217;s <code>subplot</code> functionality (see the section on &#8220;Easy
+Pythonic Subplots&#8221; <a href="http://matplotlib.sourceforge.net/users/whats_new.html#easy-pythonic-subplots">here</a>). The <code>sharey</code> argument tells Matplotlib
+that the panels should all share the same y axis. Technically I want it
+to share an x axis too, but Matplotlib kept throwing errors when I tried
+to use the <code>sharex</code> argument with dates on the x-axis. Give the data,
+the panels will end up sharing an x axis anyway, so this argument isn&#8217;t
+necessary. The function returns two objects: <code>fig</code> refers to the overall
+figure container, and <code>axes</code> is an array containing each of the
+subplot/panel objects – so <code>axes[0, 0]</code> is the first panel.</p>
+<p>Now the rest of the code:</p>
+<div class="highlight"><pre><span class="n">num_state</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nrow</span><span class="p">):</span>
+<span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ncol</span><span class="p">):</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+
+<span class="n">xs</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">linestyle</span> <span class="o">=</span> <span class="s">&#39;-&#39;</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="o">.</span><span class="mi">25</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span> <span class="s">&#39;gray&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">num_state</span> <span class="o">&lt;</span> <span class="mi">51</span><span class="p">:</span>
+    <span class="n">st</span> <span class="o">=</span> <span class="n">us_states</span><span class="p">[</span><span class="n">num_state</span><span class="p">]</span>
+    <span class="n">sightings_counts</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">st</span><span class="p">,</span> <span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ax</span> <span class="o">=</span> <span class="n">xs</span><span class="p">,</span> <span class="n">linewidth</span> <span class="o">=</span> <span class="o">.</span><span class="mi">75</span><span class="p">)</span>
+    <span class="n">xs</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="mf">0.05</span><span class="p">,</span> <span class="o">.</span><span class="mi">95</span><span class="p">,</span> <span class="n">st</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="n">transform</span> <span class="o">=</span> <span class="n">axes</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">transAxes</span><span class="p">,</span>
+    <span class="n">verticalalignment</span> <span class="o">=</span> <span class="s">&#39;top&#39;</span><span class="p">)</span>
+    <span class="n">num_state</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c"># Make extra subplots invisible</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">visible</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+
+<span class="n">xtl</span> <span class="o">=</span> <span class="n">xs</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">()</span>
+<span class="n">ytl</span> <span class="o">=</span> <span class="n">xs</span><span class="o">.</span><span class="n">get_yticklabels</span><span class="p">()</span>
+
+<span class="c"># X-axis tick labels:</span>
+<span class="c"># Turn off tick labels for all the the bottom-most</span>
+<span class="c"># subplots. This includes the plots on the last row, and</span>
+<span class="c"># if the last row doesn&#39;t have a subplot in every column</span>
+<span class="c"># put tick labels on the next row up for those last</span>
+<span class="c"># columns.</span>
+<span class="c">#</span>
+<span class="c"># Y-axis tick labels:</span>
+<span class="c"># Put left-axis labels on the first column of subplots,</span>
+<span class="c"># odd rows. Put right-axis labels on the last column</span>
+<span class="c"># of subplots, even rows.</span>
+<span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">nrow</span> <span class="o">-</span> <span class="mi">2</span> <span class="ow">or</span> <span class="p">(</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">nrow</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="p">(</span><span class="n">hangover</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">j</span> <span class="o">&lt;=</span> <span class="n">hangover</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)):</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">xtl</span><span class="p">,</span> <span class="n">visible</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">ytl</span><span class="p">,</span> <span class="n">visible</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">j</span> <span class="o">==</span> <span class="n">ncol</span> <span class="o">-</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="n">xs</span><span class="o">.</span><span class="n">yaxis</span><span class="o">.</span><span class="n">tick_right</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">setp</span><span class="p">(</span><span class="n">xtl</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mf">90.</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Let&#8217;s walk through this:</p>
+<p>First, set up a counter to keep track of what state we&#8217;re plotting. This
+is a little un-Pythonic, but given what I do inside the loop, I couldn&#8217;t
+think of a better way.</p>
+<p>Now, for each row, column in the 13-by-4 array of panels (and this code
+works for any row/column combination, as long as rows &times; columns &gt;=
+51):</p>
+<ol>
+<li>Assign the panel (&#8220;axis&#8221;) associated with this row, column pair to
+    its own variable.</li>
+<li>Draw gray gridlines in the panel.</li>
+<li>Go to the state in the <code>us_state</code> list corresponding to the current
+    value of the state counter.</li>
+<li>Select this state out of the <code>sightings_counts</code> series and plot its
+    data in the current panel. Then, put a text label with the state&#8217;s
+    initials in the upper left corner.</li>
+<li>If I&#8217;ve gone through all the states, and the state counter variable
+    is greater than 51, then make the panel invisible.</li>
+<li>Assign the x- and y-axis <code>ticklabel</code> objects for the current panel
+    to variables. We&#8217;re going to manipulate their attributes.</li>
+<li>
+<p>Now some tricky stuff. I want do the following things to the tick
+    labels:</p>
+<ul>
+<li>I want to turn off the x-axis tick labels for all but the
+    bottom-most panels, taking into account the hangover.</li>
+<li>I want to alternate the y-axis tick labels so that they are on
+    the left for odd-numbered rows, and on the right for
+    even-numbered rows. Having labels on both sides makes the graph
+    easier to read, but having them on the same side on every row
+    leads to overcrowding and overlapping.</li>
+</ul>
+</li>
+<li>
+<p>Finally, I want the x-axis tick labels rotated 90 degrees. This
+    gives space to put as many as possible on the graph without
+    overcrowding (here, we can label every two years).</p>
+</li>
+</ol>
+<p>Here&#8217;s the result:</p>
+<p><a href="../images/ufo_ts_bystate.png">
+    <img src="../images/ufo_ts_bystate.png" width=500px />
+</a></p>
+<p>Not bad, I think. And maybe even better than the out-of-the-box version
+you get with ggplot. But it was a tremendous amount of work, and I don&#8217;t
+know if I&#8217;m going to be able to decipher this code six months from now.
+It&#8217;s just a tremendous amount of bookkeeping I have to do keeping track
+of what panel I&#8217;m in and where it&#8217;s located in the layout. There ought
+to be a function that does this for me.</p>
+<h2>Conclusion</h2>
+<p>So that&#8217;s it for Chapter 1 of <span class="caps">MLFH</span>. Overall, I was pleasantly surprised
+by Pandas and how easy it made loading, cleaning, and manipulating data.
+While there are a couple of things from R that I missed, there were
+several other things I though were easier and more flexible with Pandas.</p>
+<p>On the other hand, going from lattice and ggplot to Matplotlib is like
+taking a time machine back to the early &#8216;90s. After reading the
+documentation and experimenting for several days, I still don&#8217;t think
+I&#8217;m sure how it works. Hopefully I&#8217;ll get the hang of it as I go
+forward.</p>
+<p>My take is the Python data analysis community is aware of its
+&#8220;visualization gap&#8221; vis-a-vis R, and there are tools in the works to
+solve this issue. I&#8217;ve heard whispers about &#8220;ggplot for Python&#8221; or &#8220;D3
+for Python.&#8221; Everything is still in the early stages, and it will
+probably be a while before better tools are available.</p>
+<p>I&#8217;m also a little uncertain about the &#8220;x for Python&#8221; notion of creating
+graphing libraries. Matplotlib&#8217;s <code>pyplot</code> is essentially a &#8220;Matlab for
+Python&#8221; approach to graphics, and I don&#8217;t know that works to its credit.
+I&#8217;d much rather have a solid, Pythonic graphing library that lets me
+easily make publication-quality versions of the workhorse data graphics,
+than have something that apes the latest faddish graphing tool. There
+are a lot of smart people working on the problem, though, and I&#8217;m really
+excited to see what happens.</p>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/ml4h-ch1-p5.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/ml4h-ch1-p5.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/ml4h-ch1-p5.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "ml4h-ch1-p5.html";
+          var disqus_url = "http://slendermeans.org/ml4h-ch1-p5.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

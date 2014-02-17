@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+
+    <div id="content">
+      <div id="post-list">
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch2-p2.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 2, Part 2: Logistic regression with statsmodels </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-12-21T04:04:00" pubdate> December 21, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <h2>Introduction</h2>
+<p>I last left chapter 2 of <em>Maching Learning for Hackers</em> (a long time
+ago), running some kernel density estimators on height and weight data
+(see <a href="../ml4h-ch2-p1.html">here</a>. The next part of the chapter plots a scatterplot of
+weight vs. height and runs a lowess smoother through it. I&#8217;m not going
+to write any more about the lowess function in statsmodels. I&#8217;ve
+discussed some issues with it (i.e. it&#8217;s slow) <a href="../lowess-speed.html">here</a>. And it&#8217;s my
+sense that the lowess <span class="caps">API</span>, as it is now in statsmodels, is not long for
+this world. The code is all in the IPython notebooks in <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/CH2">the Github
+repo</a> and is pretty straightforward.</p>
+<h2>Patsy and statsmodels formulas</h2>
+<p>What I want to skip to here is the logistic regressions the authors run
+to close out the chapter. Back in the spring, I coded up the chapter in
+<a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/CH2/ch2.ipynb">this notebook</a>. At this point, there wasn&#8217;t really much cohesion
+between pandas and statsmodels. You&#8217;d end up doing data exploration and
+munging with pandas, then pulling what you needed out of dataframes into
+numpy arrays, and passing those arrays to statsmodels. (After writing
+seemingly needless boilerplate code like
+<code>X = sm.add_constant(X, prepend = True ...</code></p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch2-p2.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch2-p2.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch3.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 3: Naive Bayes Text Classification </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-12-20T04:20:00" pubdate> December 20, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <p>I realize I haven&#8217;t blogged about the rest of chapter 2 yet. I&#8217;ll get
+back to that, but chapter 3 is on my mind today. If you haven&#8217;t seen
+them yet, IPython notebooks up to chapter 9 are all up in the <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH">Github
+repo</a>. To view them online, you can check the links on <a href="../category/will-it-python.html">this page</a>.</p>
+<p>Chapter 3 is about text classification. The authors build a classifier
+that will identify whether an e-mail is spam or not (&#8220;ham&#8221;) based on the
+content of the e-mail&#8217;s message. I won&#8217;t go into much detail on how the
+Naive Bayes classifier they use works (beyond what&#8217;s evident in the
+code). The theory is described well in the book and many other places.
+I&#8217;m just going to discuss implementation, assuming you know how the
+classifier works in theory. The Python code for this project relies
+heavily on the <span class="caps">NLTK</span> (Natural Language Toolkit) package, which is a
+comprehensive library that includes functions for doing <span class="caps">NLP</span> and text
+analysis, as well as an array of benchmark text corpora to use them on.
+If you want to go deep into this stuff, two good resources are:</p>
+<ul>
+<li><a href="http://shop.oreilly.com/product/9780596516499.do"><em>Natural Language Processing with ...</em></a></li></ul>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch3.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch3.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/better-typography-for-ipython-notebooks.html" rel = "bookmark"> Better typography for IPython notebooks </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-12-05T05:34:00" pubdate> December 05, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/typography.html"> Typography </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <p><em>(Warning: ignorant rant coming up)</em></p>
+<p>Like everyone else who&#8217;s ever used it, I love the <a href="http://ipython.org/ipython-doc/rel-0.13.1/interactive/htmlnotebook.html">IPython
+notebook.</a> It&#8217;s not only an awesomely productive environment to work
+in, it&#8217;s also the most powerful weapon in the Python evangelist&#8217;s
+arsenal (suck it, Matlab).</p>
+<p>I also think it&#8217;s not hard to imagine a world where scientific papers
+are all just literate programs. And the notebook is probably one of the
+best tools for literate programming around in any language. The
+intregration of markdown and LaTeX/MathJax into the notebook is just
+fantastic.</p>
+<p>But it does have one weakness as a literate programming tool. The
+default typography is ugly as sin.</p>
+<p>There are several issues, but two major ones are easily fixable.</p>
+<h2>Long lines</h2>
+<p>By far the biggest issue is that the text and input cells extend to 100%
+of the window width. Most people keep their browser windows open wider
+than is comfortable reading width, so you end up with long hard-to-read
+lines of text in the markdown cells.</p>
+<p>And for the code, it would be nice to have the code cell discourage you
+from long lines. The variable width cells don&#8217;t. I&#8217;m an 80-character
+anal ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/better-typography-for-ipython-notebooks.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/better-typography-for-ipython-notebooks.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/lowess-speed.html" rel = "bookmark"> How do you speed up 40,000 weighted least squares calculations? Skip 36,000 of them. </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-05-14T23:46:00" pubdate> May 14, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/data-analysis.html"> Data Analysis </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <p>Despite having finished all the programming for Chapter 2 of <span class="caps">MLFH</span> a
+while ago, there&#8217;s been a long hiatus since the<a href="../ml4h-ch2-p1.html">first post on that
+chapter</a>.</p>
+<h2>(S)lowess</h2>
+<p>Why the delay? The second part of the code focuses on two procedures:
+lowess scatterplot smoothing, and logistic regression. When implementing
+the former in <a href="http://statsmodels.sourceforge.net/devel/generated/statsmodels.nonparametric.api.lowess.html#statsmodels.nonparametric.api.lowess">statsmodels</a>, I found that it was running <em>dog slow</em> on
+the data&#8212;in this case a scatterplot of 10,000 height-vs.-weight points.
+Indeed, for these 10,000 points, lowess, run with the default
+parameters, required about 23 seconds. After importing modules and
+defining variables according to my <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/CH2">IPython notebook</a>, we can run
+<code>timeit</code> on the function:</p>
+<div class="highlight"><pre><span class="o">%</span><span class="n">timeit</span> <span class="o">-</span><span class="n">n</span> <span class="mi">3</span> <span class="n">lowess</span><span class="o">.</span><span class="n">lowess</span><span class="p">(</span><span class="n">heights</span><span class="p">,</span> <span class="n">weights</span><span class="p">)</span>
+</pre></div>
+
+
+<p>This results in</p>
+<div class="highlight"><pre><span class="mi">3</span> <span class="n">loops</span><span class="p">,</span> <span class="n">best</span> <span class="n">of</span> <span class="mi">3</span><span class="o">:</span> <span class="mf">42.6</span> <span class="n">s</span> <span class="n">per</span> <span class="n">loop</span>
+</pre></div>
+
+
+<p>on the machine I&#8217;m writing this on  (a Windows laptop with a 2.67 GHz i5
+processor; timings are faster, but still in the 30 sec. range on my 2.5
+GHz i7 Macbook).</p>
+<p>An R user&#8212;or really a user of any other statistical package&#8212;is going
+to be confused here. We&#8217;re all used to lowess being a relatively
+instantaneous procedure. It&#8217;s an oft-used option for ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/lowess-speed.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/lowess-speed.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch2-p1.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 2, Part 1: Summary stats and density estimators </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-05-01T04:00:00" pubdate> May 01, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <p>Chapter 2 of <span class="caps">MLFH</span> summarizes techniques for exploring your data:
+determining data types, computing quantiles and other summary
+statistics, and plotting simple exploratory graphics. I&#8217;m not going to
+replicate it in its entirety; I&#8217;m just going to hit some of the more
+involved or interesting parts. The IPython notebook I created for this
+chapter, which lives <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/CH2">here</a>, contains more code than I&#8217;ll present on
+the blog.</p>
+<p>This part&#8217;s highlights:</p>
+<ol>
+<li>Pandas objects, as we&#8217;ve seen before, have methods that provide
+    simple summary statistics.</li>
+<li>The plotting methods in Pandas let you pass parameters to the
+    Matplotlib functions they call. I&#8217;ll use this feature to mess around
+    with histogram bins.</li>
+<li>The <code>gaussian_kde</code> (kernel density estimator) function in
+    <code>scipy.stats.kde</code> provides density estimates similar to R&#8217;s
+    <code>density</code> function for Gaussian kernels. The <code>kdensity</code> function, in
+    <code>statsmodels.nonparametric.kde</code> provides that and other kernels, but
+    given the state of <code>statsmodels</code>&#8216; documentation, you would probably
+    only find this function by accident. It&#8217;s also substantially slower
+    than <code>gaussian_kde</code> on large data. *<em>[Not quite so! See
+    update at the end.]</em></li>
+</ol>
+<h2>Height and weight data</h2>
+<p>The data analyzed in this chapter are the sexes, heights and weights, of
+10,000 ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch2-p1.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch2-p1.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch1-p5.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 1, Part 5: Trellis graphs. </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-04-27T04:00:00" pubdate> April 27, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <h2>Introduction</h2>
+<p>This post will wrap up Chapter 1 of <span class="caps">MLFH</span>. The only task left is to
+replicate the authors&#8217; trellis graph on p. 26. The plot is made up of 50
+panels, one for each <span class="caps">U.S.</span> state, with each panel plotting the number of
+<span class="caps">UFO</span> sightings by month in that state.</p>
+<p>The key takeaways from this part are, unfortunately, a bunch of gripes
+about Matplotlib. Since I can&#8217;t transmit, blogospherically, the migraine
+I got over the two afternoons I spent wrestling with this graph, let me
+just try to succinctly list my grievances.</p>
+<ol>
+<li>Out-of-the-box, Matplotlib graphs are uglier than those produced by
+    either lattice or ggplot in R: The default color cycle is made up of
+    dark primary colors. Tick marks and labels are poorly placed in
+    anything but the simplest graphs. Non-data graph elements, like
+    bounding boxes and gridlines, are too prominent and take focus away
+    from the data elements.</li>
+<li>The <span class="caps">API</span> is deeply confusing and difficult to remember. You have
+    various objects that live in various containers. To make adjustments
+    to graphs, you have to remember what container the thing you want to
+    adjust lives in, remember what the object and its property is
+    called, and ...</li></ol>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch1-p5.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch1-p5.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch1-p4.html" rel = "bookmark"> <i>Machine Learning for Hackers</i>, Chapter 1, Part 4: Data aggregation and reshaping. </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-04-26T04:00:00" pubdate> April 26, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <h2>Introduction</h2>
+<p>In the <a href="../ml4h-ch1-p3.html">last part</a> I made some simple summaries of the cleaned <span class="caps">UFO</span>
+data: basic descriptive statistics and historgrams. At the very end, I
+did some simple data aggregation by summing up the sightings by date,
+and plotted the resulting time series. In this part, I&#8217;ll go further
+with the aggregation, totalling sightings by state and month.</p>
+<p>This takeaway from this part is that Pandas dataframes have some
+powerful methods for aggregating and manipulating data. I&#8217;ll show
+<code>groupby</code>, <code>reindex</code>, hierarchical indices, and <code>stack</code> and <code>unstack</code> in
+action.</p>
+<h2>The shape of data: the long and the wide of it</h2>
+<p>The first step in aggregating and reshaping data is to figure out the
+final form you want the data to be in. This form is basically defined by
+<em>content</em> and <em>shape</em>.</p>
+<p>We know what we want the content to be: an entry in the data should give
+the number of sightings in a state/month combination.</p>
+<p>We have two choices for the shape: wide or long. The wide version of
+this data would have months as the rows and states as the columns; it
+would be a 248 by 51 table with the number of sigthings as entries. This ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch1-p4.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch1-p4.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/shades-of-time.html" rel = "bookmark"> Shades of Time: I don&#8217;t buy it, and that&#8217;s why it&#8217;s so great. </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-04-22T04:00:00" pubdate> April 22, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/data-visualization.html"> Data Visualization </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <p>Over the weekend <a href="http://drewconway.com/zia">Drew Conway</a> posted about a data analysis project
+he&#8217;d just completed called <a href="http://www.drewconway.com/zia/?p=2874"><em>Shades of Time</em></a>. Very briefly, he took a
+<a href="http://www.reddit.com/r/datasets/comments/s0fld/all_time_magazine_covers_march_1923_to_march_2012/">dataset</a> of Time magazine covers from 1923 to March 2012, then used
+some Python libraries to identify the faces in the covers and identify
+the skin tone of each face. The result is a really great
+interactive <a href="http://labs.drewconway.com/time/">visualization</a> implemented in <a href="http://mbostock.github.com/d3/">d3.js</a>.</p>
+<p>From looking at this data, Drew, with some caveats, observes that &#8220;it
+does appear that the variance in skin tones have [sic] changed over
+time, and in fact the tones are getting darker.&#8221; He also notes that
+there are more faces on covers in later years.</p>
+<h2>Why I don&#8217;t believe it</h2>
+<p>There&#8217;s no real statistical testing done here–no formal quantification
+how skin-tone representation on covers is changing over time. Instead, I
+think he&#8217;s drawing his conclusion on the vizualization alone, especially
+the scatterplot in the bottom panel that seems to show more darker tones
+appearing later in the date (starting in the 70&#8217;s, the skin-tone
+dispersion in his data starts to increase).</p>
+<p>He notes that there are difficulties in both identifying faces and skin
+tones. After going through his ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/shades-of-time.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/shades-of-time.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch1-p3.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 1, Part 3: Simple summaries and plots. </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-04-19T04:00:00" pubdate> April 19, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <h2>Introduction</h2>
+<p>See <a href="../ml4h-ch1-p1.html">Part 1</a> and <a href="../ml4h-ch1-p2.html">Part 2</a> for previous work.</p>
+<p>In this part, I&#8217;ll replicate the authors&#8217; exploration of the <span class="caps">UFO</span>
+sighting dates via histograms. The key takeaways:</p>
+<ol>
+<li>The plotting methods in Pandas are easy and useful.</li>
+<li>Unlike R <code>Dates</code>, Python <code>datetimes</code> aren&#8217;t compatible with a lot of
+    mathematical operations. We&#8217;ll see that you can&#8217;t apply quantile or
+    histogram methods to them directly.</li>
+</ol>
+<h2>Quick data summary methods and datetime complications.</h2>
+<p>For those playing along at home, I&#8217;m at p. 19 of the book. The first
+thing the authors do here is get a statistical summary of the sighting
+dates in the data, which are recorded in the <code>DateOccurred</code> variable
+(which I&#8217;ve named <code>date_occurred</code> in my code). This is easy in R using
+the <code>summary</code> function, which provides the minimum, maximum, and
+quartiles of the data by default.</p>
+<p>Pandas has similar functionality, in a method called <code>describe</code>, which
+gives the same for numeric variables, plus the count of non-null values
+and the mean and standard deviation. For example:</p>
+<div class="highlight"><pre><span class="n">s1</span> <span class="o">=</span> <span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span>
+<span class="k">print</span> <span class="n">s1</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</pre></div>
+
+
+<p>outputs what we&#8217;d expect from a series of randomly-generated standard
+normals:</p>
+<div class="highlight"><pre><span class="n">count</span> <span class="mf">100.000000</span>
+<span class="n">mean</span> <span class="o">-</span><span class="mf">0.149274 ...</span></pre></div>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch1-p3.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch1-p3.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch1-p2.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 1, Part 2: Cleaning date and location data </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-04-18T04:00:00" pubdate> April 18, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <h2>Introduction</h2>
+<p>In the <a href="../ml4h-ch1-p1.html">previous post</a>, I loaded the raw <span class="caps">UFO</span> data into a Pandas data
+frame after cleaning up some irregularities in the text file. Since
+we&#8217;re ultimately concerned with analyzing <span class="caps">UFO</span> sightings over time and
+space, the next step is to clean those variables and prepare them for
+analysis and vizualization.</p>
+<p>Some Python techniques to note in this part are:</p>
+<ul>
+<li>Like in the last part, Python string methods are going to come in
+    really handy, and be a simple, expressive solution to a lot of
+    problems.</li>
+<li>When those aren&#8217;t enough, Python has a pretty straightforward set of
+    functions for implementing regular expressions.</li>
+<li>The <code>map()</code> method in Pandas can be used to &#8220;vectorize&#8221; functions
+    along a Series (i.e. a data frame column) and is similar to R&#8217;s
+    <code>apply</code>. In general, using a NumPy <code>ufunc</code> (vectorized function) is
+    preferable, but not all operations can be expressed in <code>ufunc</code>s.
+    This is especially true for non-numeric operations, such as for
+    strings or dates.</li>
+</ul>
+<h2>Cleaning dates: mapping and subsetting.</h2>
+<p>The first two columns of the data are dates in <code>YYMMDDD</code> format, and
+Pandas imported them as integers. R has a function, <code>as.Date</code> that will
+operate on a vector ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch1-p2.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch1-p2.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+      </div> <!-- End post-list -->
+<p class="paginator">
+        <a href="http://slendermeans.org/index.html">&laquo;</a>
+    Page 2 / 3
+        <a href="http://slendermeans.org/index3.html">&raquo;</a>
+</p>
+    </div>
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+  <header class="article-list-title">
+    <h1 class="page-title"> posts by <strong>Carl</strong> </h1>
+  </header>
+
+    <div id="content">
+      <div id="post-list">
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/language-wars.html" rel = "bookmark"> A Geneva Convention for the Language Wars </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2014-01-17T14:30:00" pubdate> January 17, 2014 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/programming.html"> Programming </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <p>I don&#8217;t tend to get too sniffy about the quality of discourse on the
+Internet. I have some appreciation for even the most pointless, uninformed
+flamewars. (And maybe my take on Web site comments is for another post.) But
+there&#8217;s an increasingly popular topic of articles and blog posts which is starting to annoy
+me a little. You&#8217;ve likely read them&#8212;they have titles like: &#8220;Python is Eating R&#8217;s Lunch,&#8221; &#8220;Why
+Python is Going to Take Over Data Science,&#8221; &#8220;Why Python is a Pain in the Ass and
+Will Never Beat R,&#8221; &#8220;Why Everyone Will Live on the Moon and Code in Julia in 5
+Years,&#8221; etc.</p>
+<p>This style of article obviously isn&#8217;t unique to data analysis
+languages. It&#8217;s a classic nerd flamewar, in the proud tradition of text editor wars
+and browser wars. Perhaps an added inflammatory agent here is the Data Science hype
+machine.</p>
+<p>And that&#8217;s all okay. Go on the Internet and bitch about languages you don&#8217;t like, or tell
+everyone why your preferred one is awesome. That&#8217;s what
+<a href="http://news.ycombinator.com" title="Hacker News">the Internet&#8217;s here for</a>. And Lord knows I&#8217;ve done it myself.</p>
+<p>My only problem is that it ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/language-wars.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/language-wars.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/julia-iterators.html" rel = "bookmark"> Tricked out iterators in Julia </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2014-01-13T15:15:00" pubdate> January 13, 2014 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/julia.html"> Julia </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+
+<script src="./scripts/gadfly.js"></script>
+
+<h2>Introduction</h2>
+<p>I want to spend some time messing about with iterators in Julia. I think they
+not only provide a familiar and useful entry point into Julia&#8217;s type system and dispatch
+model, they&#8217;re also interesting in their own right.<a name="fnm-multdisp" href="#fn-multdisp" class="footnote-mark">1</a> Clever application of iterators can
+help to simplify complicated loops, better express their intent, and improve
+memory usage.</p>
+<p>A word of warning about the code here. Much of the it isn&#8217;t idiomatic Julia and I wouldn&#8217;t
+necessarily recommend using this style in a serious project. I also can&#8217;t speak
+to its performance vis-a-vis more obvious Julian alternatives. In some cases,
+the style of the code examples below may help reduce memory usage, but
+performance is not my main concern. (This may be the first blogpost about Julia
+unconcerned with speed). Instead, I&#8217;m just interested in different ways of
+expressing iteration problems.</p>
+<p>For anyone who&#8217;d like to play along at home, there&#8217;s an IJulia notebook of
+this material on <a href="https://github.com/carljv/Julia-Iterators/blob/master/iterator_tricks.ipynb">Github</a>, which can be viewed on nbviewer <a href="http://nbviewer.ipython.org/urls/raw2.github.com/carljv/Julia-Iterators/master/iterator_tricks.ipynb?create=1">here</a>.</p>
+<h2>The Iterator Protocol</h2>
+<p>What do I mean by iterators?<a name="fnm-iterable" href="#fn-iterable"
+class="footnote-mark">2</a> I mean any <code>I</code> in Julia that works on ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/julia-iterators.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/julia-iterators.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/pardon-the-dust.html" rel = "bookmark"> Pardon the dust </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2013-09-30T00:00:00" pubdate> September 30, 2013 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/administrative.html"> Administrative </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <p><strong> Update 9/10/2013 </strong> New posts are going up on the blog, but I&#8217;m going to keep this post at the top for a while. Consider the site in beta for the moment, and please use the comment section of this post to report any issues. If you&#8217;re using <span class="caps">IE</span> to try and view the site, I&#8217;m sorry. But I&#8217;m not that sorry.</p>
+<p><br></p>
+<p><strong> Update 9/3/2013 </strong> Things should be working reasonably well. A few kinks to work out, and I have to migrate the former site&#8217;s comments, but the current site is pretty much ready to go.</p>
+<p><br></p>
+<p>This is the new home for my blog, <em>Slender Means</em>. It&#8217;s currently in-progress, and I&#8217;m still finishing up the design, and fixing weird links and typos from the Wordpress to Pelican migration.</p>
+<p>In the meantime, a more usable version sits at the old home: <a href="http://slendrmeans.wordpress.com">http://slendrmeans.wordpress.com</a>.</p>
+<p>Thanks for visiting!</p>
+<p>-c.</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/pardon-the-dust.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/pardon-the-dust.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch8.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 8: Principal Components Analysis </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2013-09-06T17:30:00" pubdate> September 06, 2013 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <p>The <a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/ch8/ch8.ipynb">code for Chapter 8</a> has been sitting around for a long time now. Let&#8217;s blow the dust off and check it out. One thing before we start: explaining <span class="caps">PCA</span> well is kinda hard. If any experts reading feel like I&#8217;ve described something imprecisely (and have a better description), I&#8217;m very open to suggestions.</p>
+<h2>Introduction</h2>
+<p>Chapter 8 is about <em>Principal Components Analysis</em> (<span class="caps">PCA</span>), which the authors perform on data with time series of prices for 24 stocks. In very broad terms, <span class="caps">PCA</span> is about projecting many real-life, observed variables onto a smaller number of &#8220;abstract&#8221; variables, the principal components. Principal components are selected in order to best preserve the variation and correlation of the original variables. For example, if we have 100 variables in our data, which are all highly correlated, we can project them down to just a few principal components&#8212;-i.e., the high correlation between them can be imagined as coming from an underlying factor that drives all of them, with some other less important factors driving their differences. When variables aren&#8217;t highly correlated, more principal components are needed to describe them well.</p>
+<p>As you might imagine, <span class="caps">PCA</span> can be a very effective ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch8.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch8.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/julia-loops.html" rel = "bookmark"> I&#8217;ve seen the best minds of my generation destroyed by Matlab &#8230; </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2013-05-11T16:52:00" pubdate> May 11, 2013 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/programming.html"> Programming </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <p>(Note: this is very quick and not well thought out. Mostly a
+conversation starter as opposed to any real thesis on the subject.)</p>
+<p>This post is a continuation of a Twitter conversation <a href="https://twitter.com/johnmyleswhite/status/332920041626554369">here</a>, started
+when John Myles White poked the hornets&#8217; nest. (Python&#8217;s nest? Where do
+Pythons live?)</p>
+<p><img src="../images/jmw_tweet.jpg" width=450px /></p>
+<p>The gist with John&#8217;s code is <a href="https://gist.github.com/johnmyleswhite/5556201">here</a>.</p>
+<p>This isn&#8217;t a very thoughtful post. But the conversation was becoming
+sort of a shootout and my thoughts (half-formed as they are) were a bit
+longer than a tweet. Essentially, I think the Python performance
+shootouts&#8212;PyPy, Numba, Cython&#8212;are missing the point.</p>
+<p>The point is, I think, that loops are a crutch. A 3-nested for loop in
+Julia that increments a counter takes 8 lines of code (1 initialize
+counter, 3 for statements, 1 increment statement, 3 end statements).
+Only one of those lines tells me what the code does.</p>
+<p>But most scientific programmers learned to code in imperative languages
+and that style of thinking and coding has become natural. I&#8217;ve often
+seen comments like this:</p>
+<p><img alt="forloop_tweet" src="../images/forloop_tweet.jpg" /></p>
+<p>Which I think simply equates readability with familiarity. That isn&#8217;t
+wrong, but it isn&#8217;t the whole story.</p>
+<p>Anyway, a lot of the ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/julia-loops.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/julia-loops.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch7.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 7: Numerical optimization with deterministic and stochastic  methods </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2013-02-12T18:51:00" pubdate> February 12, 2013 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <h2>Introduction</h2>
+<p>Chapter 7 of <em>Machine Learning for Hackers</em> is about numerical
+optimization. The authors organize the chapter around two examples of
+optimization. The first is a straightforward least-squares problem like
+that we&#8217;ve encountered already doing linear regressions, and is amenable
+to standard iterative algorithms (e.g. gradient descent). The second is
+a problem with a discrete search space, not clearly differentiable, and
+so lends itself to a stochastic/heuristic optimization technique (though
+we&#8217;ll see the optimization problem is basically artificial). The first
+problem gives us a chance to play around with Scipy&#8217;s optimization
+routines. The second problem has us hand-coding a Metropolis algorithm;
+this doesn&#8217;t show off much new Python, but it&#8217;s fun nonetheless.</p>
+<p>The notebook for this chapter is at the github report <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/ch7">here</a>, or you
+can view it online via nbviewer <a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/ch7/ch7.ipynb">here</a>.</p>
+<h2>Ridge regression by least-squares</h2>
+<p>In <a href="../ml4h-ch6.html">chapter 6</a> we estimated <span class="caps">LASSO</span> regressions, which added an L1
+penalty on the parameters to the <span class="caps">OLS</span> loss-function. The ridge regression
+works the same way, but applies an L2 penalty to the parameters. The
+ridge regression is a somewhat more straightforward optimization
+problem, since the L2 norm we use gives us a differentiable loss
+function.</p>
+<p>In ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch7.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch7.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch6.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 6: Regression models with regularization </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2013-02-08T20:07:00" pubdate> February 08, 2013 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <p>In my opinion, Chapter 6 is the most important chapter in <em>Machine
+Learning for Hackers</em>. It introduces the fundamental problem of machine
+learning: overfitting and the bias-variance tradeoff. And it
+demonstrates the two key tools for dealing with it: regularization and
+cross-validation.</p>
+<p>It&#8217;s also a fun chapter to write in Python, because it lets me play with
+the fantastic <a href="http://scikit-learn.org/stable/">scikit-learn</a> library. scikit-learn is loaded with
+hi-tech machine learning models, along with convenient &#8220;pipeline&#8221;-type
+functions that facilitate the process of cross-validating and selecting
+hyperparameters for models. Best of all, it&#8217;s <a href="http://scikit-learn.org/stable/">very well
+documented</a>.</p>
+<h2>Fitting a sine wave with polynomial regression</h2>
+<p>The chapter starts out with a useful toy example&#8212;trying to fit a curve
+to data generated by a sine function over the interval [0, 1] with added
+Gaussian noise. The natural way to fit nonlinear data like this is using
+a polynomial function, so that the output, <em>y</em> is a function of powers
+of the input <em>x</em>. But there are two problems with this.</p>
+<p>First, we can generate highly correlated regressors by taking powers of
+<em>x</em>, leading to noisy parameter estimates. The input <em>x</em> are evenly
+space numbers on the interval [0, 1]. So <em>x</em> and <em>x ...</em></p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch6.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch6.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch5.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 5: Linear regression (with categorical regressors) </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-12-28T01:32:00" pubdate> December 28, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <h2>Introduction</h2>
+<p>Chapter 5 of <em>Machine Learning for Hackers</em> is a relatively simple
+exercise in running linear regressions. Therefore, this post will be
+short, and I&#8217;ll only discuss the more interesting regression example,
+which nicely shows how patsy formulas handle categorical variables.</p>
+<h2>Linear regression with categorical independent variables</h2>
+<p>In chapter 5, the authors construct several linear regressions, the last
+of which is a multi-variate regression descriping the number of page
+views of top-viewed web sites. The regression is pretty straightforward,
+but includes two categorical variables: <code>HasAdvertising</code>, which takes
+values <code>True</code> or <code>False</code>; and <code>InEnglish</code>, which takes values <code>Yes</code>,
+<code>No</code> and <code>NA</code> (missing).</p>
+<p>If we include these variables in the formula, then patsy/statmodels will
+automatically generate the necessary dummy variables. For
+<code>HasAdvertising</code>, we get a dummy variable equal to one when the the
+value is <code>True</code>. For <code>InEnglish</code>, which takes three values, we get two
+separate dummy variables, one for <code>Yes</code>, one for <code>No</code>, with the missing
+value serving as the baseline.</p>
+<div class="highlight"><pre><span class="n">model</span> <span class="o">=</span> <span class="s">&#39;np.log(PageViews) ~ np.log(UniqueVisitors) + HasAdvertising +</span>
+<span class="n">InEnglish</span><span class="s">&#39;</span>
+<span class="n">pageview_fit_multi</span> <span class="o">=</span> <span class="n">ols</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">top_1k_sites</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+<span class="k">print</span> <span class="n">pageview_fit_multi</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+</pre></div>
+
+
+<p>Results in:</p>
+<div class="highlight"><pre><span class="n"><span class="caps">OLS</span></span> <span class="n">Regression</span> <span class="n">Results</span>
+
+<span class="o">==============================================================================</span>
+<span class="n">Dep</span><span class="p">.</span> <span class="n">Variable</span><span class="o">:</span> <span class="n">np</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="n">PageViews</span><span class="p">)</span> <span class="n">R</span><span class="o">-</span><span class="n">squared</span><span class="o">:</span> <span class="mf">0.480</span>
+<span class="nl">Model:</span> <span class="n"><span class="caps">OLS</span></span> <span class="n">Adj</span><span class="p">.</span> <span class="n">R</span><span class="o">-</span><span class="n">squared</span><span class="o">:</span> <span class="mf">0.478 ...</span></pre></div>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch5.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch5.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch4.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 4: Priority e-mail ranking </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-12-28T00:00:00" pubdate> December 28, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <h2>Introduction</h2>
+<p>I&#8217;m not going to write much about this chapter. In my opinion the payoff-to-effort ratio for this project is pretty low. The algorithm for ranking e-mails is pretty straightforward, but in my opinion seriously flawed. Most of the code in the chapter (and there&#8217;s a lot of it) revolves around parsing the text in the files. It&#8217;s a good exercise in thinking through feature extraction, but it&#8217;s not got a lot of new <span class="caps">ML</span> concepts. And from my perspective, there&#8217;s not much opportunity to show off any Python goodness. But, I&#8217;ll hit a couple of points that are new and interesting.</p>
+<p>The complete code is at the Github repo <a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/ch4">here</a>, and you can read the notebook via nbviewer <a href="http://nbviewer.ipython.org/urls/raw.github.com/carljv/Will_it_Python/master/MLFH/ch4/ch4.ipynb">here</a>.</p>
+<p><strong>1. Vectorized string methods in pandas.</strong> Back in <a href="../ml4h-ch1-p2.html">Chapter 1</a>, I groused about lacking vectorized functions for operations on strings or dates in pandas. If it wasn&#8217;t a numpy ufunc, you had to use the pandas <code>map()</code> method. That&#8217;s changed a lot over the summer, and since pandas 0.9.0, we can call <a href="http://pandas.pydata.org/pandas-docs/stable/basics.html#vectorized-string-methods">vectorized string methods</a>.</p>
+<p>For example, here&#8217;s the code in my chapter for program that identifies e-mails that ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/ml4h-ch4.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/ml4h-ch4.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+          <!-- Blog posts/articles/entries are tagged with Microformat2 data.
+          See: http://microformats.org/wiki/h-entry -->
+          <article class="h-entry">
+            <h1 class="p-name"><a href = "http://slendermeans.org/arm-ch5.html" rel = "bookmark"> <i><span class="caps">ARM</span></i> Chapter 5: Logistic models of well-switching in Bangladesh </a></h1>
+
+            <!-- Post info has date, author, and category -->
+            <footer class="article-panel post-info">
+              <ul>
+                <li><time class="dt-published" datetime="2012-12-22T19:10:00" pubdate> December 22, 2012 </time></li>
+                  <li> <address class = "p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+                    <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+              </ul>
+            </footer>
+
+            <div class="e-content">
+              <p>The logistic regression we ran for <a href="../ml4h-ch2-p2.html">chapter 2 of <em>Machine Learning for
+Hackers</em></a> was pretty simple. So I wanted to find an example that would
+dig a little deeper into statsmodels&#8217;s capabilities and the power of the
+patsy formula language.</p>
+<p>So, I&#8217;m taking an intermission from <em>Machine Learning for Hackers</em> and
+am going to show an example from Gelman and Hill&#8217;s <a href="http://www.stat.columbia.edu/~gelman/arm/"><em>Data Analysis Using
+Regression and Multilevel/Hierarchical Models</em></a> <em>(&#8220;<span class="caps">ARM</span>&#8221;)</em>. The chapter
+has a great example of going through the process of building,
+interpreting, and diagnosing a logistic regression model. We&#8217;ll end up
+with a model with lots of interactions and variable transforms, which is
+a great showcase for patsy and the statmodels formula <span class="caps">API</span>.</p>
+<h2>Logistic model of well-switching in Bangladesh</h2>
+<p>Our data are information on about 3,000 respondent households in
+Bangladesh with wells having an unsafe amount of arsenic. The data
+record the amount of arsenic in the respondent&#8217;s well, the distance to
+the nearest safe well (in meters), whether that respondent &#8220;switched&#8221;
+wells by using a neighbor&#8217;s safe well instead of their own, as well as
+the respondent&#8217;s years of education and a dummy variable indicating
+whether they belong to ...</p>
+            </div>
+
+            <nav class="article-panel summary-links">
+              <ul>
+                <li><a class="read-more-link" href="http://slendermeans.org/arm-ch5.html"> read more </a></li>
+                <li><a class = "comments-link" href = "http://slendermeans.org/arm-ch5.html#disqus_thread"> comments </a></li>
+            </nav>
+          </article>
+      </div> <!-- End post-list -->
+<p class="paginator">
+    Page 1 / 3
+        <a href="http://slendermeans.org/author/carl2.html">&raquo;</a>
+</p>
+    </div>
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>

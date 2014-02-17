@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "{{ SITEURL }}/{{ article.url }}" rel = "bookmark"> {{ article.title }} </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="{{ article.date.isoformat() }}" pubdate> {{ article.locale_date }} </time></li>
+          {% if article.author %}
+            <li> <address class="p-author h-card"><a href="{{ SITEURL }}/{{ article.author.url }}"> {{ article.author }} </a></address></li>
+          {% endif %}
+          {% for cat, art in categories %}
+            {% if cat == article.category %}
+              <li><a class = "p-category" href="{{ SITEURL }}/{{ cat.url }}"> {{ article.category }} </a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        {{ article.content }}
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url={{SITEURL}}/{{ article.url }}" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]={{SITEURL}}/{{article.url}}&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url={{SITEURL}}/{{article.url}}" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "{{ article.url }}";
+          var disqus_url = "{{ SITEURL }}/{{ article.url }}";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://{{ DISQUS_SITENAME }}.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+{% endblock %}

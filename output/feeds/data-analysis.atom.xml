@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Slender Means</title><link href="http://slendermeans.org/" rel="alternate"></link><link href="http://slendermeans.org/feeds/data-analysis.atom.xml" rel="self"></link><id>http://slendermeans.org/</id><updated>2012-05-14T23:46:00-04:00</updated><entry><title>How do you speed up 40,000 weighted least squares calculations? Skip 36,000 of them.</title><link href="http://slendermeans.org/lowess-speed.html" rel="alternate"></link><updated>2012-05-14T23:46:00-04:00</updated><author><name>Carl</name></author><id>tag:slendermeans.org,2012-05-14:lowess-speed.html</id><summary type="html">&lt;p&gt;Despite having finished all the programming for Chapter 2 of &lt;span class="caps"&gt;MLFH&lt;/span&gt; a
+while ago, there&amp;#8217;s been a long hiatus since the&lt;a href="../ml4h-ch2-p1.html"&gt;first post on that
+chapter&lt;/a&gt;.&lt;/p&gt;
+&lt;h2&gt;(S)lowess&lt;/h2&gt;
+&lt;p&gt;Why the delay? The second part of the code focuses on two procedures:
+lowess scatterplot smoothing, and logistic regression. When implementing
+the former in &lt;a href="http://statsmodels.sourceforge.net/devel/generated/statsmodels.nonparametric.api.lowess.html#statsmodels.nonparametric.api.lowess"&gt;statsmodels&lt;/a&gt;, I found that it was running &lt;em&gt;dog slow&lt;/em&gt; on
+the data&amp;#8212;in this case a scatterplot of 10,000 height-vs.-weight points.
+Indeed, for these 10,000 points, lowess, run with the default
+parameters, required about 23 seconds. After importing modules and
+defining variables according to my &lt;a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/CH2"&gt;IPython notebook&lt;/a&gt;, we can run
+&lt;code&gt;timeit&lt;/code&gt; on the function:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;timeit&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="n"&gt;lowess&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lowess&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;heights&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;weights&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This results in&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;best&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;42.6&lt;/span&gt; &lt;span class="n"&gt;s&lt;/span&gt; &lt;span class="n"&gt;per&lt;/span&gt; &lt;span class="n"&gt;loop&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;on the machine I&amp;#8217;m writing this on  (a Windows laptop with a 2.67 GHz i5
+processor; timings are faster, but still in the 30 sec. range on my 2.5
+GHz i7 Macbook).&lt;/p&gt;
+&lt;p&gt;An R user&amp;#8212;or really a user of any other statistical package&amp;#8212;is going
+to be confused here. We&amp;#8217;re all used to lowess being a relatively
+instantaneous procedure. It&amp;#8217;s an oft-used option for graphics packages
+like Lattice and ggplot2 &amp;#8212; and it doesn&amp;#8217;t take 20-30 seconds to
+generate a plot with a lowess curve superimposed. So what&amp;#8217;s the deal? Is
+something wrong with the statsmodels implementation?&lt;/p&gt;
+&lt;h2&gt;The naive lowess algorithm&lt;/h2&gt;
+&lt;p&gt;Short answer: no. Long answer: yeah, kinda. Let&amp;#8217;s start by looking at
+the lowess algorithm in general, sticking to the 2-D y-vs.-x scatterplot
+case. (I don&amp;#8217;t really find multi-dimensional lowess useful anyway; maybe
+others put it to frequent use. If so, I&amp;#8217;d like to hear about it).&lt;/p&gt;
+&lt;p&gt;Let&amp;#8217;s say we have data &lt;em&gt;{x&lt;sub&gt;1&lt;/sub&gt;, &amp;#8230;, x&lt;sub&gt;n&lt;/sub&gt;}&lt;/em&gt; and &lt;em&gt;{y&lt;sub&gt;1&lt;/sub&gt;, &amp;#8230;, y&lt;sub&gt;n&lt;/sub&gt;}&lt;/em&gt;. The
+idea is to fit a set of values &lt;em&gt;{y&lt;sup&gt;*&lt;/sup&gt;&lt;sub&gt;1&lt;/sub&gt;, &amp;#8230;, y&lt;sup&gt;*&lt;/sup&gt;&lt;sub&gt;n&lt;/sub&gt;}&lt;/em&gt; where each is the
+prediction at &lt;em&gt;x&lt;sub&gt;i&lt;/sub&gt;&lt;/em&gt; from a weighted regression using a fixed
+neighborhood of points around &lt;em&gt;x&lt;sub&gt;i&lt;/sub&gt;&lt;/em&gt;. The weighting scheme puts less
+weight on points that are far from &lt;em&gt;x&lt;sub&gt;i&lt;/sub&gt;&lt;/em&gt;. The regression can be linear,
+or polynomial, but linear is typical, and lowess procedures that use
+polynomials with more than 2 degrees are rare.&lt;/p&gt;
+&lt;p&gt;After we get this first set of fits, we usually run the regressions a
+few more times, each time modifying the weights to take into account
+residuals from the previous fit. These &amp;#8220;robustifying&amp;#8221; iterations apply
+successively less weight to outlying points in the data, reducing their
+influence on the final curve.&lt;/p&gt;
+&lt;p&gt;Here&amp;#8217;s the recipe:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Select the number of neighbors, &lt;em&gt;k&lt;/em&gt;, to use in each local
+    regression, and the number of robustifying iterations.&lt;/li&gt;
+&lt;li&gt;Sort the data, both &lt;em&gt;x &lt;/em&gt;and &lt;em&gt;y&lt;/em&gt;,&lt;em&gt; &lt;/em&gt;by the order of the &lt;em&gt;x&lt;/em&gt;-values.&lt;/li&gt;
+&lt;li&gt;For each &lt;em&gt;x&lt;sub&gt;i&lt;/sub&gt;&lt;/em&gt; in &lt;em&gt;{x&lt;sub&gt;1&lt;/sub&gt;, &amp;#8230; x&lt;sub&gt;n&lt;/sub&gt;}&lt;/em&gt;:&lt;ol&gt;
+&lt;li&gt;Find the &lt;em&gt;k&lt;/em&gt; points nearest to &lt;em&gt;x&lt;sub&gt;i&lt;/sub&gt;&lt;/em&gt; (the &lt;em&gt;neighborhood&lt;/em&gt;).&lt;/li&gt;
+&lt;li&gt;Calculate the weights for each &lt;em&gt;x&lt;sub&gt;j&lt;/sub&gt;&lt;/em&gt; in the neighborhood. This
+    requires:&lt;ol&gt;
+&lt;li&gt;Calculating the distance between each &lt;em&gt;x&lt;sub&gt;j&lt;/sub&gt;&lt;/em&gt; and &lt;em&gt;x&lt;sub&gt;i&lt;/sub&gt;&lt;/em&gt; and
+    applying a weighting function to these distances.&lt;/li&gt;
+&lt;li&gt;Take the weights calculated from the previous fit&amp;#8217;s
+    residuals (if this is not the first fit) and multiply them
+    by the distance weights.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;Run a regression of the &lt;em&gt;y&lt;sub&gt;j&lt;/sub&gt;&lt;/em&gt;s on the &lt;em&gt;x&lt;sub&gt;j&lt;/sub&gt;&lt;/em&gt;s in the
+    neighborhood, using the weights calculated in part B above.
+    Predict &lt;em&gt;y&lt;sup&gt;*&lt;/sup&gt;&lt;sub&gt;i&lt;/sub&gt;&lt;/em&gt;.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;Calculate the residuals from this fitted series of &lt;em&gt;{y&lt;sup&gt;*&lt;/sup&gt;&lt;sub&gt;1&lt;/sub&gt;, &amp;#8230;,
+    y&lt;sup&gt;*&lt;/sup&gt;&lt;sub&gt;n&lt;/sub&gt;}&lt;/em&gt;, and compute a weight from each of them.&lt;/li&gt;
+&lt;li&gt;Repeat 3 and 4 for the specified number of robustifying iterations.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Clearly, this is an expensive procedure. For 10,000 points and 3
+robustifying iterations (which is the default in R and statsmodels),
+you&amp;#8217;re calculating weights and running regressions 40,000 times (1
+initial fit + 3 robustifying iterations).  Running R&amp;#8217;s &lt;code&gt;lm.fit&lt;/code&gt; (which
+is the lean, fast engine under &lt;code&gt;lm&lt;/code&gt;) 40,000 times costs about 11
+seconds. Add on all the costs from weight calculations&amp;#8212;which will
+happen 40,000 &amp;times; &lt;em&gt;k&lt;/em&gt; times, since a weight needs to be calculated for
+each point&amp;#8217;s neightbor&amp;#8212;-and it&amp;#8217;s not surprising that the statsmodels
+version is as slow as it is. It is an inherently expensive algorithm.&lt;/p&gt;
+&lt;h2&gt;Cheating our way to a faster lowess&lt;/h2&gt;
+&lt;p&gt;The question is, why is R&amp;#8217;s lowess so fast? The answer is that R&amp;#8212;-and
+most other implementations, going back to Clevelands &lt;a href="http://www.netlib.org/go/lowess.f"&gt;lowess.f&lt;/a&gt; Fortan
+program&amp;#8212;don&amp;#8217;t perform lowess calculations on all that data.&lt;/p&gt;
+&lt;p&gt;If you look at the &lt;a href="http://stat.ethz.ch/R-manual/R-patched/library/stats/html/lowess.html"&gt;R help file for lowess&lt;/a&gt;, you&amp;#8217;ll see that in
+addition to the parameters we&amp;#8217;d expect&amp;#8212;the data &lt;code&gt;x&lt;/code&gt; and &lt;code&gt;y&lt;/code&gt;; a
+parameter to determine the size of the neighborhood; and the number of
+robustifying iterations&amp;#8212;there&amp;#8217;s an argument called &lt;code&gt;delta&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;The idea behind &lt;code&gt;delta&lt;/code&gt; is the following: &lt;em&gt;x&lt;sub&gt;i&lt;/sub&gt;&lt;/em&gt; that are close together
+aren&amp;#8217;t very interesting. If we&amp;#8217;ve already calculated &lt;em&gt;y&lt;sup&gt;*&lt;/sup&gt;&lt;sub&gt;i&lt;/sub&gt;&lt;/em&gt; from the
+neighborhood of data around &lt;em&gt;x&lt;sub&gt;i&lt;/sub&gt;&lt;/em&gt;, and |&lt;em&gt;x&lt;sub&gt;i+1&lt;/sub&gt;&lt;/em&gt; - &lt;em&gt;x&lt;sub&gt;i&lt;/sub&gt;&lt;/em&gt;| &amp;lt; &lt;code&gt;delta&lt;/code&gt;,
+then we don&amp;#8217;t really need to calculate &lt;em&gt;y&lt;sup&gt;*&lt;/sup&gt;&lt;sub&gt;i+1&lt;/sub&gt;&lt;/em&gt;. It&amp;#8217;s bound to be near &lt;em&gt;y&lt;sup&gt;*&lt;/sup&gt;&lt;sub&gt;i&lt;/sub&gt;&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Instead let&amp;#8217;s go out to an &lt;em&gt;x&lt;sub&gt;j&lt;/sub&gt;&lt;/em&gt; that&amp;#8217;s farther away from &lt;em&gt;x&lt;sub&gt;i&lt;/sub&gt;&lt;/em&gt;&amp;#8212;-say
+the farthest one still within &lt;code&gt;delta&lt;/code&gt; distance. Let&amp;#8217;s fit another
+weighted regression here. All those points in between&amp;#8212;within that delta
+distance&amp;#8212;can be approximated by a line going between the two regression
+fits we made.   Then, just keep skipping along in these delta-sized
+steps&amp;#8212;back-filling the predictions by linear interpolation as we
+go&amp;#8212;until the end of the data.&lt;/p&gt;
+&lt;p&gt;How much work have we saved ourselves? Assume as above 10,000 points and
+4 iterations. If the &lt;em&gt;x&lt;/em&gt;&amp;#8216;s are uniformly distributed along the axis, and
+we take &lt;code&gt;delta&lt;/code&gt; to be &lt;code&gt;0.01 * (max(x) - min(x))&lt;/code&gt; (which is the default
+value in R), then we&amp;#8217;re only running 100 regressions per iteration, or
+400 overall. Compared to the 40,000 that statsmodels is running, we can
+see why R is much faster. It&amp;#8217;s cheating!&lt;/p&gt;
+&lt;p&gt;This kind of approximating is fine, really. It&amp;#8217;s just assuming that, if
+our model is &lt;em&gt;y = f(x) + e&lt;/em&gt; and &lt;em&gt;f(x)&lt;/em&gt; is what we&amp;#8217;re trying to estimate
+with lowess, we can take the linear approximation of it in small
+neighborhoods.&lt;/p&gt;
+&lt;h2&gt;Implementing a faster lowess in Python&lt;/h2&gt;
+&lt;p&gt;Algorithms for lowess written in low level languages aren&amp;#8217;t hard to
+find. In addition to Cleveland&amp;#8217;s &lt;a href="http://www.netlib.org/go/lowess.f"&gt;Fortran implementation&lt;/a&gt;,
+there&amp;#8217;s also a &lt;a href="http://svn.r-project.org/R/trunk/src/library/stats/src/lowess.c"&gt;C version&lt;/a&gt; used by R (which is basically a direct
+translation of Cleveland&amp;#8217;s, but without all the pesky commenting to let
+you know what it&amp;#8217;s doing).&lt;/p&gt;
+&lt;p&gt;The &lt;a href="https://github.com/statsmodels/statsmodels/blob/master/statsmodels/nonparametric/smoothers_lowess.py"&gt;statsmodel version&lt;/a&gt; though, is nicely organized&amp;#8212;broken into
+sub-functions with  clear names, and exploiting vectorized operations.
+But it&amp;#8217;s slowness is not because it doesn&amp;#8217;t exploit the &lt;code&gt;delta&lt;/code&gt; trick.
+It also runs some expensive operations, like a call to SciPy&amp;#8217;s &lt;code&gt;lstsq&lt;/code&gt;
+function in each tight loop.&lt;/p&gt;
+&lt;p&gt;So, in addition to adding the delta trick, we&amp;#8217;d like to speed up those
+calculations in the tight loop (part 3 in the list above) as much as
+possible. Luckily, Cython lets us split the difference.&lt;/p&gt;
+&lt;p&gt;My Cython version of lowess is in my github repo, &lt;a href="https://github.com/carljv/Will_it_Python/tree/master/MLFH/CH2/lowess%20work"&gt;here&lt;/a&gt;, in the file
+cylowess.py. There&amp;#8217;s also an IPython notebook demonstrating it in
+action, and files comprising a testing suite, comparing its output to
+R&amp;#8217;s.&lt;/p&gt;
+&lt;p&gt;Let&amp;#8217;s take a look at some real squiggly data to see how it works. The
+Silverman motorcycle collision data, which is available as &lt;code&gt;mcycle&lt;/code&gt; in
+R&amp;#8217;s &lt;code&gt;MASS&lt;/code&gt; package, is great test data for non-parametric curve fitting
+procedures. In addition to not having any simple parametric shape, it&amp;#8217;s
+got some edge case issues that can cause problems, like repeated
+x-values.&lt;/p&gt;
+&lt;p&gt;This plot compares my lowess implementation with statsmodels&amp;#8217; and R&amp;#8217;s:&lt;/p&gt;
+&lt;p&gt;&lt;a href="../images/motorcycle-lowess-comparisons.png"&gt;
+  &lt;img src="../images/motorcycle-lowess-comparisons.png" width=350px /&gt;
+&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;The aggregate difference between R&amp;#8217;s lowess and mine?&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="k"&gt;print&lt;/span&gt; &lt;span class="s"&gt;&amp;#39;R and New Lowess &lt;span class="caps"&gt;MAD&lt;/span&gt;: &lt;/span&gt;&lt;span class="si"&gt;%5.2e&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;&lt;/span&gt; &lt;span class="o"&gt;%&lt;/span&gt;
+&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;mean&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;np&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;abs&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;r_lowess&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s"&gt;&amp;#39;y&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;new_lowess&lt;/span&gt;&lt;span class="p"&gt;[:,&lt;/span&gt; &lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;]))&lt;/span&gt;
+
+
+&lt;span class="n"&gt;R&lt;/span&gt; &lt;span class="ow"&gt;and&lt;/span&gt; &lt;span class="n"&gt;New&lt;/span&gt; &lt;span class="n"&gt;Lowess&lt;/span&gt; &lt;span class="n"&gt;&lt;span class="caps"&gt;MAD&lt;/span&gt;&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;1.62e-13&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;So it looks like it works.&lt;/p&gt;
+&lt;p&gt;Now let&amp;#8217;s look at some timings. I&amp;#8217;ll create some test data: 10,000
+points, where &lt;code&gt;x&lt;/code&gt; is uniformly distributed on [0, 20], and
+&lt;code&gt;y = sin(x) + N(0, 0.5)&lt;/code&gt;.&lt;/p&gt;
+&lt;p&gt;Statsmodel&amp;#8217;s lowess:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;timeit&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="n"&gt;smlw&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lowess&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;best&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;22.8&lt;/span&gt; &lt;span class="n"&gt;s&lt;/span&gt; &lt;span class="n"&gt;per&lt;/span&gt; &lt;span class="n"&gt;loop&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The new Cythonized lowess:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;timeit&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="n"&gt;cyl&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lowess&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;best&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mf"&gt;10.8&lt;/span&gt; &lt;span class="n"&gt;s&lt;/span&gt; &lt;span class="n"&gt;per&lt;/span&gt; &lt;span class="n"&gt;loop&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This is without the &lt;code&gt;delta&lt;/code&gt; trick. Skimming the fat off of those
+tight-looped operations and Cythonizing them cut the run time in half.
+11 seconds still sucks, though, so let&amp;#8217;s see what &lt;code&gt;delta&lt;/code&gt; gets us.&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;delta&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;max&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;min&lt;/span&gt;&lt;span class="p"&gt;())&lt;/span&gt; \&lt;span class="o"&gt;*&lt;/span&gt; &lt;span class="mf"&gt;0.01&lt;/span&gt;
+&lt;span class="o"&gt;%&lt;/span&gt;&lt;span class="n"&gt;timeit&lt;/span&gt; &lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;n&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="n"&gt;cyl&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lowess&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;delta&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;delta&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+
+
+&lt;span class="mi"&gt;3&lt;/span&gt; &lt;span class="n"&gt;loops&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;best&lt;/span&gt; &lt;span class="n"&gt;of&lt;/span&gt; &lt;span class="mi"&gt;3&lt;/span&gt;&lt;span class="p"&gt;:&lt;/span&gt; &lt;span class="mi"&gt;125&lt;/span&gt; &lt;span class="n"&gt;ms&lt;/span&gt; &lt;span class="n"&gt;per&lt;/span&gt; &lt;span class="n"&gt;loop&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Much better. That&amp;#8217;s the kind of time skipping 36,000 weighted
+least-squares calculations will save you. Given that this is some curvy
+data, is all this linear interpolation acceptable? I&amp;#8217;ll re-run both with
+a better level of the &lt;code&gt;frac&lt;/code&gt; parameter; the default is 2/3, but I&amp;#8217;ll
+reduce it to 1/10 to use smaller neighborhoods in the regression and
+allow for more curvature. Here&amp;#8217;s the plot:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;sm_lowess&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;smlw&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lowess&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;frac&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;new_lowess&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;cyl&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;lowess&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;y&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;x&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;frac&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="mf"&gt;0.1&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;delta&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;delta&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;a href="../images/sine-10k-pts-lowess-compare.png"&gt;
+  &lt;img src="../images/sine-10k-pts-lowess-compare.png" width=400px /&gt;
+&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;Which looks just as good as the non-interpolated version, but doesn&amp;#8217;t
+leave you twiddling your thumbs.&lt;/p&gt;
+&lt;h2&gt;Conclusion&lt;/h2&gt;
+&lt;p&gt;After all this, we have a version of lowess that&amp;#8217;s competitive with R&amp;#8217;s
+&lt;code&gt;lowess&lt;/code&gt; function. R also has a much richer &lt;code&gt;loess&lt;/code&gt; function, for which
+there&amp;#8217;s no real statmodels equivalent. &lt;code&gt;loess&lt;/code&gt; is a full-blown class
+from which one can make predictions and compute confidence intervals,
+among other things. It also allows for fitting a higher-dimensional
+surface, not just a curve. But I have a day job, so that&amp;#8217;s all for some
+other time. This kind of simple lowess is typically enough for most
+needs.&lt;/p&gt;
+&lt;p&gt;With this obsessive compulsive diversion into the guts of lowess out of
+the way, I&amp;#8217;ll wrap up Chapter 2 of &lt;span class="caps"&gt;MLFH&lt;/span&gt; in my next post.&lt;/p&gt;</summary><category term="python"></category><category term="R"></category></entry></feed>

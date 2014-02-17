@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title> Slender Means </title>
+    <meta charset="utf-8">
+
+    <link rel="shortcut icon" type="image/x-icon" href="http://slendermeans.org/theme/images/favicon.ico">
+
+    <link href="http://slendermeans.org/theme/css/tango_code.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/webfonts.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/layout.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/type.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/color-decor.css" rel="stylesheet">
+    <link href="http://slendermeans.org/theme/css/fontawesome/font-awesome.min.css" rel="stylesheet">
+</head>
+
+<body>
+  <header id="top-matter">
+    <!-- The Top Matter is comprised of the site Logo (which includes an image,
+    the site slogan and the site name), and the Main Navigation menu. -->
+
+    <hgroup id="logo">
+        <a href="http://slendermeans.org/index.html">
+        <!-- The graphic/title logo is a link that points home. The logo contains the site slogan and title, the text of which are styled in logo.css -->
+        <h1 id="site-name">
+          <span id="S">s</span><span id="lender">lender</span>
+          <span id="M">m</span><span id="eans">eans</span>
+        </h1>
+        <h2 id="site-tag"> i'd like to drop my trousers to the world i am a man of means of </h2>
+      </a>
+    </hgroup>
+    <nav id="main-nav">
+    <!-- The navigation bar with links to site pages -->
+        <ul>
+          <!-- Home and Archives are listed explicitly -->
+          <li><a href="http://slendermeans.org/index.html">Home</a></li>
+          <li><a href="http://slendermeans.org/archives.html">Archives</a></li>
+
+          <!-- Others are in PAGES variable, though we exclude the colophon
+          page, whose link will go at the site's end-matter footer -->
+              <li > <a href="http://slendermeans.org/pages/about.html"> About </a></li>
+              <li > <a href="http://slendermeans.org/pages/blogroll.html"> Blogroll </a></li>
+              <li > <a href="http://slendermeans.org/pages/will-it-python.html"> Will it  Python? </a></li>
+        </ul>
+    </nav>
+  </header>
+      <!-- For pages that have a title describing their content -->
+
+  <div id="content">
+    <article class="h-entry">
+      <h1 class="p-name"><a href = "http://slendermeans.org/ml4h-ch1-p2.html" rel = "bookmark"> <i>Machine Learning for Hackers</i> Chapter 1, Part 2: Cleaning date and location data </a></h1>
+
+      <!-- Post info has date, author, and category -->
+      <footer class="article-panel post-info">
+        <ul>
+          <li><time class="dt-published" datetime="2012-04-18T04:00:00" pubdate> April 18, 2012 </time></li>
+            <li> <address class="p-author h-card"><a href="http://slendermeans.org/author/carl.html"> Carl </a></address></li>
+              <li><a class = "p-category" href="http://slendermeans.org/category/will-it-python.html"> Will it Python </a></li>
+        </ul>
+      </footer>
+
+      <div class="e-content">
+        <h2>Introduction</h2>
+<p>In the <a href="../ml4h-ch1-p1.html">previous post</a>, I loaded the raw <span class="caps">UFO</span> data into a Pandas data
+frame after cleaning up some irregularities in the text file. Since
+we&#8217;re ultimately concerned with analyzing <span class="caps">UFO</span> sightings over time and
+space, the next step is to clean those variables and prepare them for
+analysis and vizualization.</p>
+<p>Some Python techniques to note in this part are:</p>
+<ul>
+<li>Like in the last part, Python string methods are going to come in
+    really handy, and be a simple, expressive solution to a lot of
+    problems.</li>
+<li>When those aren&#8217;t enough, Python has a pretty straightforward set of
+    functions for implementing regular expressions.</li>
+<li>The <code>map()</code> method in Pandas can be used to &#8220;vectorize&#8221; functions
+    along a Series (i.e. a data frame column) and is similar to R&#8217;s
+    <code>apply</code>. In general, using a NumPy <code>ufunc</code> (vectorized function) is
+    preferable, but not all operations can be expressed in <code>ufunc</code>s.
+    This is especially true for non-numeric operations, such as for
+    strings or dates.</li>
+</ul>
+<h2>Cleaning dates: mapping and subsetting.</h2>
+<p>The first two columns of the data are dates in <code>YYMMDDD</code> format, and
+Pandas imported them as integers. R has a function, <code>as.Date</code> that will
+operate on a vector of date strings, converting them to numeric dates.
+In Python, the <code>strptime</code> function in the <code>datetime</code> module performs the
+same function, but it not vectorized the way <code>as.Date</code> is. (Note that R
+also has a <code>strptime</code> that converts date strings to <span class="caps">POSIX</span> class object).
+Therefore, we have to use the <code>map</code> method.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">ymd_convert</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">Convert dates in the imported <span class="caps">UFO</span> data.</span>
+<span class="sd">Clean entries will look like <span class="caps">YYYMMDD</span>. If they&#39;re not clean, return <span class="caps">NA</span>.</span>
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="k">try</span><span class="p">:</span>
+<span class="n">cnv_dt</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="s">&#39;%Y%m</span><span class="si">%d</span><span class="s">&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+<span class="n">cnv_dt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+<span class="k">return</span> <span class="n">cnv_dt</span>
+
+<span class="n">ufo</span><span class="p">[</span><span class="s">&#39;date_occurred&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ufo</span><span class="p">[</span><span class="s">&#39;date_occurred&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">ymd_convert</span><span class="p">)</span>
+<span class="n">ufo</span><span class="p">[</span><span class="s">&#39;date_reported&#39;</span><span class="p">]</span> <span class="o">=</span>
+<span class="n">ufo</span><span class="p">[</span><span class="s">&#39;date_reported&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">ymd_convert</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Notice that <code>map</code> here is like R&#8217;s <code>apply</code> function (this is a little
+confusing, since Python also has an <code>apply</code> method that is <em>not</em> like
+R&#8217;s). Since series&#8212;columns in Pandas data frames&#8212;are  just NumPy
+<code>ndarrays</code> underneath, only NumPy <code>ufuncs</code> will operate on them in a
+vectorized (fast, elementwise) fashion. Base Python functions, and any
+more complicated functions you create from them, will have to be
+explicitly mapped. This is a little different from R, where, since the
+fundamental object in the language is the vector, functions are more
+likely vectorized than not. Nonetheless, NumPy <code>ufuncs</code> do cover the
+gamut of mathematical operations, and for other cases, the <code>map</code> method
+is easy enough to implement.</p>
+<p>Then we just get rid of the rows with one date or the other not in
+proper <code>YYYMMDD</code> format.</p>
+<div class="highlight"><pre><span class="c"># Get rid of the rows that couldn&#39;t be conformed to datetime.</span>
+<span class="n">ufo</span> <span class="o">=</span> <span class="n">ufo</span><span class="p">[(</span><span class="n">notnull</span><span class="p">(</span><span class="n">ufo</span><span class="p">[</span><span class="s">&#39;date_reported&#39;</span><span class="p">]))</span> <span class="o">&amp;</span>
+<span class="p">(</span><span class="n">notnull</span><span class="p">(</span><span class="n">ufo</span><span class="p">[</span><span class="s">&#39;date_occurred&#39;</span><span class="p">]))]</span>
+</pre></div>
+
+
+<p>The subsetting of the data frame is done by indexing it with a boolean
+vector. Since the <code>df[ ]</code> operation returns rows, the</p>
+<p>One can also subset an R data frame this way. R though, also has a
+<code>subset</code> function, with the syntax:</p>
+<div class="highlight"><pre><span class="n">ufo</span> <span class="o">=</span> <span class="n">ufo</span><span class="p">[</span><span class="err">!</span><span class="ow">is</span><span class="o">.</span><span class="n">na</span><span class="p">(</span><span class="n">ufo</span><span class="p">[</span> <span class="p">,</span> <span class="s">&#39;date.reported&#39;</span><span class="p">])</span> <span class="o">&amp;</span> <span class="err">!</span><span class="ow">is</span><span class="o">.</span><span class="n">na</span><span class="p">(</span><span class="n">ufo</span><span class="p">[</span> <span class="p">,</span> <span class="s">&#39;date.occurred&#39;</span><span class="p">]),</span> <span class="p">]</span>
+</pre></div>
+
+
+<p>being equivalent to:</p>
+<div class="highlight"><pre>ufo <span class="o">=</span> subset<span class="p">(</span>ufo<span class="p">,</span> where <span class="o">=</span> <span class="o">!</span>is.na<span class="p">(</span>date_reported<span class="p">)</span> <span class="o">&amp;</span> <span class="o">!</span>is.na<span class="p">(</span>date.occurred<span class="p">))</span>
+</pre></div>
+
+
+<p>The general <code>subset</code> syntax is:
+<code>df.new = subset(df.orig, where = condition, select = columns)</code>.
+Since <code>subset</code> looks for the variables referenced in the <code>where</code> and
+<code>select</code> arguments in the <code>df.orig</code> environment, there&#8217;s no need to call
+them as <code>df.orig[ , 'var']</code> or <code>df.orig$var</code>. There are other useful
+commands that work like this: <code>with</code>, <code>within</code>, and <code>transform</code>, for
+example.</p>
+<p>I find the <code>subset</code> function in R more expressive and easier to read
+than the boolean masking method, and I miss there being a Pandas
+equivalent.</p>
+<h2>Cleaning locations: string functions and regular expressions</h2>
+<p>Cleaning the date variables was relatively easy. Locations are trickier,
+and the authors don&#8217;t do a particularly thorough job of it. (No knock on
+them, reading several pages of text cleaning would be deadly boring, and
+they&#8217;te just illustrating some techniques). I&#8217;ll suggest a slightly
+better method that will pick up some extra data, but even that could
+probably be improved if we were concerned about getting every bit of
+information out of this dataset.</p>
+<p>The authors assume that valid <span class="caps">U.S.</span> locations are going to be in &#8220;City,
+<span class="caps">ST</span>&#8221; format (e.g., &#8220;Iowa City, <span class="caps">IA</span>&#8221;). Anything else is going to be dropped
+as either an international record, or not worth cleaning.</p>
+<p>They write a function that takes a location record and checks that it
+fits this pattern by seeing if R&#8217;s <code>strsplit</code> function splits it into
+two elements at a comma. If so, the function returns a vector containing
+the two elements, otherwise it returns a vector with two <code>NAs</code> (though
+not quite, see the note below). They then use R&#8217;s <code>lapply</code> to apply the
+function elementwise, and collect the resulting vectors in a list. Then
+there are some tricks to get the list into an <code>Nx2</code> matrix, and then put
+each column of the matrix into a variable in the data frame as <code>USCity</code>
+and <code>USState</code>.</p>
+<blockquote>
+<p><strong>Note</strong>: the authors wrap <code>strsplit</code> in <code>tryCatch</code> assuming that the
+former will throw an error if there are no commas in the string. My
+testing shows that&#8217;s not the case, and <code>strsplit</code> will just return the
+original string. The <code>tryCatch</code> wrapper doesn&#8217;t have any effect, and
+that line of code doesn&#8217;t appear to drop locations without commas as
+the authors intend. This isn&#8217;t really a problem, since they later
+subset on records with valid <span class="caps">U.S.</span> states, and that ultimately drops
+the no-comma location records.</p>
+</blockquote>
+<p>It&#8217;s easy to write a similar function in Python, using the <code>split</code>
+method of string objects.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">get_location</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+<span class="n">split_location</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span>
+<span class="n">clean_location</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">split_location</span><span class="p">]</span>
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">split_location</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+<span class="n">clean_location</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">]</span>
+<span class="k">return</span> <span class="n">clean_location</span>
+</pre></div>
+
+
+<p>This is near-direct translation of the authors&#8217; <code>get.location</code> function.
+Note the <code>strip</code> method and the list comprehension replace the <code>gsub</code>
+function the authors use to remove beginning and trailing white space
+from the extracted city and states.</p>
+<p>But a quick look at the data shows that there are lots of valid <span class="caps">U.S.
+</span>locations that will get dropped with this method. Specifically, the city
+part of the location contains commas in many records, so the split
+methods will return more than two elements and we will drop them as
+invalid. Let&#8217;s check out some cases with the following code:</p>
+<div class="highlight"><pre><span class="n">multi_commas</span> <span class="o">=</span> <span class="n">ufo</span><span class="p">[</span><span class="s">&#39;location&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span> <span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">)</span> \<span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
+<span class="k">print</span> <span class="s">&#39;Number of entries w/ multiple commas&#39;</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">multi_commas</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">ufo</span><span class="p">[</span><span class="s">&#39;location&#39;</span><span class="p">][</span><span class="n">multi_commas</span><span class="p">][:</span><span class="mi">10</span><span class="p">][</span><span class="o">/</span><span class="n">sourcecode</span><span class="p">]</span>
+</pre></div>
+
+
+<p>This returns:</p>
+<div class="highlight"><pre><span class="n">Number</span> <span class="n">of</span> <span class="n">entries</span> <span class="n">w</span><span class="o">/</span> <span class="n">multiple</span> <span class="n">commas</span> <span class="mi">1055</span>
+<span class="mi">1473</span> <span class="n">Aquaduct</span> <span class="p">(</span><span class="n">near</span><span class="p">,</span> <span class="n">over</span> <span class="n">desert</span><span class="p">,</span> <span class="n">before</span> <span class="n">entering</span> <span class="n">California</span><span class="p">),</span> <span class="n"><span class="caps">CA</span></span>
+<span class="mi">1985</span> <span class="n">Redding</span> <span class="p">(</span><span class="n">northeast</span> <span class="n">of</span><span class="p">,</span> <span class="n">out</span> <span class="n">over</span> <span class="n">Millville</span><span class="p">,</span> <span class="n">approximately</span><span class="p">),</span> <span class="n"><span class="caps">CA</span></span>
+<span class="mi">2108</span> <span class="n">Farmington</span> <span class="p">(</span><span class="n"><span class="caps">SE</span></span> <span class="n">of</span><span class="p">,</span> <span class="n">deserted</span> <span class="n">area</span><span class="p">,</span> <span class="n">Hwy</span> <span class="mi">44</span><span class="p">),</span> <span class="n"><span class="caps">NM</span></span>
+<span class="mi">2160</span> <span class="n">Stouthill</span> <span class="p">(</span><span class="n">community</span><span class="p">,</span> <span class="n">nearest</span> <span class="n">city</span> <span class="mi">30</span> <span class="n">miles</span><span class="p">,</span> <span class="n"><span class="caps">TN</span></span><span class="p">),</span> <span class="n"><span class="caps">TN</span></span>
+<span class="mi">2242</span> <span class="n">Highway</span> <span class="mi">71</span> <span class="n">between</span> <span class="n">Clearmont</span><span class="p">,</span> <span class="n">Missouri</span> <span class="n">and</span> <span class="n">Maryville</span><span class="p">,</span> <span class="n">Missou</span><span class="p">,</span> <span class="n"><span class="caps">MO</span></span>
+<span class="mi">2257</span> <span class="n">Bayfield</span> <span class="p">(</span><span class="n">near</span><span class="p">,</span> <span class="n">Lake</span> <span class="n">Superior</span><span class="p">,</span> <span class="n">south</span> <span class="n">shore</span><span class="p">),</span> <span class="n"><span class="caps">WI</span></span>
+<span class="mi">2287</span> <span class="n">Unidentified</span> <span class="n">object</span> <span class="n">sig</span><span class="p">,</span> <span class="p">(</span><span class="n"><span class="caps">VIC</span></span><span class="p">,</span> <span class="n">Australia</span><span class="p">),</span>
+<span class="mi">2297</span> <span class="n">Garfield</span><span class="p">,</span> <span class="p">(</span><span class="n"><span class="caps">VIC</span></span><span class="p">,</span> <span class="n">Australia</span><span class="p">),</span>
+<span class="mi">2384</span> <span class="n">Northeast</span> <span class="n">Cape</span> <span class="n"><span class="caps">AFS</span></span><span class="p">,</span> <span class="n">St</span> <span class="n">Lawrence</span> <span class="n">Island</span><span class="p">,,</span> <span class="n"><span class="caps">AK</span></span>
+<span class="mi">2458</span> <span class="n">Flisa</span><span class="p">,</span> <span class="n">Sol</span><span class="err">ø</span><span class="n">r</span><span class="p">,</span> <span class="n">Hedemark</span> <span class="p">(</span><span class="n">Norway</span><span class="p">),[</span><span class="o">/</span><span class="n">sourcecode</span><span class="p">]</span>
+</pre></div>
+
+
+<p>So there are over a thousand location records with more than one comma,
+and out of the first ten, seven are valid <span class="caps">U.S.</span> locations.</p>
+<p>To save these records, I&#8217;ll try another method, using regular
+expressions to search for locations that end with &#8220;, <span class="caps">ST</span>&#8221;-type patterns.
+Since we&#8217;re going to ultimately use <code>map</code> to check this pattern for
+every row in the data, I&#8217;ll <em>compile</em> the pattern first, which typically
+speeds up repeated searches.</p>
+<div class="highlight"><pre><span class="n">us_state_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s">&#39;, [A-Z][A-Z]\$&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n"><span class="caps">IGNORECASE</span></span><span class="p">)</span>
+</pre></div>
+
+
+<p>Then, I&#8217;ll create a function that takes a location record as input, and
+applies the regex search to it.</p>
+<div class="highlight"><pre><span class="k">def</span> <span class="nf">get_location2</span><span class="p">(</span><span class="n">l</span><span class="p">):</span>
+    <span class="n">strip_location</span> <span class="o">=</span> <span class="n">l</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+    <span class="n">us_state_search</span> <span class="o">=</span> <span class="n">us_state_pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">strip_location</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">us_state_search</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="n">clean_location</span> <span class="o">=</span> <span class="p">[</span><span class="s">&#39;&#39;</span><span class="p">,</span> <span class="s">&#39;&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">us_city</span> <span class="o">=</span> <span class="n">strip_location</span><span class="p">[</span> <span class="p">:</span><span class="n">us_state_search</span><span class="o">.</span><span class="n">start</span><span class="p">()]</span>
+        <span class="n">us_state</span> <span class="o">=</span> <span class="n">strip_location</span><span class="p">[</span><span class="n">us_state_search</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="o">+</span> <span class="mi">2</span><span class="p">:</span> <span class="p">]</span>
+        <span class="n">clean_location</span> <span class="o">=</span> <span class="p">[</span><span class="n">us_city</span><span class="p">,</span> <span class="n">us_state</span><span class="p">]</span>
+
+<span class="k">return</span> <span class="n">clean_location</span><span class="p">[</span><span class="o">/</span><span class="n">sourcecode</span><span class="p">]</span>
+</pre></div>
+
+
+<p>To follow this, note that if the regex pattern isn&#8217;t found, then the
+<code>search</code> method returns <code>None</code>, otherwise it returns a search object
+with several useful attributes. One of them is <code>start</code>, which indicates
+where in the string the pattern starts. To extract the city, we just
+take all the characters in the string up to <code>start</code>. The state will
+start 2 characters later (since we don&#8217;t want the comma or space in
+front). The function, like the previous one, finally returns a two
+element list with either a city and a state, or two blanks for records
+that didn&#8217;t match the pattern.</p>
+<p>I again use <code>map</code> to apply this function elementwise to the location
+column:</p>
+<div class="highlight"><pre><span class="n">location_lists</span> <span class="o">=</span> <span class="n">ufo</span><span class="p">[</span><span class="s">&#39;location&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">get_location2</span><span class="p">)</span>
+</pre></div>
+
+
+<p>This returns a series of two-element lists. I use list comprehensions to
+extract the first and second elements out to individual lists, which I
+assign to <code>us_city</code> and <code>us_state</code> variables in the data frame. It
+sounds complicated, but in Python it&#8217;s just two fairly readable lines of
+code:</p>
+<div class="highlight"><pre><span class="n">ufo</span><span class="p">[</span><span class="s">&#39;us_city&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">city</span> <span class="k">for</span> <span class="n">city</span><span class="p">,</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">location_lists</span><span class="p">]</span>
+<span class="n">ufo</span><span class="p">[</span><span class="s">&#39;us_state&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">st</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="k">for</span> <span class="n">city</span><span class="p">,</span> <span class="n">st</span> <span class="ow">in</span> <span class="n">location_lists</span><span class="p">]</span>
+</pre></div>
+
+
+<p>The last step in cleaning the location data is to weed out any locations
+that fit the &#8220;City, <span class="caps">ST</span>&#8221; pattern, but were not in <span class="caps">U.S.</span> states–Canadian
+provinces for example. The authors do this in a straightforward way by
+making a list of the 50 <span class="caps">U.S.</span> states and using R&#8217;s <code>match</code> function to
+see where the <span class="caps">U.S.</span> state variable matches a state in the list. They then
+subset the data frame to records where there is a match.</p>
+<blockquote>
+<p><strong>Note</strong>: The authors leave <span class="caps">D.C.</span> out of the list of states. It looks
+like there are about 90 records with <span class="caps">D.C.</span> in the state column.
+Unfortunately a couple of these aren&#8217;t Washington, D.C., but are South
+American &#8220;Distrito Capitals.&#8221; I&#8217;ll add <span class="caps">D.C.</span> into the list and
+subsequent analyses, keeping in mind there are a few false positives.
+(This may be true for other states as well, like I said at the start,
+this cleaning isn&#8217;t 100% accurate.)</p>
+</blockquote>
+<p>NumPy has an equivalent to the <code>match</code> function, though the name is a
+little more awkward: <code>in1d</code>. Below, I assign anything records in
+<code>us_state</code> that doesn&#8217;t have a match in the state list a blank string,
+then drop them out of the data.</p>
+<div class="highlight"><pre><span class="n">ufo</span><span class="p">[</span><span class="s">&#39;us_state&#39;</span><span class="p">][</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">ufo</span><span class="p">[</span><span class="s">&#39;us_state&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">us_states</span><span class="p">)]</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="n">ufo</span><span class="p">[</span><span class="s">&#39;us_city&#39;</span><span class="p">][</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">ufo</span><span class="p">[</span><span class="s">&#39;us_state&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">us_states</span><span class="p">)]</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+
+<span class="n">ufo_us</span> <span class="o">=</span> <span class="n">ufo</span><span class="p">[</span><span class="n">ufo</span><span class="p">[</span><span class="s">&#39;us_state&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s">&#39;&#39;</span><span class="p">]</span>
+</pre></div>
+
+
+<p>The <code>to_list</code> is necessary because Pandas requires a list argument to
+<code>[ ]</code>, and <code>in1d</code> returns a NumPy array.</p>
+<p>And that&#8217;s that. In the next post I&#8217;ll start exploring the data
+graphically.</p>
+      </div>
+
+      <nav class="article-panel social-links">
+        <ul>
+          <li><a href="http://twitter.com/share?text=Slender%20Means&url=http://slendermeans.org/ml4h-ch1-p2.html" class="social twitter">twitter</a></li>
+          <li><a href="http://www.facebook.com/sharer/sharer.php?s=100&p[url]=http://slendermeans.org/ml4h-ch1-p2.html&p[images][0]=&p[title]=&p[summary]=" class="social facebook">facebook</a></li>
+          <li><a href="https://plus.google.com/share?url=http://slendermeans.org/ml4h-ch1-p2.html" class="social gplus">google+</a></li>
+        </ul>
+      </nav>
+
+    <section id="comments">
+      <h2>Comments</h2>
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+          var disqus_identifier = "ml4h-ch1-p2.html";
+          var disqus_url = "http://slendermeans.org/ml4h-ch1-p2.html";
+          (function() {
+            var dsq = document.createElement('script');
+            dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://slendermeans.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+          })();
+        </script>
+    </div>
+  </article>
+
+
+  <!-- The site footer has a CC license link and a link to the colophon -->
+  <footer id="end-matter">
+    <ul>
+      <li><a id="cc-license" title="license" rel="license" href="http://creativecommons.org/licenses/by/3.0/deed.en_US"> Creative Commons 3.0 </a></li>
+
+      <li><a id="rss-link" title="rss" href="http://slendermeans.org/feeds/all.atom.xml">RSS</a></li>
+
+      <li><a id="colophon-link" title="colophon" href="http://slendermeans.org/pages/colophon.html"> Colophon </a></li>
+    </ul>
+  </footer>
+
+  <!-- This puts Google Analytics and Disqus comments scripts into each page -->
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-43554300-1']);
+    _gaq.push(['_trackPageview']);
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+<script type="text/javascript">
+    var disqus_shortname = 'slendermeans';
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = 'http://' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+</body>
+
+</html>
